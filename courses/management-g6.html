@@ -1,0 +1,1379 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六年級超能經理人：核心訓練</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+TC:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff; /* 淺藍色背景 */
+            color: #1f2937;
+        }
+        .container-shadow {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12); /* 更深的陰影 */
+        }
+        .page {
+            display: none;
+        }
+        /* 預設讓 Stress 頁面為 active */
+        .page.active {
+            display: block;
+        }
+        .task-done {
+            text-decoration: line-through;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        /* 腳踏車呼吸法畫布視覺調整 */
+        #breathing-canvas {
+            height: 200px;
+            width: 100%;
+        }                
+        /* 火箭發射台視覺化 */
+        #rocket-progress-bar, #custom-rocket-progress-bar {
+            height: 0;
+            transition: height 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 更流暢的緩進緩出曲線 */
+        }
+        .rocket-base {
+            background-image: linear-gradient(to top, #374151, #1f2937); /* 更深的底座 */
+        }
+        .scenario-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .scenario-content.active {
+            max-height: 500px;
+        }
+        /* 火箭圖標動畫與光暈 */
+        .rocket-icon {
+            transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 確保與進度條同步平滑 */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* 初始光暈 */
+        }
+        .launch-thrust {
+            transition: transform 0.3s ease-out; /* 快速衝刺動畫 */
+            text-shadow: 0 0 20px #facc15, 0 0 30px #f59e0b; /* 噴射火焰光暈 */
+        }
+
+        /* 導航按鈕的活躍狀態 - 新配色 */
+        .active-nav-button#nav-stress {
+            background-color: #ffe4e6; /* Light Rose background */
+            border-bottom: 3px solid #e11d48;
+        }
+        .active-nav-button#nav-goals {
+            background-color: #fffbeb; /* Light Amber background */
+            border-bottom: 3px solid #f59e0b;
+        }
+        .active-nav-button#nav-support {
+            background-color: #e0e7ff; /* Light Indigo background */
+            border-bottom: 3px solid #4f46e5;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-brand': '#06b6d4', /* 核心品牌色 - Teal/Cyan 500 */
+                        'secondary-accent': '#f59e0b', /* 目標進度色 - Amber 500 */
+                        'stress-theme': '#e11d48', /* 壓力主題色 - Rose 600 */
+                        'goals-theme': '#f59e0b', /* 目標主題色 - Amber 500 */
+                        'contract-theme': '#4f46e5', /* 契約主題色 - Indigo 600 */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl container-shadow">
+                <!-- 標語與標題 (使用新的 Primary Brand Color) -->
+        <header class="p-6 sm:p-8 bg-primary-brand rounded-t-xl text-white text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">六年級超能經理人：核心訓練</h1>
+            <p class="mt-2 text-lg font-light italic">掌握自己的時間、壓力和目標，你就是最棒的團隊領袖！</p>
+        </header>
+        
+        <!-- 導航列 (使用新配色) -->
+        <nav class="flex justify-around bg-gray-50 p-3 rounded-b-xl sticky top-0 z-10 shadow-lg">
+            <button onclick="showPage('stress')" id="nav-stress" class="nav-button active-nav-button font-extrabold text-stress-theme transition duration-150 p-3 rounded-lg flex-1 mx-2 border-2 border-transparent">
+                🛡️ 壓力超人特訓營
+            </button>
+            <button onclick="showPage('goals')" id="nav-goals" class="nav-button font-semibold text-gray-700 hover:text-goals-theme transition duration-150 p-3 rounded-lg flex-1 mx-2 border-2 border-transparent">
+                🧭 目標羅盤與團隊堡壘
+            </button>
+            <button onclick="showPage('support')" id="nav-support" class="nav-button font-semibold text-gray-700 hover:text-contract-theme transition duration-150 p-3 rounded-lg flex-1 mx-2 border-2 border-transparent">
+                📘 教師/家長專區
+            </button>
+        </nav>
+        
+        <!-- 頁面容器 -->
+        <main class="p-6 sm:p-10">
+            
+            <!-- I. 核心專區 A：壓力超人特訓營 (設為初始 Active 頁面 - 使用 Rose 主題色) -->
+            <div id="stress" class="page active">
+                <h1 class="text-3xl font-bold text-stress-theme mb-8 border-b-2 border-rose-200 pb-2">🛡️ 壓力超人特訓營</h1>
+                                
+                <!-- 1. 壓力動物園 -->
+                <div class="mb-10 p-6 bg-rose-50 rounded-xl border border-rose-200">
+                    <h2 class="text-2xl font-bold text-rose-700 mb-6">🚨 我的壓力警示燈 & 壓力動物園</h2>
+                                        
+                    <!-- 壓力警示燈 -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 mb-8">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4 text-center">🚦 自我狀態檢核</h3>
+                        <div class="flex justify-around items-center space-x-4">
+                            <!-- 燈號顏色保持不變，但邊框配色調整 -->
+                            <div id="light-green" onclick="setPressure('green')" class="cursor-pointer p-4 rounded-full w-24 h-24 flex items-center justify-center text-center font-bold text-sm shadow-md transition duration-300 border-4 border-white transform hover:scale-105" style="background-color: #10b981;">
+                                綠燈 (超棒!)
+                            </div>
+                            <div id="light-yellow" onclick="setPressure('yellow')" class="cursor-pointer p-4 rounded-full w-24 h-24 flex items-center justify-center text-center font-bold text-sm shadow-md transition duration-300 border-4 border-white transform hover:scale-105" style="background-color: #f59e0b;">
+                                黃燈 (有點緊)
+                            </div>
+                            <div id="light-red" onclick="setPressure('red')" class="cursor-pointer p-4 rounded-full w-24 h-24 flex items-center justify-center text-center font-bold text-sm shadow-md transition duration-300 border-4 border-white transform hover:scale-105" style="background-color: #ef4444;">
+                                紅燈 (需要幫助)
+                            </div>
+                        </div>
+                        <p id="pressure-message" class="mt-4 text-center font-semibold text-gray-600 h-6">點擊燈號檢核狀態</p>
+                    </div>
+
+                    <!-- 壓力類型說明 (配色調整) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-rose-100">
+                        <div class="p-4 bg-emerald-50 rounded-lg shadow-lg border-b-4 border-emerald-500">
+                            <div class="text-4xl text-center mb-2 text-emerald-600">🧚‍♂️</div>
+                            <h3 class="font-bold text-xl text-emerald-700 mb-2">① 小精靈 (正向壓力)</h3>
+                            <div class="space-y-2 text-sm text-gray-700">
+                                <p class="font-semibold text-gray-900">核心感覺：**興奮感** 和 **充滿動力**。</p>
+                                <p>這是一種好壓力！就像你準備跑一場期待已久的接力賽時，心臟跳得很快，但全身充滿力量。它能讓你更專注，表現得更好。</p>
+                                <p class="mt-1 font-bold text-emerald-600">🌟 六年級範例：</p>
+                                <ul class="list-disc list-inside ml-4 text-xs space-y-1">
+                                    <li>為了**班級榮譽**，你努力練習才藝表演，感覺既緊張又興奮。</li>
+                                    <li>你很期待**數學測驗**，因為你準備得很充足，渴望看到自己的進步。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-amber-50 rounded-lg shadow-lg border-b-4 border-amber-500">
+                            <div class="text-4xl text-center mb-2 text-amber-600">🦁</div>
+                            <h3 class="font-bold text-xl text-amber-700 mb-2">② 小獅子 (可承受壓力)</h3>
+                            <div class="space-y-2 text-sm text-gray-700">
+                                <p class="font-semibold text-gray-900">核心感覺：**有點緊繃**，但 **可以應付**。</p>
+                                <p>這就像爬一座很陡的山坡，雖然很累，但你知道只要休息一下、喝點水，就能繼續向上爬。你感覺到挑戰，但你有能力克服。</p>
+                                <p class="mt-1 font-bold text-amber-600">🚧 六年級範例：</p>
+                                <ul class="list-disc list-inside ml-4 text-xs space-y-1">
+                                    <li>**團隊報告**的截止日快到了，你覺得有點焦慮，但你已經**列好清單**並請隊友協助。</li>
+                                    <li>你必須在今天完成所有作業才能準時睡覺，雖然有壓力，但**只要專心**就能完成。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-red-50 rounded-lg shadow-lg border-b-4 border-red-500">
+                            <div class="text-4xl text-center mb-2 text-red-600">👹</div>
+                            <h3 class="font-bold text-xl text-red-700 mb-2">③ 大怪獸 (毒性壓力)</h3>
+                            <div class="space-y-2 text-sm text-gray-700">
+                                <p class="font-semibold text-gray-900">核心感覺：**無助感** 和 **完全動彈不得**。</p>
+                                <p>這是一種很可怕的壓力！它讓你覺得身體不舒服（肚子痛、睡不著），而且持續很久，讓你感覺自己完全無法控制情況。這時你需要**找大人（老師或父母）幫忙**，才能打敗它！</p>
+                                <p class="mt-1 font-bold text-red-600">🚨 六年級範例：</p>
+                                <ul class="list-disc list-inside ml-4 text-xs space-y-1">
+                                    <li>長期的**家庭衝突**或不斷被同學**霸凌**，讓你覺得孤單又害怕。</li>
+                                    <li>你同時被分配了遠超出能力範圍的任務，而且沒有任何同學可以幫助你。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 我的復原小幫手：腳踏車山坡式呼吸法 (Canvas Update - 使用 Emerald 主題色) -->
+                <div id="recovery-helper" class="mb-10 p-6 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <h2 class="text-2xl font-bold text-emerald-700 mb-4">🌬️ 我的復原小幫手：腳踏車山坡式呼吸法</h2>
+                                        
+                    <p class="mb-4 text-gray-600">這個技巧的重點是調整呼吸節奏 **(4-4-4-4)**。請跟隨畫布上的**腳踏車**，完成 4 趟山路練習（總計 64 秒）：</p>
+                    <ul class="list-disc list-inside text-gray-700 ml-4 space-y-2 mb-6">
+                        <li>**🟢 吸氣 (4s):** 緩慢、平穩地用鼻子吸氣，騎上綠色上坡。</li>
+                        <li>**🔵 坡頂閉氣 (4s):** 保持氣息，在藍色坡頂平穩滑行。</li>
+                        <li>**🟡 吐氣 (4s):** 透過嘴巴，緩慢地吐氣，騎下黃色下坡。</li>
+                        <li>**🔴 谷底閉氣 (4s):** 氣體吐盡，在紅色谷底停留。</li>
+                    </ul>
+
+                    <!-- 畫布容器與顯示區 -->
+                    <div class="flex flex-col items-center justify-center mt-6 w-full max-w-xl mx-auto relative">
+                        
+                        <!-- 狀態行: 階段指令 (左側) + 計時器 (右側) -->
+                        <div class="flex justify-between items-center w-full mb-3">
+                            <!-- 階段指令 (左側) -->
+                            <div id="currentPhaseLabel" class="text-xl font-bold text-gray-700">準備開始</div>
+                                                        
+                            <!-- 計時器顯示區塊 (右側) -->
+                            <div id="breathing-timer-display" class="bg-white text-gray-800 p-2 px-4 rounded-xl
+                                                                     shadow-lg font-mono font-extrabold text-2xl z-10
+                                                                     border-4 border-emerald-600 flex items-center justify-center min-w-[80px]">
+                                <span id="currentPhaseTime">4s</span>
+                            </div>
+                        </div>
+                        
+                        <canvas id="breathing-canvas" class="w-full border-4 border-emerald-600 rounded-xl bg-white shadow-xl"></canvas>
+                        
+                    </div>
+
+                    <!-- 呼吸計時器與控制 -->
+                    <div class="mt-6 w-full max-w-xs mx-auto space-y-3">
+                        <button id="start-breath" class="w-full bg-primary-brand hover:bg-cyan-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow-lg">
+                            開始 4 趟山路練習
+                        </button>
+                        <button id="reset-breath" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md" disabled>
+                            重設練習
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. 進入冷靜區 (CBS 應用) -->
+                <div class="p-6 bg-rose-100 rounded-xl border border-rose-300">
+                    <h2 class="text-2xl font-bold text-stress-theme mb-4">🧘 進入冷靜區 (CBS 策略應用)</h2>
+                    <p class="mb-4 text-gray-600">在情緒高漲時，記住這個口訣：**C-B-S**！</p>
+                                        
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-white rounded-lg shadow-md border-b-4 border-rose-500">
+                            <div class="text-4xl font-extrabold text-rose-500">C</div>
+                            <h3 class="font-bold text-xl mb-1">Count 數數</h3>
+                            <p class="text-sm text-gray-600">**步驟：** 從 10 慢慢倒數到 1。讓你的大腦從情緒反應切換到邏輯思考。</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow-md border-b-4 border-rose-500">
+                            <div class="text-4xl font-extrabold text-rose-500">B</div>
+                            <h3 class="font-bold text-xl mb-1">Breathe 呼吸</h3>
+                            <p class="text-sm text-gray-600">**步驟：** 運用腳踏車呼吸法 (4-4-4-4 節奏)。慢下來，調整心跳。</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow-md border-b-4 border-rose-500">
+                            <div class="text-4xl font-extrabold text-rose-500">S</div>
+                            <h3 class="font-bold text-xl mb-1">Squeeze 捏擠/放鬆</h3>
+                            <p class="text-sm text-gray-600">**步驟：** 悄悄用力捏緊橡皮擦或雙手 5 秒，然後緩慢放鬆。釋放身體積累的緊張感。</p>
+                        </div>
+                    </div>
+                                        
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleCbsScenario()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+                            情境模擬：遇到緊張衝突
+                        </button>
+                                                
+                        <!-- 情境模擬內容 (預設隱藏) -->
+                        <div id="cbs-scenario-content" class="scenario-content mt-4 max-w-lg mx-auto p-4 text-left bg-white rounded-lg shadow border border-rose-400">
+                            <h4 class="font-bold text-rose-700 mb-2">情境：你的組員公開批評你的設計</h4>
+                            <hr class="my-2">
+                            <p class="text-sm font-semibold text-gray-800">🤔 **引導你應對的步驟：**</p>
+                            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2 pl-4 mt-2">
+                                <li>**C (Count):** 你的臉紅了，想反駁。**慢下來！** 在心裡默默從 10 數到 1。</li>
+                                <li>**B (Breathe):** 感覺心跳慢下來一點後，深吸一口氣（4 秒），緩緩地吐氣（4 秒）。</li>
+                                <li>**S (Squeeze):** 悄悄用力捏緊橡皮擦或雙手，5 秒後放鬆。</li>
+                                <li>**行動：** 當你冷靜後，你可以說：「謝謝你的意見。我們可以在休息時，私下討論如何讓海報更好嗎？」</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- II. 核心專區 B：目標羅盤與團隊堡壘 (使用 Amber 主題色) -->
+            <div id="goals" class="page">
+                <h1 class="text-3xl font-bold text-goals-theme mb-8 border-b-2 border-amber-200 pb-2">🧭 目標羅盤與團隊堡壘</h1>
+                                
+                <!-- 1. 目標火箭發射台 (固定長期目標) -->
+                <div class="mb-10 p-6 bg-amber-50 rounded-xl border border-amber-200 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        
+                    <!-- 左側: 任務清單 -->
+                    <div class="lg:col-span-2">
+                        <h2 class="text-2xl font-bold text-amber-700 mb-4 flex items-center">
+                            <span class="mr-2">🚀</span> 主要任務發射台：炫勇說書人計畫
+                        </h2>
+                        <p class="text-lg font-semibold text-amber-600 mb-3">長期目標: 炫勇說書人計畫策展 (總任務: <span id="total-tasks-display">10</span> 項)</p>
+                        <p class="text-md text-gray-600 mb-4">專案目標：完成一位「勇者」的故事介紹短片（或簡報），並在下週五前進行口頭報告。</p>
+
+                        <!-- 任務清單表格 -->
+                        <div class="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">任務類別</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">任務內容 (誰 & 做什麼)</th>
+                                        <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mission-list" class="bg-white divide-y divide-gray-200 text-sm">
+                                    <!-- 固定任務清單 (任務ID: fixed-1 to fixed-10) - 這裡的 data-completed 已經在 JS 啟動時處理 -->
+                                    <tr data-type="fixed"><td class="px-3 py-2 text-gray-900 font-semibold italic" colspan="3">I. 決定主題與蒐集資料</td></tr>
+                                    <tr data-task-id="fixed-1" data-completed="false">
+                                        <td class="px-3 py-2">蒐集資料</td>
+                                        <td class="px-3 py-2">組員 A：搜尋網路與新聞，找出「勇者」的三個主要事蹟。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-1')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-2" data-completed="false">
+                                        <td class="px-3 py-2">蒐集資料</td>
+                                        <td class="px-3 py-2">組員 B：整理事蹟發生時的時間、地點等基礎資訊。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-2')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-type="fixed"><td class="px-3 py-2 text-gray-900 font-semibold italic" colspan="3">II. 訪問執行 (最重要環節)</td></tr>
+                                    <tr data-task-id="fixed-3" data-completed="false">
+                                        <td class="px-3 py-2">由誰訪問</td>
+                                        <td class="px-3 py-2">全體組員：共同討論並寫出五個關於「勇氣」的訪談核心問題。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-3')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-4" data-completed="false">
+                                        <td class="px-3 py-2">由誰訪問</td>
+                                        <td class="px-3 py-2">組員 C (訪談資料員)：準備手機或錄音筆，並測試錄音功能是否清晰。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-4')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-5" data-completed="false">
+                                        <td class="px-3 py-2">由誰訪問</td>
+                                        <td class="px-3 py-2">組員 A (首席訪問人)：練習用開心的語氣問「你當時怎麼想的？」這個問題。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-5')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-type="fixed"><td class="px-3 py-2 text-gray-900 font-semibold italic" colspan="3">III. 故事設計與整理</td></tr>
+                                    <tr data-task-id="fixed-6" data-completed="false">
+                                        <td class="px-3 py-2">設計面向</td>
+                                        <td class="px-3 py-2">專案經理 (組員 A)：決定報告會使用 圖片 還是 手繪圖 來呈現故事。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-6')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-7" data-completed="false">
+                                        <td class="px-3 py-2">設計面向</td>
+                                        <td class="px-3 py-2">組員 B：選擇一段適合故事高潮的熱血背景音樂。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-7')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-8" data-completed="false">
+                                        <td class="px-3 py-2">整理與報告</td>
+                                        <td class="px-3 py-2">組員 C：將訪談錄音中所有「勇者」說的話分段打字出來 (做成逐字稿)。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-8')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-9" data-completed="false">
+                                        <td class="px-3 py-2">整理與報告</td>
+                                        <td class="px-3 py-2">全體組員：決定報告的最終順序：從緊張開始，以啟發結束。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-9')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                    <tr data-task-id="fixed-10" data-completed="false">
+                                        <td class="px-3 py-2">最終檢核</td>
+                                        <td class="px-3 py-2">專案經理：最終播放檢查短片或簡報的流暢度。</td>
+                                        <td class="px-3 py-2 text-center"><input type="checkbox" onclick="toggleTaskCompletion('fixed-10')" class="task-checkbox w-4 h-4 text-secondary-accent rounded"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                                        
+                    <!-- 右側: 固定目標火箭發射視覺化 (使用 Amber 漸變) -->
+                    <div class="lg:col-span-1 flex flex-col items-center justify-center p-4 bg-gray-800 rounded-xl shadow-inner">
+                        <h3 class="text-xl font-bold text-white mb-4">發射進度：<span id="progress-percent">0%</span></h3>
+                        <div class="w-20 h-80 bg-gray-900 rounded-full flex flex-col justify-end items-center relative p-1 rocket-base border-4 border-gray-700">
+                                                        
+                            <!-- 火箭燃料進度條 (固定目標 - Amber) -->
+                            <div id="rocket-progress-bar" class="w-full rounded-full shadow-lg" style="background-image: linear-gradient(to top, #f59e0b, #facc15); height: 0%;"></div>
+                                                        
+                            <!-- 火箭/目標圖示 -->
+                            <div id="rocket-icon" class="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-5xl rocket-icon">
+                                🌟 <!-- 初始圖示 (目標點) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                
+                <!-- 2. 團隊的超能清單目標分解區 (自訂目標與獨立火箭 - 使用 Primary Brand Cyan) -->
+                <div class="mb-10 p-6 bg-cyan-50 rounded-xl border border-cyan-200">
+                    <h2 class="text-3xl font-bold text-primary-brand mb-6">🎯 我們的專屬超能目標分解區</h2>
+
+                    <!-- 輸入與總目標區塊 -->
+                    <div class="mb-8 p-5 bg-white rounded-lg shadow-md border border-gray-100">
+                        <h3 class="text-xl font-bold text-primary-brand mb-3">🛠️ 目標分解工具</h3>
+                        <label for="team-super-goal" class="block text-md font-semibold text-primary-brand mb-2">
+                            團隊的超能總目標：
+                        </label>
+                        <input type="text" id="team-super-goal" placeholder="例如：本週內完成科學專案的報告初稿" class="w-full p-3 border-2 border-primary-brand/50 rounded-lg focus:ring-primary-brand focus:border-primary-brand transition duration-150 text-gray-700">
+                                                
+                        <label for="new-task-content" class="block text-md font-semibold text-primary-brand mt-4 mb-2">
+                            分解任務內容 (誰 & 做什麼)：
+                        </label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="new-task-content" placeholder="例如：組員 A：繪製報告中的關鍵圖表" class="w-full p-3 border-2 border-primary-brand/50 rounded-lg focus:ring-primary-brand focus:border-primary-brand transition duration-150 text-gray-700">
+                            <button onclick="addCustomTask()" class="bg-primary-brand hover:bg-cyan-700 text-white font-bold px-4 py-3 rounded-lg flex-shrink-0 transition duration-200 shadow-md">
+                                + 開始分解
+                            </button>
+                        </div>
+                    </div>
+                                        
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 左側: 自訂任務清單 -->
+                        <div class="lg:col-span-2">
+                            <h3 class="text-2xl font-bold text-primary-brand mb-4 border-b pb-2">IV. 團隊的超能清單目標分解 (自訂任務)</h3>
+                            <p class="text-md text-gray-600 mb-4">所有自訂目標都會列在這裡。完成後別忘了打勾！</p>
+
+                            <div id="custom-mission-list-container" class="bg-white rounded-lg shadow-md divide-y divide-gray-100 p-2">
+                                <!-- Custom tasks will be injected here -->
+                            </div>
+                            <p id="no-custom-tasks" class="text-gray-500 italic p-4 text-center hidden">尚未添加任何自訂任務。</p>
+                        </div>
+
+                        <!-- 右側: 自訂目標火箭發射台 (使用 Cyan 漸變) -->
+                        <div class="lg:col-span-1 flex flex-col items-center justify-center p-4 bg-gray-800 rounded-xl shadow-inner">
+                            <h3 class="text-xl font-bold text-white mb-4">自訂目標進度：<span id="custom-progress-percent">0%</span></h3>
+                            <div class="w-20 h-80 bg-gray-900 rounded-full flex flex-col justify-end items-center relative p-1 rocket-base border-4 border-gray-700">
+                                                                
+                                <!-- 火箭燃料進度條 (自訂目標 - Cyan) -->
+                                <div id="custom-rocket-progress-bar" class="w-full rounded-full shadow-lg" style="background-image: linear-gradient(to top, #06b6d4, #22d3ee); height: 0%;"></div>
+                                                                
+                                <!-- 火箭/目標圖示 -->
+                                <div id="custom-rocket-icon" class="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-5xl rocket-icon">
+                                    🚀 <!-- 自訂目標圖示 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 我們的團隊契約區 (使用 Indigo 主題色) -->
+                <div id="team-contract-area" class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 shadow-xl">
+                    <h2 class="text-3xl font-bold text-contract-theme mb-6 border-b pb-3">📜 我們的團隊契約區</h2>
+                    <!-- 訊息提示框 (代替原資料管理區的功能) -->
+                    <div id="message-box" class="hidden p-3 mb-4 rounded-lg text-sm transition duration-300"></div>
+                    <p class="text-gray-600 mb-6">在這裡，團隊可以共同編輯契約主文並進行數位簽名。請注意：契約內容將儲存在您**本機瀏覽器**中，不會同步給其他使用者。</p>
+                                        
+                    <!-- 契約內容編輯區 -->
+                    <section class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">1. 契約內容編輯</h3>
+                        <textarea id="contract-text" rows="10"
+                                 placeholder="在此輸入您的團隊契約，例如：團隊目標、溝通規則、職責分配等..."
+                                class="w-full p-4 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-contract-theme focus:border-contract-theme transition duration-150 text-base shadow-inner"></textarea>
+                                                
+                        <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                            <button id="save-contract-btn"
+                                     class="flex-1 bg-contract-theme hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
+                                💾 儲存契約內容
+                            </button>
+                            <button id="view-contract-btn"
+                                     class="flex-1 bg-indigo-200 hover:bg-indigo-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                📜 檢視契約
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- 契約顯示區 (隱藏直到檢視) -->
+                    <section id="contract-display-area" class="hidden mb-8 p-6 border border-indigo-300 bg-white rounded-lg shadow-inner">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">當前契約內容 (只讀)</h3>
+                        <pre id="displayed-contract-text" class="whitespace-pre-wrap font-mono text-gray-700 max-h-96 overflow-y-auto"></pre>
+                    </section>
+
+                    <!-- 數位簽名區 -->
+                    <section class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">3. 數位簽名區</h3>
+                                                
+                        <div id="new-signature-panel" class="p-4 border border-emerald-400 bg-emerald-100 rounded-lg mb-6">
+                            <h4 class="font-semibold text-emerald-700 mb-3">新增您的簽名</h4>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="signer-name" placeholder="您的姓名或代號 (數位簽名)"
+                                     class="flex-1 p-3 border border-emerald-500 rounded-lg focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600 transition" required>
+                                <button id="add-signature-btn"
+                                         class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md sm:w-auto">
+                                    ✍️ 簽署契約
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="signatures-list" class="space-y-3">
+                            <!-- 簽名項目將在此處動態載入/添加 -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- III. 核心專區 C：教師/家長專區 (Support Zone - 使用 Indigo 主題色) -->
+            <div id="support" class="page">
+                <h1 class="text-3xl font-bold text-contract-theme mb-8 border-b-2 border-indigo-200 pb-2">📘 教師/家長專區 (Support Zone)</h1>
+                
+                <!-- 專區簡介 -->
+                <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 shadow-xl mb-10">
+                    <h2 class="text-2xl font-bold text-indigo-700 mb-3">給大人的話</h2>
+                    <p class="text-gray-700">
+                        本專區提供教學內容背後的教育意義與實施指南，旨在幫助大人們更好地引導六年級學生進行壓力管理與複雜合作學習。
+                    </p>
+                </div>
+
+                <!-- 教學內容與核心策略 -->
+                <section class="mb-10 p-6 bg-gray-50 rounded-xl shadow-lg border-t-4 border-indigo-500">
+                    <h3 class="text-2xl font-bold text-indigo-600 mb-4">I. 國小六年級教學內容：壓力管理與複雜合作</h3>
+                    <p class="text-base font-semibold text-gray-600 mb-4">學習目標： 掌握複雜的組織能力，理解壓力類型與恢復機制，並在群體環境中運用自我管理策略。</p>
+
+                    <!-- 核心策略 Table Structure -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-indigo-200">
+                            <thead class="bg-indigo-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider w-1/5">核心策略</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider w-1/5">具體教學與實作</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider w-3/5">來源依據（教育意義與實施指南）</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-indigo-100 text-sm">
+                                <!-- 壓力管理 -->
+                                <tr class="hover:bg-indigo-50">
+                                    <td class="p-4 align-top font-bold text-indigo-800">壓力管理</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        <span class="font-semibold">了解壓力類型：</span>教導學生區分三種壓力（正向壓力、可承受壓力、毒性壓力），並幫助他們從壓力反應中從容恢復到平靜狀態。
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-indigo-600">教育意義:</p>
+                                        <p>區分壓力類型（哈佛大學兒少發展中心模型）能幫助學生將壓力「標籤化」而非視為洪水猛獸。區分「可承受壓力」和「毒性壓力」有助於他們了解何時需要尋求外部支持。</p>
+                                        <p class="font-semibold text-indigo-600">實施指南:</p>
+                                        <p>使用比喻（如舉重、微風、暴風雨）解釋三種壓力，並在學生表現出焦慮時，引導他們判斷：「你現在體驗的是哪一種？」</p>
+                                    </td>
+                                </tr>
+                                <!-- 組織能力 / 團隊合作 -->
+                                <tr class="hover:bg-indigo-50">
+                                    <td class="p-4 align-top font-bold text-indigo-800">組織能力 / 團隊合作</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        <span class="font-semibold">設定團隊目標：</span>當學生進行分組學習時，要求他們設定合作內容相關的團隊目標，並將目標清楚訂定並公告出來，確保進度一致。
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-indigo-600">教育意義:</p>
+                                        <p>公開目標能建立集體責任感，並讓學生學習如何將個人工作納入團隊框架中。這強化了對等關係中的溝通協商能力。</p>
+                                        <p class="font-semibold text-indigo-600">實施指南:</p>
+                                        <p>確保目標是 **SMART 原則** (Specific, Measurable, Achievable, Relevant, Time-bound) 的，並要求小組指定一位「進度檢視員」定期檢查公告目標的達成情況。</p>
+                                    </td>
+                                </tr>
+                                <!-- 目標設定 -->
+                                <tr class="hover:bg-indigo-50">
+                                    <td class="p-4 align-top font-bold text-indigo-800">目標設定</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        <span class="font-semibold">長期目標分解：</span>幫助學生將長期目標分解為一系列循序漸進的短期目標，這是成功目標設定的關鍵步驟。
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-indigo-600">教育意義:</p>
+                                        <p>這是培養**執行功能**（Executive Function）中的計劃與組織能力的基礎。將大目標切塊能減少學生的認知負擔，建立持續的成就感回饋循環。</p>
+                                        <p class="font-semibold text-indigo-600">實施指南:</p>
+                                        <p>鼓勵學生使用視覺化工具（如甘特圖或清單）來標示短期目標的完成狀態，讓「進步」是可見的。</p>
+                                    </td>
+                                </tr>
+                                <!-- 自我訓練 / 情緒調節 -->
+                                <tr class="hover:bg-indigo-50">
+                                    <td class="p-4 align-top font-bold text-indigo-800">自我訓練 / 情緒調節</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        <span class="font-semibold">應對複雜情境：</span>教師透過觀察學生是否「看起來緊張、無法正常上課或參與」，引導學生運用之前學習的 **CBS 策略**或進入冷靜區，以應對情緒壓力。
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-indigo-600">教育意義:</p>
+                                        <p>透過外部提醒（教師觀察）來協助學生建立內化連結（察覺情緒與策略應用的連結）。這是一個從外部支持過渡到獨立自我管理的過程。</p>
+                                        <p class="font-semibold text-indigo-600">實施指南:</p>
+                                        <p>確保冷靜區不是一種懲罰，而是一個工具站。在學生冷靜後，溫和地詢問他們選擇哪個策略，並討論下次是否可以提前使用。</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- SEL 教學指南 -->
+                <section class="p-6 bg-green-50 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold text-green-600 mb-4">II. SEL 教學指南 (Social and Emotional Learning)</h3>
+                    <p class="text-sm text-gray-500 mb-4">本教學內容完全對應 CASEL 框架中的五大核心能力，旨在確保學生在管理壓力與複雜合作中，同時培養關鍵的社會情緒技能。</p>
+                    
+                    <!-- SEL 核心能力 Table Structure -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-green-200">
+                            <thead class="bg-green-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-green-700 uppercase tracking-wider w-1/5">SEL 核心能力</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-green-700 uppercase tracking-wider w-1/5">教學內容連結</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-green-700 uppercase tracking-wider w-3/5">實施重點與引導話術</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-green-100 text-sm">
+                                <!-- 自我覺察 -->
+                                <tr class="hover:bg-green-50">
+                                    <td class="p-4 align-top font-bold text-green-800">自我覺察 (Self-Awareness)</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        連結： 壓力管理（了解壓力類型）、情緒調節
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-green-600">實施重點:</p>
+                                        <p>教導學生識別情緒和身體訊號。正向壓力的訊號（興奮、專注）與毒性壓力的訊號（胃痛、心悸、焦躁不安）是不同的。</p>
+                                        <p class="font-semibold text-green-600">引導話術:</p>
+                                        <p>「當你發現自己開始咬指甲或深呼吸變快時，這是身體在告訴你什麼？」</p>
+                                    </td>
+                                </tr>
+                                <!-- 自我管理 -->
+                                <tr class="hover:bg-green-50">
+                                    <td class="p-4 align-top font-bold text-green-800">自我管理 (Self-Management)</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        連結： 情緒調節（CBS 策略/冷靜區）、目標設定（長期目標分解）
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-green-600">實施重點:</p>
+                                        <p>強調在有壓力時仍能堅持執行既定計畫的能力。自我管理不只是冷靜，更是在沒有人監督時也能完成短期目標的紀律。</p>
+                                        <p class="font-semibold text-green-600">引導話術:</p>
+                                        <p>「雖然你現在覺得這部分很難，但我們之前設定的短期目標 'A' 只需要 15 分鐘。你願意先專注完成這 15 分鐘嗎？」</p>
+                                    </td>
+                                </tr>
+                                <!-- 社會覺察 -->
+                                <tr class="hover:bg-green-50">
+                                    <td class="p-4 align-top font-bold text-green-800">社會覺察 (Social Awareness)</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        連結： 組織能力/團隊合作（設定團隊目標）
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-green-600">實施重點:</p>
+                                        <p>鼓勵學生理解隊友的非口語訊號。學會觀察其他隊友是否也表現出壓力、理解團隊中不同角色的貢獻與難處。</p>
+                                        <p class="font-semibold text-green-600">引導話術:</p>
+                                        <p>「我注意到小美今天有點安靜，她負責的部分比較困難嗎？我們是否該調整一下目標或給她多一點支持？」</p>
+                                    </td>
+                                </tr>
+                                <!-- 人際關係技巧 -->
+                                <tr class="hover:bg-green-50">
+                                    <td class="p-4 align-top font-bold text-green-800">人際關係技巧 (Relationship Skills)</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        連結： 組織能力/團隊合作（設定團隊目標）
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-green-600">實施重點:</p>
+                                        <p>專注於建設性溝通、協商和化解小組內衝突的能力。當目標進度不一致時，指導學生進行**「我訊息」(I-messages)** 的表達。</p>
+                                        <p class="font-semibold text-green-600">引導話術:</p>
+                                        <p>「與其說『你從來不幫忙』，不如說『我感覺到我的負擔很重，因為這個短期目標還沒完成，我需要你的協助來推進。』」</p>
+                                    </td>
+                                </tr>
+                                <!-- 負責任的決策 -->
+                                <tr class="hover:bg-green-50">
+                                    <td class="p-4 align-top font-bold text-green-800">負責任的決策 (Responsible Decision-Making)</td>
+                                    <td class="p-4 align-top text-gray-700">
+                                        連結： 所有策略的應用、應對複雜情境
+                                    </td>
+                                    <td class="p-4 align-top text-gray-600 space-y-2">
+                                        <p class="font-semibold text-green-600">實施重點:</p>
+                                        <p>引導學生思考在壓力下，選擇不同的應對策略（逃避、抱怨、使用冷靜區、尋求幫助）會帶來什麼樣的長期後果。強調選擇對團隊和自己最有利的解決方案。</p>
+                                        <p class="font-semibold text-green-600">引導話術:</p>
+                                        <p>「面對這個困境，你有 A 和 B 兩種解決方案。A 的優點和缺點是什麼？B 的呢？哪個選擇能幫助團隊最快達成目標？」</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 核心信息 -->
+                    <div class="mt-8 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
+                        <p class="font-bold text-lg mb-1">💡 核心信息：</p>
+                        <p class="text-sm">在六年級這個階段，學生需要的不僅是知識，更是處理「不舒服感受」的能力。將壓力管理與合作任務結合，是讓他們在真實情境中練習 **SEL 技能**的最佳機會。</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script>
+        // --- 全局變量 (核心功能) ---
+        let currentPressure = 'green';
+        let animationFrameId; // 畫布動畫幀 ID
+        let fixedTasksData = {}; // 儲存固定任務的完成狀態
+        let customTasks = []; // 儲存自訂任務
+        let signatures = []; // 儲存數位簽名
+
+        // --- 畫布呼吸法核心變量 ---
+        let canvas, ctx;
+        let canvasWidth, canvasHeight;
+        let yMax, yMin; // 路徑的最高點和最低點 Y 座標
+        let xStep; // 腳踏車每秒移動的 X 距離
+        let isAnimating = false;
+        let startTime = null;
+        let timeOffsetSeconds = 0; // 用於重設後的計時器偏移
+        
+        const TOTAL_CYCLES = 4;
+        const PHASE_DURATION = 4; // 每個階段 4 秒
+        const CYCLE_DURATION = PHASE_DURATION * 4; // 4s * 4 = 16 seconds
+        const TOTAL_DURATION = CYCLE_DURATION * TOTAL_CYCLES; // 64 seconds
+        
+        // 定義四個階段及其顏色
+        const BREATHING_CYCLE = [
+            // 0: 吸氣 (Inhale) - 上坡
+            { label: '🟢 吸氣 (4s)', duration: PHASE_DURATION, type: 'up', color: '#10b981' }, 
+            // 1: 閉氣 (Hold) - 坡頂
+            { label: '🔵 閉氣 (4s)', duration: PHASE_DURATION, type: 'hold-top', color: '#3b82f6' }, 
+            // 2: 吐氣 (Exhale) - 下坡
+            { label: '🟡 吐氣 (4s)', duration: PHASE_DURATION, type: 'down', color: '#f59e0b' }, 
+            // 3: 谷底閉氣 (Hold) - 坡底
+            { label: '🔴 閉氣 (谷底 4s)', duration: PHASE_DURATION, type: 'hold-bottom', color: '#ef4444' } 
+        ];
+
+        // --- 核心功能函數 ---
+
+        /**
+         * 導航切換頁面
+         * @param {string} pageId - 要顯示的頁面 ID ('stress' 或 'goals' 或 'support')
+         */
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active-nav-button');
+                button.classList.remove('text-primary-brand', 'text-stress-theme', 'text-goals-theme', 'text-contract-theme', 'font-extrabold');
+                button.classList.add('text-gray-700', 'font-semibold');
+            });
+
+            const activeNav = document.getElementById(`nav-${pageId}`);
+            activeNav.classList.add('active-nav-button');
+            activeNav.classList.remove('text-gray-700', 'font-semibold');
+            activeNav.classList.add('font-extrabold');
+            
+            if (pageId === 'stress') {
+                activeNav.classList.add('text-stress-theme');
+            } else if (pageId === 'goals') {
+                activeNav.classList.add('text-goals-theme');
+            } else if (pageId === 'support') {
+                activeNav.classList.add('text-contract-theme'); // 使用 Indigo 主題色
+            }
+
+            // 如果切換到 goals 頁面，確保進度條是最新的
+            if (pageId === 'goals') {
+                updateRocketProgress(false); // 更新固定目標
+                updateCustomRocketProgress(); // 更新自訂目標
+                loadCustomTasks(); // 載入自訂任務
+                loadContractData(); // 載入契約 (此函數內部會載入簽名)
+            }
+
+            // 如果離開 stress 頁面，重設呼吸練習
+            if (pageId !== 'stress' && isAnimating) {
+                resetBreathing();
+            }
+        }
+
+        /**
+         * 壓力警示燈邏輯
+         * @param {string} color - 'green', 'yellow', or 'red'
+         */
+        function setPressure(color) {
+            currentPressure = color;
+            const lights = {
+                'green': '🟢 綠燈！你現在超級專注、充滿能量！',
+                'yellow': '🟡 黃燈！有點焦慮或緊張，需要放慢腳步。',
+                'red': '🔴 紅燈！感覺很崩潰或無助，請立刻暫停並尋求協助！'
+            };
+
+            ['green', 'yellow', 'red'].forEach(light => {
+                const element = document.getElementById(`light-${light}`);
+                // 移除所有燈的邊框
+                element.classList.remove('border-primary-brand', 'border-red-500', 'border-yellow-600', 'border-4');
+                element.classList.add('border-white');
+
+                // 點擊的燈加上強調邊框
+                if (light === color) {
+                    element.classList.remove('border-white');
+                    if (color === 'green') element.classList.add('border-[#10b981]', 'border-4'); // Emerald
+                    if (color === 'yellow') element.classList.add('border-[#f59e0b]', 'border-4'); // Amber
+                    if (color === 'red') element.classList.add('border-[#ef4444]', 'border-4'); // Red
+                }
+            });
+
+            document.getElementById('pressure-message').textContent = lights[color];
+        }
+
+        /**
+         * 切換 CBS 情境模擬的顯示/隱藏
+         */
+        function toggleCbsScenario() {
+            const content = document.getElementById('cbs-scenario-content');
+            content.classList.toggle('active');
+        }
+
+        // --- 呼吸法畫布邏輯 (維持不變，因為這部分功能完善) ---
+        
+        /**
+         * 初始化畫布
+         */
+        function initCanvas() {
+            canvas = document.getElementById('breathing-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 設置響應式尺寸
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = 200; // 固定高度
+            canvasWidth = canvas.width;
+            canvasHeight = canvas.height;
+
+            // 定義山路路徑的 Y 範圍 (留出邊距)
+            yMax = canvasHeight * 0.85; // 谷底
+            yMin = canvasHeight * 0.15; // 坡頂
+            
+            // 計算每秒腳踏車應移動的 X 距離 (總路徑寬度 / 總時間 64s)
+            xStep = canvasWidth / TOTAL_DURATION;
+
+            drawCycle(0); // 初始繪製
+        }
+
+        /**
+         * 根據時間繪製呼吸路徑
+         * @param {number} totalTimeSeconds - 總運行時間 (0 to TOTAL_DURATION)
+         */
+        function drawCycle(totalTimeSeconds) {
+            if (!ctx) return;
+
+            // 清除畫布
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            // 繪製路徑 (4 個完整的週期)
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            for (let cycle = 0; cycle < TOTAL_CYCLES; cycle++) {
+                const startX = cycle * canvasWidth / TOTAL_CYCLES;
+                const pathWidth = canvasWidth / TOTAL_CYCLES;
+
+                // 繪製四個階段
+                BREATHING_CYCLE.forEach((phase, index) => {
+                    const phaseStartX = startX + index * phase.duration * xStep;
+                    const phaseEndX = phaseStartX + phase.duration * xStep;
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = phase.color;
+
+                    if (index === 0) { // 吸氣 (上坡: 谷底 -> 坡頂)
+                        ctx.moveTo(phaseStartX, yMax);
+                        ctx.lineTo(phaseEndX, yMin);
+                    } else if (index === 1) { // 閉氣 (坡頂: 平穩)
+                        ctx.moveTo(phaseStartX, yMin);
+                        ctx.lineTo(phaseEndX, yMin);
+                    } else if (index === 2) { // 吐氣 (下坡: 坡頂 -> 谷底)
+                        ctx.moveTo(phaseStartX, yMin);
+                        ctx.lineTo(phaseEndX, yMax);
+                    } else if (index === 3) { // 谷底閉氣 (谷底: 平穩)
+                        ctx.moveTo(phaseStartX, yMax);
+                        ctx.lineTo(phaseEndX, yMax);
+                    }
+                    ctx.stroke();
+                });
+            }
+
+            // --- 繪製腳踏車 ---
+            let currentX = totalTimeSeconds * xStep;
+            let currentY;
+
+            // 判斷當前在哪個週期和階段
+            const currentTotalPhaseIndex = Math.floor(totalTimeSeconds / PHASE_DURATION);
+            const phaseIndex = currentTotalPhaseIndex % 4; // 0, 1, 2, 3
+            const timeInPhase = totalTimeSeconds % PHASE_DURATION;
+            
+            const phase = BREATHING_CYCLE[phaseIndex];
+
+            // 計算腳踏車的 Y 座標
+            if (phase.type === 'up') { // 上坡 (吸氣)
+                // 從 yMax 到 yMin
+                currentY = yMax - (yMax - yMin) * (timeInPhase / PHASE_DURATION);
+            } else if (phase.type === 'hold-top') { // 坡頂閉氣
+                currentY = yMin;
+            } else if (phase.type === 'down') { // 下坡 (吐氣)
+                // 從 yMin 到 yMax
+                currentY = yMin + (yMax - yMin) * (timeInPhase / PHASE_DURATION);
+            } else { // 谷底閉氣
+                currentY = yMax;
+            }
+
+            // 繪製腳踏車 (使用圓形代替)
+            ctx.beginPath();
+            ctx.arc(currentX, currentY, 12, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a'; // 深藍色
+            ctx.shadowColor = '#0f172a';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+            ctx.shadowBlur = 0; // 重設陰影
+
+            // 繪製進度線 (從起點到腳踏車位置)
+            ctx.beginPath();
+            ctx.moveTo(0, yMax); // 從起點開始繪製
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#06b6d4'; // Cyan 進度線
+            
+            // 重新描繪走過的路線，讓其在腳踏車下方
+            for (let cycle = 0; cycle < TOTAL_CYCLES; cycle++) {
+                const startX = cycle * canvasWidth / TOTAL_CYCLES;
+                
+                BREATHING_CYCLE.forEach((p, i) => {
+                    const pStartX = startX + i * p.duration * xStep;
+                    const pEndX = pStartX + p.duration * xStep;
+
+                    if (pStartX < currentX) {
+                        const segmentEndX = Math.min(pEndX, currentX);
+
+                        if (i === 0) { // 上坡
+                            ctx.moveTo(pStartX, yMax);
+                            ctx.lineTo(segmentEndX, yMax - (yMax - yMin) * ((segmentEndX - pStartX) / (p.duration * xStep)));
+                        } else if (i === 1) { // 坡頂
+                            ctx.moveTo(pStartX, yMin);
+                            ctx.lineTo(segmentEndX, yMin);
+                        } else if (i === 2) { // 下坡
+                            ctx.moveTo(pStartX, yMin);
+                            ctx.lineTo(segmentEndX, yMin + (yMax - yMin) * ((segmentEndX - pStartX) / (p.duration * xStep)));
+                        } else if (i === 3) { // 谷底
+                            ctx.moveTo(pStartX, yMax);
+                            ctx.lineTo(segmentEndX, yMax);
+                        }
+                        ctx.stroke();
+                    }
+                });
+            }
+
+            // 更新文字指令
+            const totalRemainingTime = Math.round(TOTAL_DURATION - totalTimeSeconds);
+            const phaseRemainingTime = PHASE_DURATION - timeInPhase;
+            const cycleCount = Math.floor(currentTotalPhaseIndex / 4) + 1;
+
+            document.getElementById('currentPhaseLabel').textContent = `${phase.label} (第 ${cycleCount} 趟)`;
+            document.getElementById('currentPhaseTime').textContent = `${Math.ceil(phaseRemainingTime)}s`;
+
+            // 總進度條的顏色會根據當前階段改變
+            document.getElementById('breathing-timer-display').style.borderColor = phase.color;
+        }
+
+        /**
+         * 呼吸法動畫主迴圈
+         * @param {number} timestamp - requestAnimationFrame 提供的時間戳
+         */
+        function animateCycle(timestamp) {
+            if (!startTime) startTime = timestamp;
+            
+            // 計算總運行時間 (秒)
+            const elapsedTime = (timestamp - startTime) / 1000 + timeOffsetSeconds;
+            
+            if (elapsedTime >= TOTAL_DURATION) {
+                // 結束動畫
+                drawCycle(TOTAL_DURATION); // 確保繪製到終點
+                document.getElementById('currentPhaseLabel').textContent = '🎉 練習結束！冷靜成功！';
+                document.getElementById('currentPhaseTime').textContent = '0s';
+                document.getElementById('start-breath').disabled = false;
+                document.getElementById('start-breath').textContent = '重新開始練習';
+                document.getElementById('reset-breath').disabled = true;
+                isAnimating = false;
+                return;
+            }
+
+            drawCycle(elapsedTime);
+            animationFrameId = requestAnimationFrame(animateCycle);
+        }
+
+        /**
+         * 開始呼吸法練習
+         */
+        function startBreathing() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            startTime = null; // 重設起始時間
+            timeOffsetSeconds = 0; // 從 0s 開始
+            
+            document.getElementById('start-breath').disabled = true;
+            document.getElementById('start-breath').textContent = '練習中...';
+            document.getElementById('reset-breath').disabled = false;
+            
+            cancelAnimationFrame(animationFrameId); // 取消任何可能的舊動畫
+            animationFrameId = requestAnimationFrame(animateCycle);
+        }
+        
+        /**
+         * 重設呼吸法練習
+         */
+        function resetBreathing() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            isAnimating = false;
+            startTime = null;
+            timeOffsetSeconds = 0;
+
+            document.getElementById('start-breath').disabled = false;
+            document.getElementById('start-breath').textContent = '開始 4 趟山路練習';
+            document.getElementById('reset-breath').disabled = true;
+            document.getElementById('currentPhaseLabel').textContent = '準備開始';
+            document.getElementById('currentPhaseTime').textContent = '4s';
+            document.getElementById('breathing-timer-display').style.borderColor = '#10b981';
+
+            initCanvas(); // 重新初始化並繪製初始狀態
+        }
+
+        // 綁定呼吸按鈕事件
+        document.getElementById('start-breath').addEventListener('click', startBreathing);
+        document.getElementById('reset-breath').addEventListener('click', resetBreathing);
+        window.addEventListener('resize', initCanvas); // 響應式調整畫布
+
+        // --- 目標羅盤與任務追蹤邏輯 (固定任務) ---
+        
+        /**
+         * 初始化固定任務狀態，從 HTML 屬性中提取
+         */
+        function initFixedTasks() {
+            document.querySelectorAll('#mission-list tr[data-task-id]').forEach(row => {
+                const taskId = row.dataset.taskId;
+                // 從 HTML 讀取初始狀態
+                const isCompleted = row.dataset.completed === 'true'; 
+                fixedTasksData[taskId] = isCompleted;
+
+                // 根據狀態設定 checkbox 和樣式
+                const checkbox = row.querySelector('.task-checkbox');
+                const contentCell = row.querySelector('td:nth-child(2)');
+                
+                checkbox.checked = isCompleted;
+                if (isCompleted) {
+                    contentCell.classList.add('task-done');
+                } else {
+                    contentCell.classList.remove('task-done');
+                }
+            });
+            updateRocketProgress(false);
+        }
+
+        /**
+         * 切換固定任務的完成狀態
+         * @param {string} taskId - 任務 ID
+         */
+        function toggleTaskCompletion(taskId) {
+            const row = document.querySelector(`tr[data-task-id="${taskId}"]`);
+            const checkbox = row.querySelector('.task-checkbox');
+
+            fixedTasksData[taskId] = checkbox.checked;
+
+            if (checkbox.checked) {
+                row.querySelector('td:nth-child(2)').classList.add('task-done');
+            } else {
+                row.querySelector('td:nth-child(2)').classList.remove('task-done');
+            }
+            
+            // ** 儲存狀態回 HTML 屬性 (重要，用於重載頁面時正確初始化) **
+            row.dataset.completed = checkbox.checked ? 'true' : 'false';
+
+            // 更新進度條
+            updateRocketProgress(false);
+        }
+
+        /**
+         * 更新火箭進度條的視覺化
+         * @param {boolean} isCustom - 是否為自訂目標 (true: Custom, false: Fixed)
+         */
+        function updateRocketProgress(isCustom) {
+            const listContainer = isCustom ? document.getElementById('custom-mission-list-container') : document.getElementById('mission-list');
+            const tasks = listContainer.querySelectorAll(isCustom ? '.custom-task-row' : 'tr[data-task-id]');
+
+            const total = tasks.length;
+            if (total === 0) {
+                if (isCustom) {
+                     document.getElementById('no-custom-tasks').classList.remove('hidden');
+                }
+                const percent = 0;
+                document.getElementById(isCustom ? 'custom-progress-percent' : 'progress-percent').textContent = '0%';
+                document.getElementById(isCustom ? 'custom-rocket-progress-bar' : 'rocket-progress-bar').style.height = '0%';
+                // 確保圖示重設到底部
+                document.getElementById(isCustom ? 'custom-rocket-icon' : 'rocket-icon').style.transform = `translateY(0) scale(1)`;
+                document.getElementById(isCustom ? 'custom-rocket-icon' : 'rocket-icon').classList.remove('launch-thrust');
+                return;
+            }
+            
+            if (isCustom) {
+                document.getElementById('no-custom-tasks').classList.add('hidden');
+            }
+
+            let completed = 0;
+            if (isCustom) {
+                completed = customTasks.filter(t => t.completed).length;
+            } else {
+                tasks.forEach(row => {
+                    const taskId = row.dataset.taskId;
+                    if (fixedTasksData[taskId]) {
+                        completed++;
+                    }
+                });
+            }
+
+            const percent = Math.round((completed / total) * 100);
+            const barId = isCustom ? 'custom-rocket-progress-bar' : 'rocket-progress-bar';
+            const percentDisplayId = isCustom ? 'custom-progress-percent' : 'progress-percent';
+            const iconId = isCustom ? 'custom-rocket-icon' : 'rocket-icon';
+            const iconElement = document.getElementById(iconId);
+
+            document.getElementById(percentDisplayId).textContent = `${percent}%`;
+            document.getElementById(barId).style.height = `${percent}%`;
+
+            // ** 🚀 火箭上升視覺化邏輯更新 (更逼真的發射) 🚀 **
+            const iconTranslateY = -percent;
+            
+            // 預設設定為平滑過渡
+            iconElement.style.transition = 'transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            iconElement.classList.remove('launch-thrust');
+
+
+            if (percent === 100) {
+                 // 100% 完成時，設定快速衝刺效果
+                iconElement.innerHTML = '🚀'; // 100% 時都使用火箭
+                iconElement.style.transition = 'transform 0.3s ease-out'; // 更快的速度
+                iconElement.classList.add('launch-thrust'); // 添加火焰光暈
+                
+                // 向上移動到非常高的位置，模擬發射離開
+                iconElement.style.transform = `translateY(-200%) scale(1.5)`;
+            } else {
+                // 0-99% 時，根據進度上升
+                iconElement.innerHTML = isCustom ? '🚀' : '🌟'; // 0-99% 時顯示火箭或星
+                iconElement.style.transform = `translateY(${iconTranslateY}%) scale(1)`; 
+            }
+        }
+        
+        // --- 目標羅盤與任務追蹤邏輯 (自訂任務 - 使用 localStorage) ---
+        
+        const CUSTOM_TASKS_KEY = 'superManagerCustomTasks';
+        const TEAM_GOAL_KEY = 'superManagerTeamGoal';
+
+        /**
+         * 從本地儲存載入自訂任務和總目標
+         */
+        function loadCustomTasks() {
+            const savedTasks = localStorage.getItem(CUSTOM_TASKS_KEY);
+            if (savedTasks) {
+                customTasks = JSON.parse(savedTasks);
+            } else {
+                customTasks = [];
+            }
+            
+            const savedGoal = localStorage.getItem(TEAM_GOAL_KEY);
+            document.getElementById('team-super-goal').value = savedGoal || '';
+
+            renderCustomTasks();
+        }
+
+        /**
+         * 儲存自訂任務到本地儲存
+         */
+        function saveCustomTasks() {
+            localStorage.setItem(CUSTOM_TASKS_KEY, JSON.stringify(customTasks));
+            const teamGoal = document.getElementById('team-super-goal').value;
+            localStorage.setItem(TEAM_GOAL_KEY, teamGoal);
+            renderCustomTasks();
+        }
+
+        /**
+         * 渲染自訂任務列表
+         */
+        function renderCustomTasks() {
+            const container = document.getElementById('custom-mission-list-container');
+            container.innerHTML = '';
+            
+            if (customTasks.length === 0) {
+                 document.getElementById('no-custom-tasks').classList.remove('hidden');
+                 updateCustomRocketProgress();
+                 return;
+            } else {
+                document.getElementById('no-custom-tasks').classList.add('hidden');
+            }
+
+            customTasks.forEach((task, index) => {
+                const isDoneClass = task.completed ? 'task-done' : '';
+                
+                const taskHtml = `
+                    <div class="custom-task-row flex items-center p-3 hover:bg-cyan-100 transition duration-150" data-task-id="${task.id}">
+                        <!-- 任務內容 -->
+                        <div class="flex-1 ${isDoneClass} text-gray-800 text-sm font-medium pr-4">
+                            ${task.content}
+                        </div>
+                        <!-- 狀態切換 -->
+                        <input type="checkbox" id="custom-task-${index}" ${task.completed ? 'checked' : ''} 
+                                onclick="toggleCustomTaskCompletion('${task.id}')" 
+                                class="w-4 h-4 text-primary-brand rounded">
+                        <!-- 刪除按鈕 -->
+                        <button onclick="deleteCustomTask('${task.id}')" class="ml-4 text-red-400 hover:text-red-600 transition duration-150">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+                container.innerHTML += taskHtml;
+            });
+            updateCustomRocketProgress();
+        }
+
+        /**
+         * 新增自訂任務
+         */
+        function addCustomTask() {
+            const input = document.getElementById('new-task-content');
+            const content = input.value.trim();
+            if (content) {
+                const newTask = {
+                    id: Date.now().toString(), // 簡單的唯一 ID
+                    content: content,
+                    completed: false
+                };
+                customTasks.push(newTask);
+                saveCustomTasks();
+                input.value = ''; // 清空輸入框
+            }
+        }
+
+        /**
+         * 切換自訂任務的完成狀態
+         * @param {string} taskId - 任務 ID
+         */
+        function toggleCustomTaskCompletion(taskId) {
+            const taskIndex = customTasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                customTasks[taskIndex].completed = !customTasks[taskIndex].completed;
+                saveCustomTasks(); // 保存並重新渲染以更新樣式
+            }
+        }
+        
+        /**
+         * 刪除自訂任務
+         * @param {string} taskId - 任務 ID
+         */
+        function deleteCustomTask(taskId) {
+            customTasks = customTasks.filter(t => t.id !== taskId);
+            saveCustomTasks();
+        }
+
+        /**
+         * 更新自訂目標火箭進度 (呼叫通用函數)
+         */
+        function updateCustomRocketProgress() {
+            updateRocketProgress(true);
+        }
+
+        // --- 團隊契約與簽名邏輯 (使用 localStorage) ---
+
+        const CONTRACT_TEXT_KEY = 'superManagerContractText';
+        const SIGNATURES_KEY = 'superManagerSignatures';
+
+        /**
+         * 顯示訊息 (代替 alert)
+         * @param {string} message - 訊息內容
+         * @param {string} type - 訊息類型 ('success', 'error', 'info')
+         */
+        function showMessage(message, type = 'info') {
+            const box = document.getElementById('message-box');
+            box.textContent = message;
+            box.className = 'p-3 mb-4 rounded-lg text-sm transition duration-300'; // Reset classes
+            box.classList.remove('hidden');
+
+            if (type === 'success') {
+                box.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-400');
+            } else if (type === 'error') {
+                box.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-400');
+            } else {
+                box.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-400');
+            }
+            setTimeout(() => box.classList.add('hidden'), 3000);
+        }
+
+        /**
+         * 載入契約、簽名並填充編輯器
+         */
+        function loadContractData() {
+            // 1. 載入契約內容到編輯器
+            const savedText = localStorage.getItem(CONTRACT_TEXT_KEY);
+            document.getElementById('contract-text').value = savedText || '';
+            document.getElementById('displayed-contract-text').textContent = savedText || '目前沒有契約內容。';
+            
+            // 2. 載入簽名
+            const savedSignatures = localStorage.getItem(SIGNATURES_KEY);
+            if (savedSignatures) {
+                signatures = JSON.parse(savedSignatures);
+            } else {
+                signatures = [];
+            }
+            renderSignatures();
+        }
+
+        /**
+         * 儲存契約內容
+         */
+        document.getElementById('save-contract-btn').addEventListener('click', () => {
+            const text = document.getElementById('contract-text').value.trim();
+            localStorage.setItem(CONTRACT_TEXT_KEY, text);
+            document.getElementById('displayed-contract-text').textContent = text || '目前沒有契約內容。';
+            showMessage('💾 契約內容已儲存！', 'success');
+        });
+
+        /**
+         * 切換契約檢視區
+         */
+        document.getElementById('view-contract-btn').addEventListener('click', () => {
+            const displayArea = document.getElementById('contract-display-area');
+            displayArea.classList.toggle('hidden');
+            loadContractData(); // 重新載入以確保顯示最新的內容
+        });
+        
+        /**
+         * 渲染數位簽名列表
+         */
+        function renderSignatures() {
+            const list = document.getElementById('signatures-list');
+            list.innerHTML = '';
+
+            if (signatures.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 italic p-2 text-center">尚未有組員簽署契約。</p>';
+                return;
+            }
+
+            signatures.forEach(sig => {
+                const sigElement = document.createElement('div');
+                sigElement.className = 'flex justify-between items-center p-3 bg-white border border-emerald-200 rounded-lg shadow-sm';
+                sigElement.innerHTML = `
+                    <div class="text-gray-800">
+                        <span class="font-bold text-lg text-emerald-700">${sig.name}</span>
+                        <span class="text-xs text-gray-500 ml-3"> (${sig.timestamp})</span>
+                    </div>
+                    <button onclick="deleteSignature('${sig.id}')" class="text-red-400 hover:text-red-600 transition duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                list.appendChild(sigElement);
+            });
+        }
+
+        /**
+         * 新增數位簽名
+         */
+        document.getElementById('add-signature-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('signer-name');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                showMessage('請輸入您的姓名或代號才能簽署！', 'error');
+                return;
+            }
+
+            const newSignature = {
+                id: Date.now().toString(),
+                name: name,
+                timestamp: new Date().toLocaleString('zh-TW', { hour12: false }),
+            };
+
+            signatures.push(newSignature);
+            localStorage.setItem(SIGNATURES_KEY, JSON.stringify(signatures));
+            renderSignatures();
+            nameInput.value = ''; // 清空輸入框
+            showMessage('✍️ 數位簽名成功！', 'success');
+        });
+        
+        /**
+         * 刪除數位簽名
+         * @param {string} id - 簽名 ID
+         */
+        function deleteSignature(id) {
+            signatures = signatures.filter(sig => sig.id !== id);
+            localStorage.setItem(SIGNATURES_KEY, JSON.stringify(signatures));
+            renderSignatures();
+            showMessage('簽名已移除。', 'info');
+        }
+
+        // --- 啟動函式 (在 DOM 載入後執行) ---
+        window.onload = function() {
+            // 初始設定壓力燈
+            setPressure('green');
+            
+            // 初始化畫布
+            initCanvas();
+
+            // 初始化固定任務的狀態和進度
+            initFixedTasks();
+            
+            // 載入自訂任務和契約數據
+            loadCustomTasks();
+            loadContractData();
+        };
+
+    </script>
+</body>
+</html>

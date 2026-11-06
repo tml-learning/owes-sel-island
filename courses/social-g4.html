@@ -1,0 +1,888 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會偵探大冒險</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; overflow-x: hidden; font-size: 16px; } /* 增加基礎字型大小 */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .spill-anim { animation: spill 2s infinite; }
+        @keyframes spill { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+        .magnify { cursor: zoom-in; transition: transform 0.2s; }
+        .magnify:hover { transform: scale(1.1); }
+        p, span, div, button { text-rendering: optimizeLegibility; }
+        h1 { font-size: 2.5rem; line-height: 1.2; }
+        h2 { font-size: 2rem; line-height: 1.3; }
+        h3 { font-size: 1.75rem; line-height: 1.4; }
+        p { font-size: 1.125rem; line-height: 1.6; }
+    </style>
+</head>
+<body class="pb-20 text-gray-800"> <!-- 設定預設文字顏色 -->
+
+    <!-- 導覽列 -->
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="goToHome()">
+                    <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg"> <!-- 加大圖示 -->
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col hidden sm:flex">
+                        <span class="font-black text-xl leading-tight">社會偵探</span> <!-- 加大標題 -->
+                        <span class="text-xs text-indigo-500 font-bold tracking-widest uppercase">Office</span>
+                    </div>
+                </div>
+                
+                <!-- 新增：重新開始按鈕 -->
+                <button onclick="showRestartConfirm()" class="hidden sm:flex items-center gap-1.5 text-gray-500 hover:text-indigo-600 font-bold text-sm px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors border border-transparent hover:border-indigo-100">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    <span>重新開始</span>
+                </button>
+            </div>
+            
+            <div class="flex gap-3 items-center">
+                <!-- 手機版重新開始圖示 -->
+                <button onclick="showRestartConfirm()" class="sm:hidden text-gray-500 hover:text-indigo-600 p-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </button>
+                <span id="header-name" class="hidden bg-indigo-50 px-4 py-2 rounded-full text-base font-bold text-indigo-600 border border-indigo-100 flex items-center gap-2"> <!-- 加大並加深顏色 -->
+                    <i data-lucide="user-check" class="w-5 h-5"></i> <span id="display-name"></span>
+                </span>
+                <button onclick="toggleGuide(true)" class="bg-amber-400 hover:bg-amber-500 text-amber-900 px-4 py-2 rounded-full text-sm sm:text-base font-bold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap"> <!-- 加大按鈕 -->
+                    <i data-lucide="info" class="w-5 h-5"></i> <span class="hidden sm:inline">教學錦囊</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-container" class="max-w-5xl mx-auto px-4 py-8">
+        <!-- 內容將由 JavaScript 動態插入 -->
+    </main>
+
+    <!-- 底部進度條 -->
+    <div id="footer-progress" class="hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-200 p-3 sm:p-4 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="max-w-3xl mx-auto flex justify-between sm:justify-around items-center text-xs sm:text-sm md:text-base font-black text-gray-400 px-2">
+            <div id="step-1-label" class="flex flex-col items-center gap-1 sm:gap-1.5 transition-colors text-center w-1/3"><i data-lucide="smile" class="w-4 h-4 sm:w-5 sm:h-5"></i> 1. 讀心實驗室</div>
+            <div class="h-px w-4 sm:w-8 md:w-10 bg-gray-300"></div>
+            <div id="step-2-label" class="flex flex-col items-center gap-1 sm:gap-1.5 transition-colors text-center w-1/3"><i data-lucide="microscope" class="w-4 h-4 sm:w-5 sm:h-5"></i> 2. 動機顯微鏡</div>
+            <div class="h-px w-4 sm:w-8 md:w-10 bg-gray-300"></div>
+            <div id="step-3-label" class="flex flex-col items-center gap-1 sm:gap-1.5 transition-colors text-center w-1/3"><i data-lucide="git-compare" class="w-4 h-4 sm:w-5 sm:h-5"></i> 3. 觀點交換所</div>
+        </div>
+    </div>
+
+    <!-- 老師教學錦囊 Modal -->
+    <div id="teacher-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl border border-gray-100">
+            <div class="sticky top-0 bg-amber-400 p-5 flex justify-between items-center">
+                <h3 class="text-xl font-black text-amber-900 flex items-center gap-2">
+                    <i data-lucide="graduation-cap"></i> 老師教學指南
+                </h3>
+                <button onclick="toggleGuide(false)" class="bg-white/20 p-2 rounded-full hover:bg-white/40 transition-colors">
+                    <i data-lucide="x" class="text-amber-900"></i>
+                </button>
+            </div>
+            <div class="p-8 space-y-6">
+                <section class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-bold text-indigo-800 mb-1 italic">Level 1: 肢體與語氣</h4>
+                    <p class="text-gray-600 text-sm">引導學生關注「非語言訊息」。例如：眉頭深鎖不代表在生氣，可能是困擾或擔憂。</p>
+                </section>
+                <section class="border-l-4 border-emerald-500 pl-4">
+                    <h4 class="font-bold text-emerald-800 mb-1 italic">Level 2: 動機辨識</h4>
+                    <p class="text-gray-600 text-sm">關鍵在於「收集證據」。讓學生明白，單看結果（書濕了）會生氣，但看到過程（絆倒）會產生同理心。</p>
+                </section>
+                <section class="border-l-4 border-orange-500 pl-4">
+                    <h4 class="font-bold text-orange-800 mb-1 italic">Level 3: 利社會應對</h4>
+                    <p class="text-gray-600 text-sm">練習「冷靜表達需求」。即便對方不是故意的，我們仍可以表達自己的感受並尋求補償。</p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自訂確認重新開始 Modal (取代瀏覽器原生 confirm) -->
+    <div id="confirm-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-8 shadow-2xl border border-gray-100 text-center">
+            <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500 shadow-inner">
+                <i data-lucide="rotate-ccw" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-2xl font-black text-gray-800 mb-3">確定要重新開始？</h3>
+            <p class="text-gray-500 text-base mb-8 font-medium">這將會清除目前的任務進度與偵探身分，並回到登入首頁。</p>
+            <div class="flex gap-4 justify-center">
+                <button onclick="cancelRestart()" class="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-lg rounded-2xl transition-colors">取消</button>
+                <button onclick="confirmRestart()" class="flex-1 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black text-lg rounded-2xl transition-all shadow-lg shadow-rose-200 hover:-translate-y-0.5">確定重置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 狀態管理 ---
+        let state = {
+            currentStage: 'welcome',
+            isLoggedIn: false,
+            studentName: '',
+            report: { l1: '', l2: '', l3: [] },
+            l1Step: 0,
+            l2Clues: { face: false, floor: false, cup: false },
+            l3Step: 0,
+            audioPlayingId: null, // 改為記錄正在播放的ID，用來模擬播放狀態
+            expectedEmotion: null
+        };
+
+        // 新增：重置遊戲函數
+        function resetGame() {
+            if (confirm('確定要重新開始嗎？這將會清除目前的進度與身分。')) {
+                state = {
+                    currentStage: 'welcome',
+                    isLoggedIn: false,
+                    studentName: '',
+                    report: { l1: '', l2: '', l3: [] },
+                    l1Step: 0,
+                    l2Clues: { face: false, floor: false, cup: false },
+                    l3Step: 0,
+                    audioPlayingId: null,
+                    expectedEmotion: null
+                };
+                
+                // 嘗試停止正在播放的語音
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+                
+                render();
+            }
+        }
+
+        const TONES_MAP = { '好奇': '輕快上揚', '生氣': '重音急促', '害怕': '顫抖小聲' };
+
+        const L3_QUESTIONS = [
+            {
+                scenario: "情境一：當小美看到大強『慌張地』跑過來拿面紙，這時候小美心底的第一個想法應該是什麼？",
+                options: [
+                    { text: "他一定又是想來惡作劇弄濕我的書！", type: "negative" },
+                    { text: "他表情很慌張，也許是發生了意外。", type: "positive" },
+                    { text: "他拿面紙要做什麼？不關我的事。", type: "neutral" }
+                ],
+                correct: 1,
+                feedback: "優秀！偵探會先冷靜觀察對方的神情來避免情緒暴衝。"
+            },
+            {
+                scenario: "情境二：大強道歉說：『對不起，我剛才腳扭到才撞到桌子的...』，小美如何回應最能解決問題？",
+                options: [
+                    { text: "「你每次都這樣找藉口！」", type: "angry" },
+                    { text: "「雖然我很心疼書濕了，但我們先一起把水擦乾吧。」", type: "social" },
+                    { text: "（默默把東西收一收，去別的地方坐）", type: "ignore" }
+                ],
+                correct: 1,
+                feedback: "太棒了！這就是『利社會行為』，在表達感受的同時也願意與對方合作。"
+            },
+            {
+                scenario: "情境三：最後大強幫小美把書吹乾並答應下次會更小心。這次經驗學到了什麼？",
+                options: [
+                    { text: "只要說對不起，別人就一定會原諒。", type: "wrong" },
+                    { text: "意外發生時，釐清『動機』比直接發火更重要。", type: "correct" },
+                    { text: "在圖書館不能帶任何飲料。", type: "wrong" }
+                ],
+                correct: 1,
+                feedback: "完全正確！看清動機、同理他人，這就是社會偵探的終極目標。"
+            }
+        ];
+
+        // --- 初始化 ---
+        window.onload = () => {
+            // 預先載入本地端語音包，確保第一次點擊就有聲音
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+            }
+            render();
+            lucide.createIcons();
+        };
+
+        function render() {
+            const container = document.getElementById('app-container');
+            const footer = document.getElementById('footer-progress');
+            const headerName = document.getElementById('header-name');
+            
+            if (state.studentName) {
+                headerName.classList.remove('hidden');
+                headerName.style.display = 'flex';
+                document.getElementById('display-name').innerText = state.studentName;
+            } else {
+                headerName.classList.add('hidden');
+            }
+
+            if (state.currentStage !== 'welcome' && state.currentStage !== 'report') {
+                footer.classList.remove('hidden');
+                updateProgressUI();
+            } else {
+                footer.classList.add('hidden');
+            }
+
+            switch(state.currentStage) {
+                case 'welcome': container.innerHTML = welcomeTemplate(); break;
+                case 'level1': container.innerHTML = level1Template(); break;
+                case 'level2': container.innerHTML = level2Template(); break;
+                case 'level3': container.innerHTML = level3Template(); break;
+                case 'report': container.innerHTML = reportTemplate(); break;
+            }
+            lucide.createIcons();
+        }
+
+        function updateProgressUI() {
+            const steps = ['1', '2', '3'];
+            const colors = { level1: 'text-indigo-600', level2: 'text-emerald-600', level3: 'text-orange-600' };
+            steps.forEach(i => {
+                const el = document.getElementById(`step-${i}-label`);
+                el.className = "flex flex-col items-center gap-1 transition-colors text-gray-400 font-bold";
+            });
+            const activeId = state.currentStage.replace('level', '');
+            document.getElementById(`step-${activeId}-label`).classList.add(colors[state.currentStage]);
+            document.getElementById(`step-${activeId}-label`).classList.remove('text-gray-400');
+        }
+
+        // --- 模板 ---
+        function welcomeTemplate() {
+            if (!state.isLoggedIn) {
+                return `
+                <div class="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-8 fade-in">
+                    <div class="relative w-full max-w-lg">
+                        <div class="absolute -top-16 -left-12 text-8xl animate-bounce-slow drop-shadow-lg z-20">🕵️‍♂️</div>
+                        <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-indigo-200/50 border border-gray-100 relative z-10">
+                            <h1 class="text-4xl sm:text-5xl font-black text-gray-800 mb-4 tracking-tight">社會偵探任務</h1>
+                            <p class="text-gray-500 font-medium mb-10 text-lg">透過觀察與思考，成為人際溝通大師</p>
+                            <div class="space-y-8">
+                                <div class="text-left">
+                                    <label class="block text-sm font-black text-indigo-500 uppercase tracking-widest mb-3 ml-2">偵探代號</label>
+                                    <input type="text" id="name-input" class="w-full px-6 py-5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-indigo-500 focus:bg-white focus:outline-none text-xl font-bold transition-all placeholder:text-gray-400" placeholder="輸入你的大名..." oninput="validateName(this.value)">
+                                    <p id="name-error" class="text-rose-500 text-sm mt-3 font-bold hidden px-2">請輸入有效的名稱（2-10字）</p>
+                                </div>
+                                <button id="start-btn" disabled onclick="login()" class="w-full py-5 rounded-2xl text-2xl font-black text-white bg-gray-300 cursor-not-allowed transition-all shadow-lg mt-4">
+                                    進入偵探事務所
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="fade-in max-w-5xl mx-auto py-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                    <div class="text-left">
+                        <span class="text-indigo-600 font-black text-sm uppercase tracking-widest block mb-2">任務選單</span>
+                        <h1 class="text-4xl font-black text-gray-800">歡迎回來，${state.studentName} 偵探</h1>
+                    </div>
+                    <div class="bg-white px-5 py-3 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4">
+                        <div class="flex -space-x-3">
+                            ${[1,2,3].map(i => `<div class="w-10 h-10 rounded-full bg-indigo-${i}00 border-2 border-white flex items-center justify-center text-sm font-bold text-indigo-900 shadow-sm">${i}</div>`).join('')}
+                        </div>
+                        <span class="text-sm font-bold text-gray-600">今日訓練進度：0%</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div onclick="startLevel('level1')" class="card-hover bg-white rounded-[2.5rem] p-10 border-2 border-indigo-50 hover:border-indigo-200 cursor-pointer group flex flex-col items-center text-center shadow-sm">
+                        <div class="w-28 h-28 bg-indigo-50 rounded-full flex items-center justify-center text-6xl mb-8 group-hover:scale-110 transition-transform">👁️</div>
+                        <h3 class="text-3xl font-black text-gray-800 mb-4">讀心術實驗室</h3>
+                        <p class="text-gray-500 text-base leading-relaxed mb-8">從表情微表情與語氣中，抓出隱藏的情緒訊號。</p>
+                        <span class="mt-auto px-8 py-3 bg-indigo-600 text-white rounded-xl text-lg font-black shadow-lg shadow-indigo-200 w-full">執行任務</span>
+                    </div>
+
+                    <div onclick="startLevel('level2')" class="card-hover bg-white rounded-[2.5rem] p-10 border-2 border-emerald-50 hover:border-emerald-200 cursor-pointer group flex flex-col items-center text-center shadow-sm">
+                        <div class="w-28 h-28 bg-emerald-50 rounded-full flex items-center justify-center text-6xl mb-8 group-hover:scale-110 transition-transform">🔍</div>
+                        <h3 class="text-3xl font-black text-gray-800 mb-4">動機顯微鏡</h3>
+                        <p class="text-gray-500 text-base leading-relaxed mb-8">意外還是故意？觀察現場線索判斷對方的真心動機。</p>
+                        <span class="mt-auto px-8 py-3 bg-emerald-600 text-white rounded-xl text-lg font-black shadow-lg shadow-emerald-200 w-full">執行任務</span>
+                    </div>
+
+                    <div onclick="startLevel('level3')" class="card-hover bg-white rounded-[2.5rem] p-10 border-2 border-orange-50 hover:border-orange-200 cursor-pointer group flex flex-col items-center text-center shadow-sm">
+                        <div class="w-28 h-28 bg-orange-50 rounded-full flex items-center justify-center text-6xl mb-8 group-hover:scale-110 transition-transform">🤝</div>
+                        <h3 class="text-3xl font-black text-gray-800 mb-4">觀點交換所</h3>
+                        <p class="text-gray-500 text-base leading-relaxed mb-8">運用利社會回應，化解誤會，將衝突變成交朋友的機會。</p>
+                        <span class="mt-auto px-8 py-3 bg-orange-600 text-white rounded-xl text-lg font-black shadow-lg shadow-orange-200 w-full">執行任務</span>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function level1Template() {
+            return `
+            <div class="max-w-4xl mx-auto fade-in">
+                <button onclick="goToHome()" class="mb-8 text-gray-500 hover:text-indigo-600 flex items-center gap-2 font-bold text-base transition-colors bg-white px-4 py-2 rounded-lg shadow-sm">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> 返回任務選單
+                </button>
+                <div class="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-indigo-100">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 border-b border-gray-100 pb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">讀心術實驗室</h2>
+                            <p class="text-xs md:text-sm text-indigo-600 font-bold uppercase tracking-widest bg-indigo-50 inline-block px-3 py-1 rounded-full">Level 1 Task</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="w-12 h-2 rounded-full ${state.l1Step === 0 ? 'bg-indigo-600' : 'bg-indigo-200'} transition-colors"></div>
+                            <div class="w-12 h-2 rounded-full ${state.l1Step === 1 ? 'bg-indigo-600' : 'bg-indigo-200'} transition-colors"></div>
+                        </div>
+                    </div>
+                    ${state.l1Step === 0 ? `
+                        <div class="space-y-10">
+                            <div class="bg-slate-900 rounded-[2.5rem] p-8 md:p-14 text-center relative overflow-hidden group shadow-2xl">
+                                <div class="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <div class="text-7xl md:text-8xl mb-8 animate-bounce">😰</div>
+                                <p class="text-slate-100 text-lg md:text-2xl font-bold leading-relaxed tracking-wide shadow-black drop-shadow-md">「（小明正在翻找書包，把書本都倒出來，<br/>眉頭深鎖，呼吸變得很急促...）」</p>
+                            </div>
+                            <div class="space-y-6 bg-gray-50 p-6 md:p-8 rounded-3xl border border-gray-200">
+                                <p class="font-black text-xl md:text-2xl text-gray-800 text-center mb-6">🔍 偵探眼：他的情緒是什麼？</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                                    <button onclick="checkL1A('生氣')" class="py-4 md:py-6 px-4 bg-white border-2 border-gray-200 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-md transition-all font-black text-lg md:text-xl text-gray-700">生氣 😡</button>
+                                    <button onclick="checkL1A('難過')" class="py-4 md:py-6 px-4 bg-white border-2 border-gray-200 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-md transition-all font-black text-lg md:text-xl text-gray-700">難過 😭</button>
+                                    <button onclick="checkL1A('擔心')" class="py-4 md:py-6 px-4 bg-white border-2 border-gray-200 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-md transition-all font-black text-lg md:text-xl text-gray-700">擔心 😰</button>
+                                </div>
+                                <div id="l1-feedback" class="mt-6 p-5 hidden rounded-2xl text-center font-bold text-lg border-2"></div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="space-y-10 fade-in">
+                            <div class="bg-indigo-50 p-6 md:p-10 rounded-[2.5rem] border-2 border-dashed border-indigo-300 relative">
+                                <div class="flex flex-col items-center">
+                                    <div class="bg-white p-4 md:p-5 rounded-3xl shadow-md mb-6">
+                                        <i data-lucide="message-circle" class="w-10 h-10 md:w-12 md:h-12 text-indigo-600"></i>
+                                    </div>
+                                    <h3 class="text-xl md:text-2xl font-black text-gray-800 mb-4 text-center">聽音辨位：語氣解析</h3>
+                                    <p class="text-center text-gray-600 mb-8 md:mb-10 text-base md:text-lg max-w-lg">偵探不只看眼，還要聽聲。請點擊播放按鈕，分辨其中的情感。</p>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-10">
+                                    ${['好奇', '生氣', '害怕'].map((e, i) => `
+                                        <button onclick="playLocalSpeech('${e}', ${i+1})" class="flex flex-col items-center justify-center p-4 md:p-6 bg-white rounded-2xl shadow-sm border-2 border-gray-100 hover:border-indigo-300 hover:shadow-md transition-all active:scale-95 group h-28 md:h-32">
+                                            <i data-lucide="${state.audioPlayingId === i+1 ? 'loader-2' : 'play-circle'}" id="audio-icon-${i+1}" class="w-10 h-10 md:w-12 md:h-12 ${state.audioPlayingId === i+1 ? 'text-indigo-500 animate-spin' : 'text-gray-400 group-hover:text-indigo-500'} mb-3 transition-colors"></i>
+                                            <span class="text-xs md:text-sm font-black text-gray-500 uppercase tracking-wider group-hover:text-indigo-600 transition-colors">音訊 ${i+1}</span>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                                <div id="guess-area" class="hidden mt-8 p-6 md:p-8 rounded-3xl bg-white shadow-xl animate-fade-in border-t-4 border-indigo-500">
+                                    <p class="font-black text-lg md:text-xl mb-6 text-center text-gray-800">這段音訊聽起來像是哪種語氣？</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        ${['好奇', '生氣', '害怕'].map(e => `<button onclick="checkEmotionGuess('${e}')" class="bg-indigo-100 text-indigo-800 border-2 border-indigo-200 p-4 rounded-2xl font-bold text-lg hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors shadow-sm">${e}</button>`).join('')}
+                                    </div>
+                                </div>
+                                <div id="l1-feedback-2" class="mt-6 p-4 hidden rounded-2xl text-center font-bold text-lg border-2"></div>
+                                <button id="l1-next" class="hidden w-full mt-10 bg-indigo-600 text-white py-4 md:py-5 rounded-2xl text-lg md:text-xl font-black shadow-xl shadow-indigo-200 hover:-translate-y-1 hover:shadow-2xl transition-all" onclick="goToL2()">任務完成：前往下一關 🚀</button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+            </div>`;
+        }
+
+        function level2Template() {
+            return `
+            <div class="max-w-4xl mx-auto fade-in">
+                <button onclick="goToHome()" class="mb-6 text-gray-400 hover:text-emerald-600 flex items-center gap-1 font-bold text-sm transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 回事務所
+                </button>
+                <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-xl border border-emerald-50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10 rotate-12 pointer-events-none">
+                        <i data-lucide="microscope" class="w-24 h-24 md:w-32 md:h-32 text-emerald-600"></i>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 relative z-10">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-gray-800">動機顯微鏡</h2>
+                            <p class="text-emerald-500 font-bold uppercase tracking-widest text-xs md:text-sm mt-1">案件：圖書館藍莓汁事件</p>
+                        </div>
+                        <div class="bg-emerald-50 px-4 py-2 rounded-xl text-xs md:text-sm font-black text-emerald-700 border border-emerald-100">
+                            已收集證據: ${Object.values(state.l2Clues).filter(v => v).length} / 3
+                        </div>
+                    </div>
+
+                    <!-- 互動場景圖 (響應式尺寸調整) -->
+                    <div class="relative bg-slate-50 rounded-[2rem] p-4 md:p-10 mb-8 border-2 border-gray-100 shadow-inner overflow-hidden min-h-[380px] sm:min-h-[450px]">
+                        <!-- 背景裝飾：圖書館架 -->
+                        <div class="absolute top-0 left-0 w-full h-1/3 bg-slate-100/50 grid grid-cols-6 gap-2 p-2 pointer-events-none">
+                             ${Array(12).fill(0).map(() => `<div class="bg-slate-200 rounded-sm"></div>`).join('')}
+                        </div>
+                        
+                        <!-- 互動桌子 -->
+                        <div class="absolute bottom-[20%] left-[5%] md:left-[10%] w-[90%] md:w-[80%] border-b-[6px] md:border-b-8 border-[#d4a373] rounded-sm opacity-50 pointer-events-none"></div>
+                        
+                        <!-- 受害者：小美 (左側) -->
+                        <div class="absolute bottom-[25%] left-[5%] md:left-[20%] flex flex-col items-center z-10">
+                            <div class="bg-white/90 p-1.5 md:p-2 rounded-xl shadow-sm text-[10px] md:text-xs font-bold text-gray-600 mb-1 md:mb-2 border border-gray-200 relative whitespace-nowrap">
+                                我的新書...😭
+                                <div class="absolute -bottom-1 left-1/2 w-2 h-2 bg-white/90 border-b border-r border-gray-200 rotate-45 transform -translate-x-1/2"></div>
+                            </div>
+                            <div class="text-[4rem] md:text-[5rem] drop-shadow-md">👧</div>
+                            <div class="mt-1 md:mt-2 relative">
+                                <div class="text-[3.5rem] md:text-[4rem]">📖</div>
+                                <!-- 濺灑在書上的效果 -->
+                                ${state.l2Clues.cup ? `<div class="absolute inset-0 bg-purple-500/60 rounded-lg spill-anim filter blur-[2px]"></div>` : ''}
+                            </div>
+                            <span class="mt-1 font-black text-gray-500 text-xs md:text-sm">小美</span>
+                        </div>
+
+                        <!-- 被撞飛的杯子 (空中，左中) -->
+                        <div onclick="clickClue('cup')" class="absolute top-[32%] sm:top-[35%] left-[30%] sm:left-[40%] cursor-pointer group z-30 transition-transform hover:scale-110">
+                            <div class="relative">
+                                <div class="text-[3.5rem] md:text-[4rem] transition-transform duration-500 ${state.l2Clues.cup ? 'rotate-[-110deg] translate-y-6 md:translate-y-8 translate-x-[-1.5rem] md:translate-x-[-2rem]' : 'rotate-12'} drop-shadow-lg">🥤</div>
+                                ${state.l2Clues.cup ? `<div class="absolute top-0 -left-6 md:-left-8 w-16 md:w-24 h-10 md:h-12 bg-purple-400/50 rounded-[50%] spill-anim filter blur-sm -rotate-45 pointer-events-none"></div>` : ''}
+                            </div>
+                            ${!state.l2Clues.cup ? `<div class="absolute -top-6 md:-top-8 -left-4 md:-left-6 bg-indigo-500 text-white text-[10px] md:text-xs font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full animate-bounce shadow-lg flex items-center gap-1 whitespace-nowrap"><i data-lucide="mouse-pointer-click" class="w-3 md:w-4 h-3 md:h-4"></i> 檢查飲料</div>` : ''}
+                        </div>
+
+                        <!-- 嫌疑人：大強 (右側) -->
+                        <div class="absolute bottom-[25%] right-[5%] md:right-[20%] flex flex-col items-center z-20 group">
+                            <!-- 對話框 -->
+                            ${state.l2Clues.face ? `
+                                <div class="absolute -top-20 md:-top-24 -left-12 md:-left-12 bg-white p-2.5 md:p-3 rounded-xl shadow-lg border-2 border-emerald-400 w-36 md:w-48 text-[10px] md:text-xs font-bold leading-relaxed animate-bounce z-40">
+                                    <span class="text-emerald-700 block mb-1"><i data-lucide="message-square-quote" class="inline w-3 h-3 mb-1"></i> 大強的心聲：</span>
+                                    糟糕！我剛才急著拿書，腳被椅子絆了一下...
+                                    <div class="absolute -bottom-1.5 left-1/2 w-3 h-3 bg-white border-b-2 border-r-2 border-emerald-400 rotate-45 transform -translate-x-1/2"></div>
+                                </div>
+                            ` : ''}
+                            
+                            <!-- 互動：大強 -->
+                            <div onclick="clickClue('face')" class="relative cursor-pointer transition-transform hover:scale-105 active:scale-95">
+                                <div class="text-[4rem] md:text-[5rem] drop-shadow-lg transition-all duration-300 ${state.l2Clues.face ? 'scale-110' : ''}">${state.l2Clues.face ? '😨' : '🏃‍♂️'}</div>
+                                ${!state.l2Clues.face ? `
+                                    <div class="absolute -top-3 md:-top-4 -right-2 md:-right-4 bg-rose-500 text-white text-[10px] md:text-xs font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full animate-pulse shadow-md flex items-center gap-1 whitespace-nowrap"><i data-lucide="eye" class="w-3 md:w-4 h-3 md:h-4"></i> 看表情</div>
+                                ` : ''}
+                            </div>
+                            <span class="mt-1 md:mt-2 font-black text-gray-500 text-xs md:text-sm">大強</span>
+                        </div>
+
+                        <!-- 關鍵證據：椅子 (直接呈現，大強旁邊) -->
+                        <div onclick="clickClue('floor')" class="absolute bottom-[10%] md:bottom-[15%] right-[25%] md:right-[35%] cursor-pointer group z-30 transition-transform hover:scale-105">
+                             <div class="text-[3.5rem] md:text-[4rem] drop-shadow-md transition-all duration-300 ${state.l2Clues.floor ? 'rotate-[-25deg] translate-x-4 md:translate-x-6 translate-y-3 md:translate-y-4 opacity-80' : 'opacity-100'}">🪑</div>
+                             <!-- 絆倒痕跡 -->
+                             ${state.l2Clues.floor ? `<div class="absolute -bottom-1 md:-bottom-2 -left-4 md:-left-6 text-lg md:text-xl opacity-50 -rotate-45 pointer-events-none">💢</div>` : ''}
+                             ${!state.l2Clues.floor ? `<div class="absolute -top-5 md:-top-6 -left-2 md:-left-4 bg-emerald-500 text-white text-[10px] md:text-xs font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-md flex items-center gap-1 animate-bounce whitespace-nowrap"><i data-lucide="search" class="w-3 md:w-4 h-3 md:h-4"></i> 檢查椅子</div>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- 線索清單 -->
+                    <h3 class="text-lg md:text-xl font-black text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="list-checks" class="text-indigo-600"></i> 偵探筆記：已收集的線索</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+                        <!-- 線索一 -->
+                        <div class="p-6 rounded-3xl border-2 transition-all duration-500 ${state.l2Clues.face ? 'bg-emerald-50 border-emerald-300 shadow-md' : 'bg-gray-50 border-gray-200 opacity-70'} relative overflow-hidden">
+                            ${state.l2Clues.face ? '<div class="absolute top-0 right-0 bg-emerald-500 text-white p-1 rounded-bl-xl"><i data-lucide="check" class="w-5 h-5"></i></div>' : ''}
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 rounded-xl ${state.l2Clues.face ? 'bg-emerald-200' : 'bg-gray-200'}">
+                                    <i data-lucide="smile" class="w-6 h-6 ${state.l2Clues.face ? 'text-emerald-700' : 'text-gray-400'}"></i>
+                                </div>
+                                <span class="font-black text-lg text-gray-800">1. 微表情分析</span>
+                            </div>
+                            <div class="text-gray-600 text-sm leading-relaxed font-medium">
+                                ${state.l2Clues.face ? 
+                                  '<p class="text-emerald-800 font-bold mb-1">🔍 觀察結果：</p>大強張大嘴巴、臉色發白，呈現驚嚇狀態。<br/><p class="text-emerald-800 font-bold mt-2 mb-1">💡 推論：</p>這是不知所措的自然反應，不像惡作劇得逞的樣子。' : 
+                                  '<div class="flex items-center gap-2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i> 尚未解鎖...</div>'}
+                            </div>
+                        </div>
+
+                        <!-- 線索二 -->
+                        <div class="p-6 rounded-3xl border-2 transition-all duration-500 ${state.l2Clues.floor ? 'bg-emerald-50 border-emerald-300 shadow-md' : 'bg-gray-50 border-gray-200 opacity-70'} relative overflow-hidden">
+                             ${state.l2Clues.floor ? '<div class="absolute top-0 right-0 bg-emerald-500 text-white p-1 rounded-bl-xl"><i data-lucide="check" class="w-5 h-5"></i></div>' : ''}
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 rounded-xl ${state.l2Clues.floor ? 'bg-emerald-200' : 'bg-gray-200'}">
+                                    <i data-lucide="map-pin" class="w-6 h-6 ${state.l2Clues.floor ? 'text-emerald-700' : 'text-gray-400'}"></i>
+                                </div>
+                                <span class="font-black text-lg text-gray-800">2. 現場環境重建</span>
+                            </div>
+                            <div class="text-gray-600 text-sm leading-relaxed font-medium">
+                                ${state.l2Clues.floor ? 
+                                  '<p class="text-emerald-800 font-bold mb-1">🔍 觀察結果：</p>走道上的椅子被拉開了，且旁邊有凌亂的鞋印。<br/><p class="text-emerald-800 font-bold mt-2 mb-1">💡 推論：</p>大強在跑動時，腳很可能被凸出來的椅子絆到了。' : 
+                                  '<div class="flex items-center gap-2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i> 尚未解鎖...</div>'}
+                            </div>
+                        </div>
+
+                        <!-- 線索三 -->
+                        <div class="p-6 rounded-3xl border-2 transition-all duration-500 ${state.l2Clues.cup ? 'bg-emerald-50 border-emerald-300 shadow-md' : 'bg-gray-50 border-gray-200 opacity-70'} relative overflow-hidden">
+                             ${state.l2Clues.cup ? '<div class="absolute top-0 right-0 bg-emerald-500 text-white p-1 rounded-bl-xl"><i data-lucide="check" class="w-5 h-5"></i></div>' : ''}
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 rounded-xl ${state.l2Clues.cup ? 'bg-emerald-200' : 'bg-gray-200'}">
+                                    <i data-lucide="droplet" class="w-6 h-6 ${state.l2Clues.cup ? 'text-emerald-700' : 'text-gray-400'}"></i>
+                                </div>
+                                <span class="font-black text-lg text-gray-800">3. 事發經過推演</span>
+                            </div>
+                            <div class="text-gray-600 text-sm leading-relaxed font-medium">
+                                ${state.l2Clues.cup ? 
+                                  '<p class="text-emerald-800 font-bold mb-1">🔍 觀察結果：</p>藍莓汁杯子呈現拋物線翻倒，杯蓋原本就沒蓋緊。<br/><p class="text-emerald-800 font-bold mt-2 mb-1">💡 推論：</p>受到外力撞擊（如人撲倒）導致杯子飛出並灑落。' : 
+                                  '<div class="flex items-center gap-2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i> 尚未解鎖...</div>'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 結案判定區 -->
+                    ${(state.l2Clues.face && state.l2Clues.floor && state.l2Clues.cup) ? `
+                        <div class="bg-indigo-700 p-10 rounded-[2.5rem] text-center text-white shadow-2xl shadow-indigo-300 fade-in border-4 border-indigo-400/30">
+                            <div class="inline-flex bg-indigo-500 p-4 rounded-2xl mb-6 shadow-inner">
+                                <i data-lucide="gavel" class="w-10 h-10"></i>
+                            </div>
+                            <h3 class="text-3xl font-black mb-4">線索收集完畢，請結案！</h3>
+                            <p class="text-indigo-100 font-bold mb-8 text-lg">綜合上述<span class="text-amber-300">「表情」</span>、<span class="text-amber-300">「椅子位置」</span>與<span class="text-amber-300">「飲料翻倒方式」</span>，<br/>你認為大強弄濕書本的動機是？</p>
+                            
+                            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                                <button onclick="checkL2Verdict('故意的')" class="bg-indigo-800 hover:bg-indigo-600 border-2 border-indigo-400 px-10 py-4 rounded-2xl font-black text-lg transition-all shadow-lg hover:-translate-y-1">故意的惡作劇 😈</button>
+                                <button onclick="checkL2Verdict('意外')" class="bg-white text-indigo-700 hover:bg-indigo-50 px-10 py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-900/50 transition-all hover:-translate-y-1 transform scale-105 border-b-4 border-indigo-200">不小心的意外 🦶</button>
+                            </div>
+                            
+                            <div id="l2-verdict-fb" class="mt-8 font-bold hidden"></div>
+                        </div>
+                    ` : `
+                        <div class="text-center p-8 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-300">
+                            <p class="text-slate-500 font-black text-lg flex items-center justify-center gap-3">
+                                <i data-lucide="search-check" class="w-6 h-6 animate-pulse text-indigo-500"></i>
+                                偵探，請點擊上方場景中的提示，收集完整的 3 個證據才能結案！
+                            </p>
+                        </div>
+                    `}
+                </div>
+            </div>`;
+        }
+
+        function level3Template() {
+            const q = L3_QUESTIONS[state.l3Step];
+            return `
+            <div class="max-w-3xl mx-auto fade-in">
+                <button onclick="goToHome()" class="mb-6 text-gray-400 hover:text-orange-600 flex items-center gap-1 font-bold text-sm transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 回事務所
+                </button>
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-orange-50">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800">觀點交換所</h2>
+                            <p class="text-xs text-orange-500 font-bold uppercase tracking-widest mt-1">最後決策訓練</p>
+                        </div>
+                        <div class="text-xs font-black bg-orange-50 text-orange-700 px-3 py-1 rounded-full">
+                            Progress: ${state.l3Step + 1}/3
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div class="bg-orange-50 p-8 rounded-[2rem] border border-orange-100 relative">
+                            <div class="absolute -top-3 -left-3 bg-orange-500 text-white p-2 rounded-lg shadow-lg">
+                                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                            </div>
+                            <p class="text-lg font-black text-gray-800 leading-relaxed">${q.scenario}</p>
+                        </div>
+                        <div id="l3-options" class="grid grid-cols-1 gap-4">
+                            ${q.options.map((opt, idx) => `
+                                <button onclick="checkL3Answer(${idx})" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-orange-500 hover:bg-orange-50 transition-all font-bold text-gray-600 flex items-center justify-between">
+                                    <span>${idx + 1}. ${opt.text}</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="l3-feedback" class="hidden p-6 rounded-2xl text-center font-black text-lg animate-bounce shadow-lg border-2"></div>
+                        <button id="l3-next-btn" class="hidden w-full bg-orange-600 text-white py-5 rounded-2xl font-black shadow-xl hover:shadow-orange-200 transition-all active:scale-95" onclick="nextL3()">
+                            ${state.l3Step < 2 ? '進入下一個情境' : '簽發結業證書 🎓'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function reportTemplate() {
+            return `
+            <div class="max-w-4xl mx-auto fade-in py-8 px-4">
+                <div class="bg-gradient-to-br from-indigo-900 via-slate-800 to-indigo-900 p-2 sm:p-3 rounded-[3rem] shadow-2xl">
+                    <div class="bg-white rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden h-full border border-indigo-100/50">
+                        
+                        <!-- 背景浮水印 -->
+                        <div class="absolute -right-10 -bottom-10 opacity-[0.03] rotate-[-15deg] pointer-events-none">
+                            <i data-lucide="shield-check" class="w-80 h-80 text-indigo-900"></i>
+                        </div>
+
+                        <!-- 官方認證印章 (動畫效果) -->
+                        <div class="absolute top-8 right-8 md:top-12 md:right-12 border-4 border-rose-500 text-rose-500 text-lg md:text-2xl font-black px-4 py-1 rotate-[15deg] rounded-lg opacity-80 uppercase tracking-widest shadow-sm animate-pulse z-20 pointer-events-none">
+                            官方認證
+                        </div>
+
+                        <!-- 標題區 -->
+                        <div class="text-center mb-12 relative z-10">
+                            <div class="inline-block bg-amber-100 p-4 rounded-full mb-6 shadow-inner">
+                                <i data-lucide="award" class="w-12 h-12 text-amber-500"></i>
+                            </div>
+                            <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600 mb-4 drop-shadow-sm">頂尖社會偵探證書</h1>
+                            <p class="text-gray-500 font-bold text-lg md:text-xl mt-4">
+                                榮譽探員代號：<span class="text-indigo-700 text-3xl font-black ml-2 border-b-4 border-amber-400 pb-1">${state.studentName}</span>
+                            </p>
+                        </div>
+                        
+                        <!-- 專屬能力徽章 (取代 LV MAX) -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10">
+                            <!-- 徽章 1 -->
+                            <div class="bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-100 flex flex-col items-center text-center transform transition-all hover:scale-105 hover:shadow-lg hover:border-indigo-300">
+                                <div class="w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center text-white mb-4 shadow-md"><i data-lucide="smile" class="w-8 h-8"></i></div>
+                                <h4 class="font-black text-indigo-900 text-lg mb-1">讀心觀察力</h4>
+                                <div class="flex text-amber-400 text-base mb-3 drop-shadow-sm">★★★★★</div>
+                                <span class="bg-white border-2 border-indigo-200 text-indigo-700 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">微表情大師</span>
+                            </div>
+                            
+                            <!-- 徽章 2 -->
+                            <div class="bg-emerald-50 p-6 rounded-3xl border-2 border-emerald-100 flex flex-col items-center text-center transform transition-all hover:scale-105 hover:shadow-lg hover:border-emerald-300">
+                                <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white mb-4 shadow-md"><i data-lucide="microscope" class="w-8 h-8"></i></div>
+                                <h4 class="font-black text-emerald-900 text-lg mb-1">動機推理力</h4>
+                                <div class="flex text-amber-400 text-base mb-3 drop-shadow-sm">★★★★★</div>
+                                <span class="bg-white border-2 border-emerald-200 text-emerald-700 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">真相洞察者</span>
+                            </div>
+
+                            <!-- 徽章 3 -->
+                            <div class="bg-orange-50 p-6 rounded-3xl border-2 border-orange-100 flex flex-col items-center text-center transform transition-all hover:scale-105 hover:shadow-lg hover:border-orange-300">
+                                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white mb-4 shadow-md"><i data-lucide="heart-handshake" class="w-8 h-8"></i></div>
+                                <h4 class="font-black text-orange-900 text-lg mb-1">利社會行動</h4>
+                                <div class="flex text-amber-400 text-base mb-3 drop-shadow-sm">★★★★★</div>
+                                <span class="bg-white border-2 border-orange-200 text-orange-700 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">和平交涉官</span>
+                            </div>
+                        </div>
+
+                        <!-- 結語金句 -->
+                        <div class="bg-slate-900 p-8 rounded-[2rem] relative z-10 shadow-xl text-center overflow-hidden group">
+                            <div class="absolute inset-0 bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors"></div>
+                            <i data-lucide="quote" class="w-8 h-8 text-indigo-400 mx-auto mb-4 opacity-50"></i>
+                            <p class="text-xl md:text-2xl font-black text-amber-400 tracking-wide leading-relaxed drop-shadow-md">
+                                「真正的偵探，不只用眼睛看世界，<br class="hidden sm:block" />更用心去感受別人的處境。」
+                            </p>
+                        </div>
+
+                        <!-- 操作按鈕 -->
+                        <div class="mt-12 text-center relative z-10">
+                            <button onclick="finishTask()" class="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white transition-all duration-200 bg-gradient-to-r from-amber-500 to-orange-600 font-pj rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600 hover:scale-[1.02] shadow-[0_10px_20px_-10px_rgba(245,158,11,0.8)] text-xl">
+                                <i data-lucide="home" class="w-6 h-6 mr-2 group-hover:animate-bounce"></i>
+                                結束任務並回到首頁
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- 邏輯 ---
+        function toggleGuide(show) {
+            document.getElementById('teacher-modal').classList.toggle('hidden', !show);
+        }
+
+        // 新增：自訂重置遊戲相關函數
+        function showRestartConfirm() {
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function cancelRestart() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        function confirmRestart() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            performReset();
+        }
+
+        function finishTask() {
+            performReset();
+        }
+
+        function performReset() {
+            state = {
+                currentStage: 'welcome',
+                isLoggedIn: false,
+                studentName: '',
+                report: { l1: '', l2: '', l3: [] },
+                l1Step: 0,
+                l2Clues: { face: false, floor: false, cup: false },
+                l3Step: 0,
+                audioPlayingId: null,
+                expectedEmotion: null
+            };
+            
+            // 嘗試停止正在播放的語音
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            
+            render();
+        }
+
+        function validateName(val) {
+            const btn = document.getElementById('start-btn');
+            const err = document.getElementById('name-error');
+            const isValid = val.trim().length >= 2 && val.trim().length <= 10;
+            
+            if (isValid) {
+                btn.disabled = false;
+                btn.className = "w-full py-5 rounded-2xl text-xl font-black text-white bg-indigo-600 cursor-pointer shadow-xl shadow-indigo-200 transition-all transform hover:scale-[1.02] active:scale-95";
+                err.classList.add('hidden');
+            } else {
+                btn.disabled = true;
+                btn.className = "w-full py-5 rounded-2xl text-xl font-black text-white bg-gray-300 cursor-not-allowed transition-all shadow-lg";
+                if (val.length > 0) err.classList.remove('hidden');
+            }
+        }
+
+        function login() {
+            state.studentName = document.getElementById('name-input').value;
+            state.isLoggedIn = true;
+            render();
+        }
+
+        function goToHome() {
+            state.currentStage = 'welcome';
+            render();
+        }
+
+        function startLevel(lvl) {
+            state.currentStage = lvl;
+            render();
+        }
+
+        function checkL1A(choice) {
+            const fb = document.getElementById('l1-feedback');
+            fb.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+            if (choice === '擔心') {
+                fb.innerText = '✅ 觀察入微！偵探發現了他呼吸急促且神情焦慮。';
+                fb.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+                setTimeout(() => { state.l1Step = 1; render(); }, 2000);
+            } else {
+                fb.innerText = '❌ 再仔細看看，他是在急著尋找東西，並非單純發洩情緒喔。';
+                fb.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+            }
+        }
+
+        // 替換原本的 simulateAudio，改用瀏覽器內建 Web Speech API 播放真實聲音
+        function playLocalSpeech(emotion, id) {
+            if (state.audioPlayingId !== null) return; // 正在播放時忽略點擊
+            
+            if (!('speechSynthesis' in window)) {
+                alert("您的瀏覽器不支援語音合成功能，請嘗試使用 Chrome 或 Edge 瀏覽器。");
+                return;
+            }
+
+            state.audioPlayingId = id;
+            state.expectedEmotion = emotion;
+            render(); // 重新渲染以顯示載入/播放動畫
+
+            // 確保停止之前尚未播完的語音
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance();
+            
+            // 透過調整參數，用同一句話模擬不同情緒
+            if (emotion === '好奇') {
+                utterance.text = "你要去哪裡呀？";
+                utterance.pitch = 1.6; // 音調變高
+                utterance.rate = 1.1;  // 速度稍微輕快
+            } else if (emotion === '生氣') {
+                utterance.text = "你要去哪裡！";
+                utterance.pitch = 0.5; // 音調壓低
+                utterance.rate = 1.6;  // 速度急促
+                utterance.volume = 1.0; 
+            } else if (emotion === '害怕') {
+                utterance.text = "你...你要...去哪裡？";
+                utterance.pitch = 1.3; // 音調偏高
+                utterance.rate = 0.6;  // 語速變慢、結巴感
+            }
+
+            // 盡可能尋找中文語音引擎
+            const voices = window.speechSynthesis.getVoices();
+            const zhVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('TW'));
+            if (zhVoice) {
+                utterance.voice = zhVoice;
+            }
+
+            // 播放結束事件
+            utterance.onend = () => {
+                state.audioPlayingId = null;
+                render(); // 恢復圖示狀態
+                
+                // 顯示猜測區域
+                const guessArea = document.getElementById('guess-area');
+                const feedback2 = document.getElementById('l1-feedback-2');
+                if(guessArea && feedback2) {
+                    guessArea.classList.remove('hidden');
+                    feedback2.innerText = '🔊 播放完成，請選擇你認為的感覺。';
+                    feedback2.className = "mt-6 p-4 rounded-2xl text-center font-bold text-indigo-700 bg-indigo-50 border-2 border-indigo-200 text-lg";
+                    feedback2.classList.remove('hidden');
+                }
+            };
+
+            // 錯誤處理
+            utterance.onerror = (e) => {
+                console.error("語音播放發生錯誤", e);
+                state.audioPlayingId = null;
+                render();
+            };
+
+            // 開始播放
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkEmotionGuess(guess) {
+            const fb = document.getElementById('l1-feedback-2');
+            if (guess === state.expectedEmotion) {
+                fb.innerText = `🎉 答對了！這確實是「${guess}」的語氣。`;
+                fb.className = "mt-4 p-3 rounded-xl text-center font-black text-emerald-600 bg-emerald-50 text-sm";
+                document.getElementById('l1-next').classList.remove('hidden');
+                document.getElementById('guess-area').classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                fb.innerText = '❌ 聽起來不太像喔，再細心體會一下頻率。';
+                fb.className = "mt-4 p-3 rounded-xl text-center font-black text-rose-600 bg-rose-50 text-sm";
+            }
+        }
+
+        function goToL2() { 
+            state.currentStage = 'level2'; 
+            render(); 
+        }
+        
+        function clickClue(type) {
+            state.l2Clues[type] = true;
+            render();
+        }
+
+        function checkL2Verdict(verdict) {
+            const fb = document.getElementById('l2-verdict-fb');
+            fb.classList.remove('hidden', 'text-white');
+            if (verdict === '意外') {
+                fb.innerText = "🏆 完美推理！綜合絆倒的鞋印與驚嚇表情，這是一場意外。";
+                fb.classList.add('text-emerald-300');
+                state.report.l2 = '識破意外動機';
+                setTimeout(() => { state.currentStage = 'level3'; render(); }, 2000);
+            } else {
+                fb.innerText = "❌ 偵探再想想，他的表情看起來像是故意的嗎？桌子下的線索呢？";
+                fb.classList.add('text-rose-300');
+            }
+        }
+        
+        function goToL3() { state.currentStage = 'level3'; render(); }
+
+        function checkL3Answer(idx) {
+            const q = L3_QUESTIONS[state.l3Step];
+            const fb = document.getElementById('l3-feedback');
+            const opts = document.getElementById('l3-options');
+            fb.classList.remove('hidden', 'text-rose-700', 'bg-rose-50', 'border-rose-200', 'text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+
+            if (idx === q.correct) {
+                fb.innerText = "✅ " + q.feedback;
+                fb.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+                opts.classList.add('pointer-events-none', 'opacity-60');
+                document.getElementById('l3-next-btn').classList.remove('hidden');
+            } else {
+                fb.innerText = '❌ 這個回應可能會讓衝突擴大喔，社會偵探會選擇更溫暖、有建設性的做法！';
+                fb.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
+            }
+        }
+
+        function nextL3() {
+            if (state.l3Step < 2) {
+                state.l3Step++;
+                render();
+            } else {
+                state.currentStage = 'report';
+                render();
+            }
+        }
+
+        // 移除 pcmToWav 函數，因為已經不使用外部語音API
+        // function pcmToWav(pcm16, sampleRate = 24000) { ... }
+    </script>
+</body>
+</html>

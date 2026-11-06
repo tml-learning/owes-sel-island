@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的情緒與行動超級計畫</title>
+    <!-- 引入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* 已移除外部字體載入，改用系統字體堆棧 */
+        body {
+            /* 優先使用系統預設字體，並提供繁體中文支援 */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: #f0f4f8; /* 淺藍灰色背景 */
+        }
+        .tab-content.hidden {
+            display: none;
+        }
+        .thermometer-container {
+            width: 80px;
+            height: 250px;
+            border: 8px solid #3b82f6; /* Blue border */
+            border-radius: 16px;
+            background-color: #e5e7eb; /* Light grey background */
+            position: relative;
+            overflow: hidden;
+        }
+        .rating-star {
+            transition: all 0.15s;
+            display: inline-block;
+        }
+        .rating-star:hover {
+            color: #facc15 !important; 
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 hidden opacity-0" onclick="closeModal()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full mx-4 transform transition-all duration-300 scale-100" onclick="event.stopPropagation()">
+            <div id="modal-header" class="p-4 rounded-t-lg bg-green-500">
+                <h3 id="modal-title" class="text-xl font-bold text-white"></h3>
+            </div>
+            <div class="p-6">
+                <p id="modal-message" class="text-gray-700 mb-4"></p>
+                <button onclick="closeModal()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                    知道了！
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-indigo-700">🚀 我的「情緒與行動」超級計畫</h1>
+            <p class="text-lg text-gray-600 mt-2">四年級：追蹤與個人化策略的建立</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button id="tab-btn-1" onclick="switchTab(1)" class="tab-btn bg-indigo-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-indigo-600 transition">
+                測量心情
+            </button>
+            <button id="tab-btn-2" onclick="switchTab(2)" class="tab-btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full shadow hover:bg-indigo-100 transition">
+                行動追蹤
+            </button>
+            <button id="tab-btn-3" onclick="switchTab(3)" class="tab-btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full shadow hover:bg-indigo-100 transition">
+                目標特訓
+            </button>
+            <button id="tab-btn-4" onclick="switchTab(4)" class="tab-btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full shadow hover:bg-indigo-100 transition">
+                自我激勵
+            </button>
+            <button id="tab-btn-5" onclick="switchTab(5)" class="tab-btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full shadow hover:bg-indigo-100 transition">
+                SEL 教學指南
+            </button>
+        </div>
+
+        <!-- 1. 測量我的心情：感受溫度計 -->
+        <div id="tab-content-1" class="tab-content">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-6 flex items-center"><i data-lucide="thermometer" class="mr-3"></i> 1. 感受溫度計</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 溫度計顯示區 -->
+                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-xl shadow-inner">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">我的情緒小宇宙</h3>
+                    <!-- 感受溫度計視覺化 -->
+                    <div class="thermometer-container relative">
+                        <!-- 刻度標籤 -->
+                        <div class="absolute inset-y-0 right-0 w-1/3 text-right pr-2 flex flex-col justify-between py-2 text-sm font-semibold text-gray-600">
+                            <span>5 (大爆發)</span>
+                            <span>4 (很生氣)</span>
+                            <span>3 (有點煩)</span>
+                            <span>2 (還不錯)</span>
+                            <span>1 (冷靜)</span>
+                        </div>
+                        <!-- 溫度填充條 -->
+                        <div id="feeling-thermometer-fill" class="absolute bottom-0 left-0 w-full rounded-b-xl transition-all duration-500 bg-gray-200" style="height: 0%;"></div>
+                    </div>
+                    <div id="temp-value-display" class="mt-6 p-2 rounded-lg text-center font-extrabold shadow-md">3 度：有點煩躁</div>
+                    <input type="range" min="1" max="5" value="3" id="temp-slider" class="w-full mt-4 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                
+                <!-- 情境回顧區表單 -->
+                <div class="p-4 bg-white rounded-xl shadow-lg border-t-4 border-indigo-500">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">＋記錄我的情緒爆發事件</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="record-location" placeholder="1. 事件發生在哪裡？ (例如：下課時)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        <textarea id="record-event" rows="2" placeholder="2. 當時發生了什麼事？ (簡單寫下來)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <textarea id="record-action" rows="2" placeholder="3. 我嘗試做了什麼？ (例如：生氣大哭、深呼吸 3 次)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <button onclick="submitFeelingRecord()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition flex items-center justify-center">
+                            <i data-lucide="save" class="mr-2 w-5 h-5"></i> 儲存這次紀錄
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-indigo-600 mt-10 mb-4 border-b pb-2">📅 最近的追蹤紀錄</h3>
+            <div id="feeling-records-list" class="space-y-3">
+                <p class="text-gray-500 text-center">載入情緒紀錄中...</p>
+            </div>
+        </div>
+
+        <!-- 2. 我的行動追蹤站：情緒計畫表 -->
+        <div id="tab-content-2" class="tab-content hidden">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-6 flex items-center"><i data-lucide="clipboard-list" class="mr-3"></i> 2. 情緒計畫表</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 追蹤表單 -->
+                <div class="p-4 bg-white rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">📝 三欄追蹤表：記錄策略與結果</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="strategy-activity" placeholder="活動 (例如：午餐時間)" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <input type="text" id="strategy-emotion" placeholder="情緒 (例如：開心、緊張)" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <input type="text" id="strategy-strategy" placeholder="策略 (例如：喝水、找老師、休息 5 分鐘)" class="w-full p-3 border border-gray-300 rounded-lg">
+                        
+                        <!-- 星星評分 -->
+                        <div class="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-bold text-gray-700 mb-2">有效程度 (1 顆星 = 沒用, 5 顆星 = 超有效):</span>
+                            <div class="flex space-x-3 text-3xl">
+                                <!-- Rating 1 -->
+                                <label for="rating-1" class="cursor-pointer transition hover:scale-110">
+                                    <input type="radio" name="rating" value="1" id="rating-1" class="hidden">
+                                    <span class="rating-star text-gray-400" data-rating="1">★</span>
+                                </label>
+                                <!-- Rating 2 -->
+                                <label for="rating-2" class="cursor-pointer transition hover:scale-110">
+                                    <input type="radio" name="rating" value="2" id="rating-2" class="hidden">
+                                    <span class="rating-star text-gray-400" data-rating="2">★</span>
+                                </label>
+                                <!-- Rating 3 -->
+                                <label for="rating-3" class="cursor-pointer transition hover:scale-110">
+                                    <input type="radio" name="rating" value="3" id="rating-3" class="hidden">
+                                    <span class="rating-star text-gray-400" data-rating="3">★</span>
+                                </label>
+                                <!-- Rating 4 -->
+                                <label for="rating-4" class="cursor-pointer transition hover:scale-110">
+                                    <input type="radio" name="rating" value="4" id="rating-4" class="hidden">
+                                    <span class="rating-star text-gray-400" data-rating="4">★</span>
+                                </label>
+                                <!-- Rating 5 -->
+                                <label for="rating-5" class="cursor-pointer transition hover:scale-110">
+                                    <input type="radio" name="rating" value="5" id="rating-5" class="hidden">
+                                    <span class="rating-star text-gray-400" data-rating="5">★</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button onclick="submitStrategyRecord()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition flex items-center justify-center">
+                            <i data-lucide="send" class="mr-2 w-5 h-5"></i> 提交檢核
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 我的有效招數資料庫 -->
+                <div class="p-4 bg-yellow-50 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4 flex items-center"><i data-lucide="award" class="mr-2 text-yellow-500"></i> 我的有效招數資料庫 (4⭐/5⭐)</h3>
+                    <div id="success-library" class="space-y-3">
+                        <p class="text-gray-500 text-center">正在分析你的超級策略...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-indigo-600 mt-10 mb-4 border-b pb-2">📊 最近的策略紀錄</h3>
+            <div id="strategy-records-list" class="space-y-3">
+                <p class="text-gray-500 text-center">載入策略紀錄中...</p>
+            </div>
+        </div>
+        
+        <!-- 3. 目標設定特訓營：拆解任務高手 -->
+        <div id="tab-content-3" class="tab-content hidden">
+             <h2 class="text-3xl font-bold text-indigo-600 mb-6 flex items-center"><i data-lucide="target" class="mr-3"></i> 3. 目標設定特訓營</h2>
+             <div class="grid md:grid-cols-2 gap-8">
+                 <!-- 目標雷達圖 (提問引導) -->
+                 <div class="p-4 bg-indigo-50 rounded-xl shadow-lg border-t-4 border-indigo-500">
+                     <h3 class="text-xl font-bold text-indigo-700 mb-4">分解與規劃的初步練習</h3>
+                     <div class="space-y-4">
+                         <input type="text" id="goal-final" placeholder="1. 我的大目標是什麼？ (例如：週末前完成功課)" class="w-full p-3 border border-gray-300 rounded-lg">
+                         <textarea id="goal-step1" rows="2" placeholder="2. 我如何達成目標？ (第一個步驟或細節是什麼？)" class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
+                         <input type="text" id="goal-check" placeholder="3. 我如何知道自己成功了？ (檢核點是什麼？)" class="w-full p-3 border border-gray-300 rounded-lg">
+                         <button onclick="submitGoal()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition flex items-center justify-center">
+                             <i data-lucide="list-checks" class="mr-2 w-5 h-5"></i> 建立我的任務清單
+                         </button>
+                     </div>
+                 </div>
+                 
+                 <!-- 最近的目標 -->
+                 <div class="p-4 bg-white rounded-xl shadow-lg border-t-4 border-gray-300">
+                      <h3 class="text-xl font-bold text-gray-700 mb-4 flex items-center"><i data-lucide="list-todo" class="mr-2 text-gray-500"></i> 最近的目標計畫</h3>
+                       <div id="goal-list" class="space-y-3">
+                          <p class="text-gray-500 text-center">載入目標中...</p>
+                       </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- 4. 我的動力來源：自我激勵充電站 -->
+        <div id="tab-content-4" class="tab-content hidden">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-6 flex items-center"><i data-lucide="zap" class="mr-3"></i> 4. 自我激勵充電站</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 動力問答區 (互動式) - 包含例句提示 -->
+                <div class="p-4 bg-purple-50 rounded-xl shadow-lg border-t-4 border-purple-500">
+                    <h3 class="text-xl font-bold text-purple-700 mb-4">💡 了解我的內在動機 (互動反思)</h3>
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">1. 如果我達成目標，對我最好的影響是什麼？</label>
+                        <textarea id="motivation-impact" rows="2" placeholder="寫下對你的好處... (例如：我可以自信地向大家報告我的研究結果)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        
+                        <label class="block text-sm font-medium text-gray-700">2. 達成目標的你，看起來是怎麼樣的？ (視覺化)</label>
+                        <textarea id="motivation-vision" rows="2" placeholder="想像並描述你的樣子... (例如：我會是一個專心完成功課、下課能開心玩耍的學生)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        
+                        <label class="block text-sm font-medium text-gray-700">3. 什麼會讓你「想要」專心行動？</label>
+                        <input type="text" id="motivation-want" placeholder="寫下你的內在驅動力... (例如：因為我想得到老師的肯定，或是想看到自己的進步)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                        
+                        <button onclick="submitMotivation()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition flex items-center justify-center">
+                            <i data-lucide="sparkles" class="mr-2 w-5 h-5"></i> 儲存我的動力來源
+                        </button>
+                    </div>
+                    
+                    <h4 class="text-lg font-bold text-purple-700 mt-6 pt-4 border-t border-purple-200">✨ 最近一次儲存的動力</h4>
+                    <div id="motivation-latest" class="p-3 bg-purple-100 rounded-lg text-sm text-purple-800">
+                        <p class="text-gray-500">尚無紀錄。</p>
+                    </div>
+                </div>
+                
+                <!-- 「打氣卡」製作器 -->
+                <div class="p-4 bg-yellow-50 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                    <h3 class="text-xl font-bold text-yellow-700 mb-4">💌 製作我的打氣卡！</h3>
+                    <p class="text-gray-700 mb-2">輸入一句自我鼓勵的話：</p>
+                    <input type="text" id="cheer-text-input" placeholder="例如：我可以做到！我是最棒的！" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+                    <button onclick="generateCheerCard()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg transition flex items-center justify-center mb-4">
+                         <i data-lucide="message-square-text" class="mr-2 w-5 h-5"></i> 製作打氣卡
+                    </button>
+                    
+                    <div id="cheer-card-output" class="mt-4 flex justify-center">
+                        <p class="text-gray-500">完成製作後，你的卡片會在這裡出現喔！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. SEL 教學指南 / 給大人的話 (新增區塊) -->
+        <div id="tab-content-5" class="tab-content hidden">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-6 flex items-center"><i data-lucide="graduation-cap" class="mr-3"></i> 5. SEL 教學指南 / 給大人的話</h2>
+            <div class="p-6 bg-white rounded-xl shadow-lg border-t-4 border-indigo-700">
+                <p class="text-lg text-gray-700 mb-6">
+                    本應用程式的核心目標是培養孩子的 **SEL（Social-Emotional Learning）核心能力**，尤其聚焦於 **自我覺察 (Self-Awareness)** 與 **自我管理 (Self-Management)**。以下是各分頁背後的教育意義與實施指南：
+                </p>
+
+                <div class="space-y-8">
+                    <!-- 1. 感受溫度計 -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 flex items-center"><i data-lucide="trending-up" class="mr-2 w-5 h-5"></i> 1. 感受溫度計：情緒強度識別</h3>
+                        <p class="mt-2 text-gray-700">**教育意義：** 訓練**自我覺察**。將抽象的情緒具體化為 **1-5 級的量表**，幫助孩子認識情緒的強度，是管理情緒的第一步。</p>
+                        <p class="mt-2 text-purple-700 font-semibold">**實施指南：**</p>
+                        <ul class="list-disc list-inside text-gray-600 pl-4">
+                            <li>引導提問：「**是什麼讓你覺得這是 4 度而不是 3 度？**」鼓勵孩子描述細節。</li>
+                            <li>強調「行動」的重要性：「當溫度上升時，你做了什麼？結果如何？」協助孩子把情緒和行動連結。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. 情緒計畫表 -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 flex items-center"><i data-lucide="zap-fast" class="mr-2 w-5 h-5"></i> 2. 情緒計畫表：個人化策略建立</h3>
+                        <p class="mt-2 text-gray-700">**教育意義：** 培養**自我管理**的**評價能力**。孩子透過評估策略的 **星級 (1-5 顆星)**，找出最適合自己的、最有效的應對機制，建立個人化的「**超級招數資料庫**」。</p>
+                        <p class="mt-2 text-purple-700 font-semibold">**實施指南：**</p>
+                        <ul class="list-disc list-inside text-gray-600 pl-4">
+                            <li>找出 4/5 顆星的紀錄：與孩子一起複習「我的有效招數」，鼓勵他們在未來類似情境中 **主動嘗試** 這些高分策略。</li>
+                            <li>討論低分策略：「**為什麼這個策略這次沒用？**」幫助孩子理解情境與策略的匹配度。</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 3. 目標特訓營 -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 flex items-center"><i data-lucide="check-square" class="mr-2 w-5 h-5"></i> 3. 目標特訓營：任務拆解與執行</h3>
+                        <p class="mt-2 text-gray-700">**教育意義：** 訓練**負責任的決策**與**自我管理**能力。教導孩子將複雜的目標拆解成 **具體、可執行** 的「第一步」，避免因目標太大而產生的無助感。</p>
+                        <p class="mt-2 text-purple-700 font-semibold">**實施指南：**</p>
+                        <ul class="list-disc list-inside text-gray-600 pl-4">
+                            <li>確認「第一步」的具體性：例如，如果目標是「讀完一本書」，第一步不該是「開始讀」，而應是「**打開書本，讀 15 分鐘**」。</li>
+                            <li>利用「檢核點」進行鼓勵：一旦完成檢核點，應立即給予 **口頭肯定**，強化孩子的執行動力。</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 4. 自我激勵充電站 -->
+                    <div class="pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 flex items-center"><i data-lucide="thumbs-up" class="mr-2 w-5 h-5"></i> 4. 自我激勵：內在動機強化</h3>
+                        <p class="mt-2 text-gray-700">**教育意義：** 建立**內在動機 (Intrinsic Motivation)**。透過反思與視覺化，幫助孩子認識到達成目標最大的益處是 **自我成長**，而非單純的外部獎勵。</p>
+                        <p class="mt-2 text-purple-700 font-semibold">**實施指南：**</p>
+                        <ul class="list-disc list-inside text-gray-600 pl-4">
+                            <li>多談「影響」與「願景」：詢問孩子「**達成目標的你，感覺如何？**」強化自我效能感。</li>
+                            <li>鼓勵製作「打氣卡」：正向的 **自我對話** 是孩子面對挑戰時最重要的心理工具。鼓勵他們將卡片內容寫在實體便利貼上。</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 記憶體內資料儲存 (In-Memory Storage) ---
+        // 資料將儲存在這些陣列中，直到網頁被重新載入或關閉。
+        let feelings = [];
+        let strategies = [];
+        let goals = [];
+        let motivations = [];
+
+        // 載入並渲染所有資料 (使用記憶體中的陣列)
+        function loadAndRenderAllData() {
+            renderFeelingRecords(feelings);
+            renderStrategyRecords(strategies);
+            renderSuccessLibrary(strategies);
+            renderGoals(goals);
+            renderMotivations(motivations);
+        }
+        
+        // --- Data Submission Functions (使用記憶體內陣列) ---
+
+        // 提交情緒溫度計紀錄
+        window.submitFeelingRecord = () => {
+            
+            const temperature = parseInt(document.getElementById('temp-slider').value);
+            const location = document.getElementById('record-location').value.trim();
+            const event = document.getElementById('record-event').value.trim();
+            const action = document.getElementById('record-action').value.trim();
+
+            if (!location || !event || !action) {
+                showModal('錯誤', '請填寫所有紀錄欄位！', 'error');
+                return;
+            }
+            
+            const newRecord = {
+                id: Date.now(), // 使用時間戳作為唯一 ID
+                location,
+                event,
+                temperature,
+                action,
+                timestamp: Date.now()
+            };
+
+            // 直接推入記憶體陣列
+            feelings.unshift(newRecord); 
+            
+            showModal('成功', '情緒紀錄已儲存！你很棒！', 'success');
+            // 清空表格
+            document.getElementById('record-location').value = '';
+            document.getElementById('record-event').value = '';
+            document.getElementById('record-action').value = '';
+            document.getElementById('temp-slider').value = '3';
+            updateTempDisplay(3);
+
+            loadAndRenderAllData();
+        };
+
+        // 提交情緒計畫表紀錄
+        window.submitStrategyRecord = () => {
+            const activity = document.getElementById('strategy-activity').value.trim();
+            const emotion = document.getElementById('strategy-emotion').value.trim();
+            const strategy = document.getElementById('strategy-strategy').value.trim();
+            const rating = parseInt(document.querySelector('input[name="rating"]:checked')?.value);
+
+            if (!activity || !emotion || !strategy || !rating) {
+                showModal('錯誤', '請填寫活動、情緒、策略，並給予星星評分！', 'error');
+                return;
+            }
+
+            const newRecord = {
+                id: Date.now(),
+                activity,
+                emotion,
+                strategy,
+                rating,
+                timestamp: Date.now()
+            };
+
+            // 直接推入記憶體陣列
+            strategies.unshift(newRecord); 
+
+            showModal('成功', '策略追蹤已儲存！', 'success');
+            // 清空表格
+            document.getElementById('strategy-activity').value = '';
+            document.getElementById('strategy-emotion').value = '';
+            document.getElementById('strategy-strategy').value = '';
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.checked = false;
+            });
+            // 重設星星顏色
+            document.querySelectorAll('.rating-star').forEach(span => {
+                span.style.color = '#9ca3af'; 
+                span.style.fontWeight = 'normal';
+            });
+
+            loadAndRenderAllData();
+        };
+        
+        // 提交目標設定
+        window.submitGoal = () => {
+            const finalGoal = document.getElementById('goal-final').value.trim();
+            const step1 = document.getElementById('goal-step1').value.trim();
+            const check = document.getElementById('goal-check').value.trim();
+            
+            if (!finalGoal || !step1 || !check) {
+                showModal('錯誤', '請填寫目標設定的三個問題！', 'error');
+                return;
+            }
+
+            const newGoal = {
+                id: Date.now(),
+                goal: finalGoal,
+                steps: [step1], 
+                check: check,
+                isCompleted: false,
+                timestamp: Date.now()
+            };
+            
+            // 直接推入記憶體陣列
+            goals.unshift(newGoal);
+
+            showModal('成功', '目標已設定！開始行動吧！', 'success');
+            document.getElementById('goal-final').value = '';
+            document.getElementById('goal-step1').value = '';
+            document.getElementById('goal-check').value = '';
+
+            loadAndRenderAllData();
+        }
+        
+        // 提交動機與反思紀錄
+        window.submitMotivation = () => {
+            const impact = document.getElementById('motivation-impact').value.trim();
+            const vision = document.getElementById('motivation-vision').value.trim();
+            const want = document.getElementById('motivation-want').value.trim();
+            
+            if (!impact || !vision || !want) {
+                showModal('錯誤', '請填寫所有動力問答欄位！', 'error');
+                return;
+            }
+
+            const newRecord = {
+                id: Date.now(),
+                impact,
+                vision,
+                want,
+                timestamp: Date.now()
+            };
+
+            // 直接推入記憶體陣列
+            motivations.unshift(newRecord);
+
+            showModal('成功', '內在動機已儲存！你充滿能量！', 'success');
+            // 清空表格
+            document.getElementById('motivation-impact').value = '';
+            document.getElementById('motivation-vision').value = '';
+            document.getElementById('motivation-want').value = '';
+
+            loadAndRenderAllData();
+        };
+
+
+        // --- UI Rendering Functions ---
+
+        // 渲染情緒追蹤紀錄列表
+        const renderFeelingRecords = (records) => {
+            const container = document.getElementById('feeling-records-list');
+            container.innerHTML = '';
+            
+            if (records.length === 0) {
+                 container.innerHTML = '<p class="text-gray-500 text-center">暫無紀錄。</p>';
+                 return;
+            }
+
+            // 這裡使用傳入的記憶體內 records 陣列
+            records.slice(0, 5).forEach(record => { // 只顯示最新的 5 筆
+                const date = new Date(record.timestamp).toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-white rounded-lg shadow border-l-4 ' + getTempColor(record.temperature).border;
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg">${record.temperature} 度 - ${record.location}</span>
+                        <span class="text-sm text-gray-500">${date}</span>
+                    </div>
+                    <p class="text-gray-700 mt-1">事件: ${record.event}</p>
+                    <p class="text-gray-700">我的行動: ${record.action}</p>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        // 渲染策略追蹤紀錄列表
+        const renderStrategyRecords = (records) => {
+            const container = document.getElementById('strategy-records-list');
+            container.innerHTML = '';
+            
+            if (records.length === 0) {
+                 container.innerHTML = '<p class="text-gray-500 text-center">暫無紀錄。</p>';
+                 return;
+            }
+            
+            // 這裡使用傳入的記憶體內 records 陣列
+            records.slice(0, 5).forEach(record => { // 只顯示最新的 5 筆
+                const date = new Date(record.timestamp).toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
+                const stars = '⭐'.repeat(record.rating);
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-white rounded-lg shadow border-l-4 border-green-400';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg">${record.activity} (${record.emotion})</span>
+                        <span class="text-sm text-gray-500">${date}</span>
+                    </div>
+                    <p class="text-gray-700 mt-1">策略: ${record.strategy}</p>
+                    <p class="text-yellow-500 text-xl mt-1">${stars}</p>
+                `;
+                container.appendChild(item);
+            });
+        };
+        
+        // 渲染「我的有效招數」資料庫
+        const renderSuccessLibrary = (allRecords) => {
+            const container = document.getElementById('success-library');
+            container.innerHTML = '';
+            
+            const successStrategies = allRecords.filter(r => r.rating >= 4);
+            const strategyCounts = successStrategies.reduce((acc, curr) => {
+                const key = curr.strategy;
+                acc[key] = (acc[key] || 0) + 1;
+                return acc;
+            }, {});
+            
+            const sortedStrategies = Object.entries(strategyCounts)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 3); // 只顯示前三名
+
+            if (sortedStrategies.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">還沒有超級招數喔！趕快多試試幾種策略吧！</p>';
+                return;
+            }
+
+            sortedStrategies.forEach(([strategy, count]) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center p-2 bg-yellow-100 rounded-full shadow-md';
+                item.innerHTML = `
+                    <span class="text-2xl mr-2">🌟</span>
+                    <span class="font-semibold text-gray-800">${strategy}</span>
+                    <span class="ml-auto text-sm bg-yellow-500 text-white rounded-full px-2 py-0.5">${count} 次成功</span>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        // 渲染目標設定
+        const renderGoals = (records) => {
+             const container = document.getElementById('goal-list');
+             container.innerHTML = '';
+             
+             if (records.length === 0) {
+                 container.innerHTML = '<p class="text-gray-500 text-center">暫無紀錄。</p>';
+                 return;
+            }
+
+            // 這裡使用傳入的記憶體內 records 陣列
+             records.slice(0, 3).forEach(record => { // 只顯示最新的 3 個目標
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-indigo-100 rounded-lg shadow border-l-4 border-indigo-500';
+                item.innerHTML = `
+                    <h4 class="font-bold text-indigo-700">🎯 目標: ${record.goal}</h4>
+                    <p class="text-sm text-indigo-600">💪 第一步: ${record.steps[0]}</p>
+                    <p class="text-sm text-indigo-600">✅ 檢核點: ${record.check}</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // 渲染動機紀錄
+        const renderMotivations = (records) => {
+             const container = document.getElementById('motivation-latest');
+             if (records.length === 0) {
+                 container.innerHTML = '<p class="text-gray-500">尚無紀錄。</p>';
+                 return;
+             }
+             
+             // 這裡使用傳入的記憶體內 records 陣列
+             const latest = records[0];
+             const date = new Date(latest.timestamp).toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+             container.innerHTML = `
+                 <p class="font-bold text-xs mb-1">紀錄於 ${date}</p>
+                 <p class="mt-1">✅ 影響: ${latest.impact}</p>
+                 <p>🎨 願景: ${latest.vision}</p>
+                 <p>🔥 驅力: ${latest.want}</p>
+             `;
+        }
+
+
+        // --- Utility Functions ---
+        
+        // 獲取溫度對應的顏色
+        const getTempColor = (temp) => {
+            switch (temp) {
+                case 1: return { color: 'bg-blue-300', text: 'text-blue-800', border: 'border-blue-500', name: '冷靜/放鬆' };
+                case 2: return { color: 'bg-green-300', text: 'text-green-800', border: 'border-green-500', name: '平靜/專心' };
+                case 3: return { color: 'bg-yellow-300', text: 'text-yellow-800', border: 'border-yellow-500', name: '有點煩躁' };
+                case 4: return { color: 'bg-orange-300', text: 'text-orange-800', border: 'border-orange-500', name: '生氣/焦慮' };
+                case 5: return { color: 'bg-red-500', text: 'text-white', border: 'border-red-700', name: '大爆發/失控' };
+                default: return { color: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-500', name: '未定' };
+            }
+        };
+
+        // 更新溫度計顯示
+        window.updateTempDisplay = (value) => {
+            const temp = parseInt(value);
+            const display = document.getElementById('temp-value-display');
+            const thermometer = document.getElementById('feeling-thermometer-fill');
+            const { color, text, name } = getTempColor(temp);
+
+            display.textContent = `${temp} 度：${name}`;
+            display.className = `p-2 rounded-lg text-center font-extrabold transition-colors duration-300 ${color} ${text} shadow-md`;
+            
+            // 更新溫度計填充高度 (0% for 1, 100% for 5)
+            const heightPercent = ((temp - 1) / 4) * 100;
+            thermometer.style.height = `${heightPercent}%`;
+            thermometer.className = `absolute bottom-0 left-0 w-full rounded-b-xl transition-all duration-500 ${color}`;
+        };
+        
+        // 模態框 (Modal) 顯示
+        window.showModal = (title, message, type) => {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            
+            const header = document.getElementById('modal-header');
+            header.className = 'p-4 rounded-t-lg ' + (type === 'success' ? 'bg-green-500' : 'bg-red-500');
+            
+            modal.classList.remove('hidden');
+            // 使用 setTimeout 確保 opacity 轉換生效
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 10);
+        };
+        
+        window.closeModal = () => {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.remove('opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        // 生成打氣卡
+        window.generateCheerCard = () => {
+            const cheerText = document.getElementById('cheer-text-input').value.trim();
+            const cardContainer = document.getElementById('cheer-card-output');
+            
+            if (!cheerText) {
+                showModal('提示', '請輸入你想對自己說的打氣話！', 'error');
+                return;
+            }
+
+            cardContainer.innerHTML = `
+                <div id="card-to-download" class="w-full max-w-sm mx-auto p-6 bg-yellow-300 rounded-2xl shadow-xl border-4 border-yellow-500 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-10">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="45" stroke="#fff" stroke-width="2" stroke-dasharray="10 5"/>
+                            <path d="M50 5 L65 30 L50 20 L35 30 Z" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <p class="text-5xl mb-4 animate-bounce">🚀</p>
+                    <p class="font-extrabold text-2xl text-indigo-800 leading-snug break-words">${cheerText}</p>
+                    <p class="text-sm mt-3 text-indigo-600">來自你的超級動力！</p>
+                </div>
+            `;
+            
+            // 提示成功生成
+            showModal('成功', '打氣卡已製作完成！', 'success');
+        };
+        
+        // Tab 切換邏輯
+        function switchTab(tabIndex) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            contents.forEach((content, index) => {
+                const isSelected = (index + 1) === tabIndex;
+                content.classList.toggle('hidden', !isSelected);
+                buttons[index].classList.toggle('bg-indigo-500', isSelected);
+                buttons[index].classList.toggle('text-white', isSelected);
+                buttons[index].classList.toggle('bg-gray-200', !isSelected);
+                buttons[index].classList.toggle('text-gray-700', !isSelected);
+            });
+            
+            // 重新渲染 Lucide 圖標
+            lucide.createIcons();
+        }
+
+        // 頁面加載完成後初始化
+        window.onload = () => {
+            updateTempDisplay(3); // 初始化溫度計顯示
+            document.getElementById('temp-slider').addEventListener('input', (e) => updateTempDisplay(e.target.value));
+            
+            loadAndRenderAllData(); // 載入所有記憶體內資料
+            switchTab(1); // 初始化顯示第一個 Tab
+            
+            // 監聽星星點擊事件
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const selectedRating = parseInt(e.target.value);
+                    document.querySelectorAll('.rating-star').forEach(span => {
+                        const starRating = parseInt(span.getAttribute('data-rating'));
+                        span.style.color = starRating <= selectedRating ? '#facc15' : '#9ca3af';
+                        span.style.fontWeight = starRating <= selectedRating ? 'bold' : 'normal';
+                    });
+                });
+            });
+            
+            // 初始化星星顏色
+            document.querySelectorAll('.rating-star').forEach(span => {
+                 span.style.color = '#9ca3af'; 
+            });
+        };
+        
+    </script>
+</body>
+</html>

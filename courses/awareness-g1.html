@@ -1,0 +1,421 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一年級社會情緒自我覺察學習</title>
+    <!-- Load Tailwind CSS CDN for modern styling and responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font setup for Chinese Traditional and aesthetics */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8; /* Light blue background for calmness */
+        }
+        /* Enhanced custom card shadow */
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Initially hide all descriptive elements */
+        #extension-prompt, 
+        #body-awareness-happy, #body-awareness-sad, #body-awareness-angry, 
+        #body-awareness-calm, #body-awareness-scared, #body-awareness-excited {
+            display: none;
+        }
+        /* Customizing button hover effects for better feedback */
+        .emotion-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        /* New custom style for the breathing guide circle */
+        #breathing-circle {
+            transition: transform 4s ease-in-out; /* Match the 4-second breathing cycle */
+        }
+    </style>
+    <script>
+        // Tailwind config for font loading
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                },
+                // Added for smooth transition in breathing guide
+                transitionDuration: {
+                    '4000': '4000ms', 
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl card-shadow p-6 sm:p-10">
+
+        <!-- Header Area (TITLE UPDATED) -->
+        <header class="text-center mb-10 border-b-2 pb-4 border-indigo-200">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-indigo-700 tracking-tight">
+                一年級社會情緒自我覺察學習
+            </h1>
+            <p class="mt-2 text-lg text-gray-600">
+                （具體、視覺化、六種基礎情緒詞彙擴充版）
+            </p>
+        </header>
+
+        <!-- Strategy 1: Emotional Color Check-ins -->
+        <section class="mb-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3 text-yellow-600 text-4xl">🟡</span> 策略一：情緒顏色報到 (Color Check-ins)
+            </h2>
+            <p class="text-gray-700 mb-6 border-l-4 border-yellow-300 pl-3 italic">
+                目標：訓練學生將抽象情緒與具體顏色連結。請學生點擊代表**當前心情**的顏色卡片。
+            </p>
+
+            <!-- Color Cards Grid (6 emotions) -->
+            <div id="color-check-in" class="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4">
+
+                <!-- 快樂 (Happy - Yellow) -->
+                <button onclick="selectEmotion('yellow', '快樂', '😊')" 
+                        class="emotion-btn bg-yellow-400 text-gray-800 p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">😊</span>
+                    <span class="text-sm sm:text-base font-bold">快樂</span>
+                </button>
+
+                <!-- 傷心 (Sad - Blue) -->
+                <button onclick="selectEmotion('blue', '傷心', '😢')" 
+                        class="emotion-btn bg-blue-500 text-white p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">😢</span>
+                    <span class="text-sm sm:text-base font-bold">傷心</span>
+                </button>
+
+                <!-- 生氣 (Angry - Red) -->
+                <button onclick="selectEmotion('red', '生氣', '😡')" 
+                        class="emotion-btn bg-red-500 text-white p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">😡</span>
+                    <span class="text-sm sm:text-base font-bold">生氣</span>
+                </button>
+                
+                <!-- 平靜 (Calm - Green) -->
+                <button onclick="selectEmotion('green', '平靜', '😌')" 
+                        class="emotion-btn bg-green-500 text-white p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">😌</span>
+                    <span class="text-sm sm:text-base font-bold">平靜</span>
+                </button>
+
+                <!-- 害怕/擔心 (Scared - Purple) -->
+                <button onclick="selectEmotion('purple', '害怕/擔心', '😨')" 
+                        class="emotion-btn bg-purple-500 text-white p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">😨</span>
+                    <span class="text-sm sm:text-base font-bold">害怕/擔心</span>
+                </button>
+
+                <!-- 興奮/期待 (Excited - Orange) -->
+                <button onclick="selectEmotion('orange', '興奮/期待', '🤩')" 
+                        class="emotion-btn bg-orange-500 text-white p-3 sm:p-5 rounded-xl transition duration-300 shadow-md">
+                    <span class="text-3xl sm:text-4xl block mb-1">🤩</span>
+                    <span class="text-sm sm:text-base font-bold">興奮/期待</span>
+                </button>
+            </div>
+
+            <!-- Check-in Result and Extension Prompt Area -->
+            <div id="check-in-result" class="mt-8 p-4 sm:p-6 bg-gray-50 rounded-lg border-l-4 border-gray-300 hidden">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">✅ 今天的報到結果：</h3>
+                <p class="text-2xl font-extrabold mb-4">
+                    <span id="selected-emotion" class="text-indigo-600"></span>
+                </p>
+
+                <!-- Extension Prompt (Teacher's Guide) -->
+                <div id="extension-prompt" class="p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-md">
+                    <p class="font-bold text-yellow-800">💡 延伸提問（感受與情境連結）：</p>
+                    <p class="text-yellow-700 mt-1">
+                        「你選了 **<span id="prompt-emotion" class="font-bold"></span>**，是因為**發生了什麼事**？」<br>
+                        （老師可鼓勵學生簡單分享，將**情緒**與**事件**連結）
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategy 2: Introduction to Body Awareness -->
+        <section class="mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3 text-green-600 text-4xl">🟢</span> 策略二：身體覺察啟蒙 (Body Awareness)
+            </h2>
+            <p class="text-gray-700 mb-6 border-l-4 border-green-300 pl-3 italic">
+                目標：幫助學生理解**情緒**與**身體反應**的具體連結。點擊情緒，查看身體的感覺。
+            </p>
+
+            <!-- Body Awareness Button Grid (6 emotions) -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                
+                <button onclick="toggleBodyAwareness('happy')" class="p-4 bg-yellow-100 hover:bg-yellow-200 rounded-xl transition duration-200 active:scale-[0.98] text-yellow-800 font-semibold">
+                    快樂 (Happy)
+                </button>
+                <button onclick="toggleBodyAwareness('sad')" class="p-4 bg-blue-100 hover:bg-blue-200 rounded-xl transition duration-200 active:scale-[0.98] text-blue-800 font-semibold">
+                    傷心 (Sad)
+                </button>
+                <button onclick="toggleBodyAwareness('angry')" class="p-4 bg-red-100 hover:bg-red-200 rounded-xl transition duration-200 active:scale-[0.98] text-red-800 font-semibold">
+                    生氣 (Angry)
+                </button>
+                <button onclick="toggleBodyAwareness('calm')" class="p-4 bg-green-100 hover:bg-green-200 rounded-xl transition duration-200 active:scale-[0.98] text-green-800 font-semibold">
+                    平靜 (Calm)
+                </button>
+                <button onclick="toggleBodyAwareness('scared')" class="p-4 bg-purple-100 hover:bg-purple-200 rounded-xl transition duration-200 active:scale-[0.98] text-purple-800 font-semibold">
+                    害怕/擔心 (Scared)
+                </button>
+                <button onclick="toggleBodyAwareness('excited')" class="p-4 bg-orange-100 hover:bg-orange-200 rounded-xl transition duration-200 active:scale-[0.98] text-orange-800 font-semibold">
+                    興奮/期待 (Excited)
+                </button>
+            </div>
+
+            <!-- Body Reaction Description Cards -->
+            <div id="awareness-descriptions" class="mt-6 space-y-3">
+                
+                <div id="body-awareness-happy" class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-md text-yellow-800">
+                    <p class="font-bold text-lg mb-1">😊 快樂時的身體：</p>
+                    <p>臉部肌肉會**放鬆**，嘴角會上揚，身體感覺**暖暖的、輕盈的**，好像隨時可以跳起來！</p>
+                </div>
+
+                <div id="body-awareness-sad" class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-md text-blue-800">
+                    <p class="font-bold text-lg mb-1">😢 傷心時的身體：</p>
+                    <p>眼睛可能濕濕的，**肩膀會往下垂**，**胸口感覺悶悶的**或有點重，想找人抱抱。</p>
+                </div>
+
+                <div id="body-awareness-angry" class="p-4 bg-red-50 border-l-4 border-red-500 rounded-md text-red-800">
+                    <p class="font-bold text-lg mb-1">😡 生氣時的身體：</p>
+                    <p>**拳頭會緊握**，臉頰和耳朵可能**發熱**，心臟跳得很快，全身感覺緊繃和想動。</p>
+                </div>
+
+                <div id="body-awareness-calm" class="p-4 bg-green-50 border-l-4 border-green-500 rounded-md text-green-800">
+                    <p class="font-bold text-lg mb-1">😌 平靜時的身體：</p>
+                    <p>全身**軟軟的、放鬆的**，像棉花糖一樣輕，呼吸慢且深，感覺很**舒服**、很安全。</p>
+                </div>
+
+                <div id="body-awareness-scared" class="p-4 bg-purple-50 border-l-4 border-purple-500 rounded-md text-purple-800">
+                    <p class="font-bold text-lg mb-1">😨 害怕/擔心時的身體：</p>
+                    <p>身體會**縮成一團**或變得**僵硬**，肚子緊緊的像有石頭，手心可能流汗，很想逃跑。</p>
+                </div>
+
+                <div id="body-awareness-excited" class="p-4 bg-orange-50 border-l-4 border-orange-500 rounded-md text-orange-800">
+                    <p class="font-bold text-lg mb-1">🤩 興奮/期待時的身體：</p>
+                    <p>像**充滿電的電池**，身體會抖動或想跳舞，心臟跳得超快，說話的聲音會變大！</p>
+                </div>
+
+            </div>
+            
+            <!-- Emotional Game Guide -->
+            <div class="mt-8 p-6 bg-indigo-100 border-4 border-indigo-400 border-dashed rounded-xl">
+                <h3 class="text-xl font-bold text-indigo-800 mb-3">🎲 情緒遊戲：肢體扮演活動</h3>
+                <p class="text-indigo-700">
+                    **教學引導：**<br>
+                    1. 老師說出情緒詞彙（例如：**害怕**）。<br>
+                    2. 學生用身體表達：「如果你現在很害怕，你的身體會是什麼樣子？」<br>
+                    3. 老師引導學生觀察並描述彼此身體的狀態，加深對**情緒**與**身體反應**的認識。
+                </p>
+            </div>
+
+        </section>
+
+        <!-- Strategy 3 (Now Strategy 4 content): Calming Breath Guide (New Feature) -->
+        <section class="mt-12 pt-8 border-t-4 border-red-400">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3 text-red-600 text-4xl">🧘</span> 策略三：平靜呼吸引導 (Calming Breath)
+            </h2>
+            <p class="text-gray-700 mb-6 border-l-4 border-red-300 pl-3 italic">
+                目標：當覺察到身體緊繃或不舒服時，利用視覺引導進行**4秒吸氣、4秒吐氣**的冷靜練習。
+            </p>
+
+            <div class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-lg border border-red-200">
+                <div class="mb-4 text-center">
+                    <p id="breathing-status" class="text-2xl font-extrabold text-gray-700 min-h-[3rem] flex items-center justify-center">
+                        點擊開始練習
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        (請跟隨圓圈大小變化，用鼻子吸氣，用嘴巴慢慢吐氣)
+                    </p>
+                </div>
+                
+                <!-- Breathing Circle Area -->
+                <div class="w-40 h-40 flex items-center justify-center my-6">
+                    <div id="breathing-circle" class="w-full h-full bg-red-400 rounded-full shadow-xl transform scale-100 transition-transform duration-4000 ease-in-out opacity-75">
+                        <!-- Inner div for slight visual depth, keep it empty -->
+                    </div>
+                </div>
+
+                <button onclick="startBreathingGuide()" id="start-btn" 
+                        class="px-8 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition duration-300 active:scale-[0.95] shadow-md disabled:bg-gray-400">
+                    開始深呼吸練習
+                </button>
+            </div>
+        </section>
+        
+        <!-- Separator before the last strategy -->
+        <hr class="mt-12 border-t-4 border-gray-300"> 
+
+        <!-- Strategy 4 (Now Strategy 3 content): Unfinished Story (Sharing Habit) -->
+        <section class="pt-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="mr-3 text-indigo-600 text-4xl">📚</span> 策略四：未說完的故事 (習慣表達)
+            </h2>
+            <p class="text-gray-700 mb-6 border-l-4 border-indigo-300 pl-3 italic">
+                目標：鼓勵學生分享當天發生的事情和感受，透過例句建立表達習慣，將感受和情境連結起來。
+            </p>
+
+            <!-- Student Learning Examples (例句) -->
+            <div class="bg-indigo-50 p-6 rounded-xl shadow-inner mb-8">
+                <h3 class="text-xl font-bold text-indigo-700 mb-3">💬 學習的例句 (學生表達引導)</h3>
+                <ul class="list-disc pl-5 space-y-2 text-indigo-800">
+                    <li>「今天，我覺得**[情緒詞，例如：傷心/開心]**，因為**[發生的事]**。」</li>
+                    <li>「我想說一個關於**[人/事]**的故事。」</li>
+                    <li>「那時候我的身體感覺**[身體反應詞，例如：熱熱的/緊緊的/輕輕的]**。」</li>
+                    <li>「如果再來一次，我會試著**[嘗試的新方法]**。」</li>
+                </ul>
+            </div>
+
+            <!-- Teacher Guide and Tips (教學指引和重點提示) -->
+            <div class="bg-red-50 p-6 rounded-xl border-2 border-red-300">
+                <h3 class="text-xl font-bold text-red-700 mb-3">📢 教學指引與重點提示 (給老師的話)</h3>
+                <ul class="list-disc pl-5 space-y-2 text-red-800">
+                    <li class="font-bold">傾聽與專注：</li>
+                    <p class="pl-4 text-sm text-red-600">老師必須**眼神接觸、身體前傾**，讓學生感覺被完全接納，**不插嘴、不打斷**，將時間完全留給說故事的人。</p>
+                    <li class="font-bold">非批判性的回應：</li>
+                    <p class="pl-4 text-sm text-red-600">使用**開放式回應**，例如：「我聽到了，你感覺很**[情緒]**。」或「謝謝你勇敢分享這個故事。」避免急著給予評價或解決方案。</p>
+                    <li class="font-bold">情緒常態化：</li>
+                    <p class="pl-4 text-sm text-red-600">明確表達所有情緒（包括生氣、害怕）都是**正常且可以被討論**的。重點在於**覺察**，而非**好壞**。</p>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Global variable for breathing guide interval
+        let breathingInterval = null;
+        let isBreathing = false;
+
+        /**
+         * Strategy 1: Handles click event for Emotional Color Check-ins.
+         */
+        function selectEmotion(color, emotion, emoji) {
+            const resultBox = document.getElementById('check-in-result');
+            const selectedEmotion = document.getElementById('selected-emotion');
+            const promptEmotion = document.getElementById('prompt-emotion');
+            const extensionPrompt = document.getElementById('extension-prompt');
+            
+            // 1. Update selected emotion text and color
+            selectedEmotion.innerHTML = `${emoji} ${emotion}！`;
+            selectedEmotion.className = `text-${color}-600`;
+            
+            // 2. Show check-in result box and adjust its border color
+            // Ensure classes are correctly applied for responsiveness and style
+            resultBox.classList.remove('hidden');
+            // Remove previous border-* classes before applying the new one
+            resultBox.className = resultBox.className.replace(/border-([a-z]+)-400/g, 'border-gray-300');
+            resultBox.classList.add(`border-l-4`, `border-${color}-400`);
+            
+            // 3. Update the extension prompt text
+            promptEmotion.textContent = emotion;
+            
+            // 4. Ensure extension prompt is visible
+            extensionPrompt.style.display = 'block';
+
+            // Scroll to the result area for immediate feedback
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        /**
+         * Strategy 2: Toggles the display of the Body Awareness description cards.
+         */
+        function toggleBodyAwareness(emotionType) {
+            const allTypes = ['happy', 'sad', 'angry', 'calm', 'scared', 'excited'];
+            
+            allTypes.forEach(id => {
+                const element = document.getElementById(`body-awareness-${id}`);
+                if (element) {
+                    if (id === emotionType) {
+                        // Toggle the clicked element's visibility
+                        element.style.display = element.style.display === 'block' ? 'none' : 'block';
+                    } else {
+                        // Hide all other elements
+                        element.style.display = 'none';
+                    }
+                }
+            });
+
+            // Scroll to the descriptions area
+            const awarenessDiv = document.getElementById('awareness-descriptions');
+            if (awarenessDiv) {
+                 awarenessDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        /**
+         * Strategy 3 (New Position): Calming Breath Guide logic
+         */
+        function startBreathingGuide() {
+            const circle = document.getElementById('breathing-circle');
+            const statusText = document.getElementById('breathing-status');
+            const startBtn = document.getElementById('start-btn');
+
+            if (isBreathing) {
+                // Stop the guide
+                clearInterval(breathingInterval);
+                breathingInterval = null;
+                isBreathing = false;
+                startBtn.textContent = '繼續深呼吸練習';
+                startBtn.classList.remove('bg-red-800');
+                startBtn.classList.add('bg-red-600');
+                circle.style.transform = 'scale(1)';
+                statusText.textContent = '練習已暫停';
+                return;
+            }
+
+            // Start the guide
+            isBreathing = true;
+            startBtn.textContent = '點擊暫停練習';
+            startBtn.classList.remove('bg-red-600');
+            startBtn.classList.add('bg-red-800');
+            statusText.textContent = '💡 預備...';
+
+            let phase = 'inhale'; // 'inhale' or 'exhale'
+
+            // Initial delay before starting the first phase
+            setTimeout(() => {
+                
+                // Set the initial state
+                if (phase === 'inhale') {
+                    statusText.textContent = '深吸氣 (4秒)... 👃';
+                    circle.style.transform = 'scale(1.5)'; // Scale up (Inhale)
+                }
+
+                // Start the loop every 4 seconds
+                breathingInterval = setInterval(() => {
+                    if (phase === 'inhale') {
+                        // Switch to Exhale
+                        phase = 'exhale';
+                        statusText.textContent = '慢吐氣 (4秒)... 😮‍💨';
+                        circle.style.transform = 'scale(1)'; // Scale down (Exhale)
+                    } else {
+                        // Switch back to Inhale
+                        phase = 'inhale';
+                        statusText.textContent = '深吸氣 (4秒)... 👃';
+                        circle.style.transform = 'scale(1.5)'; // Scale up (Inhale)
+                    }
+                }, 4000); // Cycle duration is 4 seconds
+            }, 1000); // Short delay before the first inhale starts
+        }
+
+
+        // Initialize: Hide the check-in result block on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultBox = document.getElementById('check-in-result');
+            if (resultBox) {
+                resultBox.classList.add('hidden');
+            }
+        });
+    </script>
+
+</body>
+</html>

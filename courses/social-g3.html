@@ -1,0 +1,588 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小小觀察家：社會覺察探險隊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.2), 0 6px 10px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-primary { background-color: #ff69b4; }
+        .color-accent { background-color: #32cd32; }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-emoji-pop { animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+
+        .btn-game { transition: all 0.2s ease-in-out; cursor: pointer; }
+        .btn-game:active { transform: scale(0.98); }
+        .btn-primary-sel { background-color: #ff69b4; color: white; }
+        .btn-primary-sel:hover { background-color: #ff1493; }
+
+        .view-content { display: none; }
+        
+        .reason-option {
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .reason-option.active {
+            border-color: #ff69b4;
+            background-color: #fff1f2;
+            color: #be185d;
+            font-weight: bold;
+        }
+        .reason-option.wrong-flash {
+            animation: shake 0.5s linear;
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .role-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .role-card.selected {
+            border-color: #ff69b4;
+            background-color: #fff1f2;
+            transform: scale(1.05);
+        }
+
+        .action-option {
+            border: 2px solid #cbd5e1;
+            transition: all 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+        .action-option.active {
+            border-color: #32cd32;
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+        .empathy-option {
+            transition: all 0.2s;
+            border-width: 2px;
+        }
+
+        .guide-section {
+            background: linear-gradient(135deg, #fff 0%, #f9fafb 100%);
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <header class="color-primary p-4 shadow-lg sticky top-0 z-10">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-white tracking-wider mb-2 sm:mb-0">
+                ⭐ 小小觀察家：社會覺察探險隊
+            </h1>
+            <nav id="main-nav" class="flex flex-wrap gap-2 text-sm sm:text-base">
+                <button onclick="changeView('home')" class="nav-btn bg-white text-pink-600 px-3 py-1 rounded-full font-semibold hover:bg-pink-100">首頁</button>
+                <button onclick="changeView('module1')" class="nav-btn bg-white text-pink-600 px-3 py-1 rounded-full font-semibold hover:bg-pink-100">區塊一：角色屋</button>
+                <button onclick="changeView('module2')" class="nav-btn bg-white text-pink-600 px-3 py-1 rounded-full font-semibold hover:bg-pink-100">區塊二：同理站</button>
+                <button onclick="changeView('module3')" class="nav-btn bg-white text-pink-600 px-3 py-1 rounded-full font-semibold hover:bg-pink-100">區塊三：回饋場</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 flex-grow">
+
+        <!-- 首頁 -->
+        <section id="home-view" class="view-content">
+            <div class="color-accent p-8 rounded-2xl text-white card-shadow text-center">
+                <h2 class="text-4xl font-bold mb-4">歡迎來到社會覺察探險隊！👋</h2>
+                <p class="text-xl mb-6">三年級的小小觀察家們，準備好探索社會中的各種角色、感受與溝通的秘密了嗎？</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div class="bg-white/20 p-6 rounded-xl">
+                        <span class="text-5xl">🏠</span>
+                        <h3 class="text-xl font-bold mt-2">角色辨識</h3>
+                    </div>
+                    <div class="bg-white/20 p-6 rounded-xl">
+                        <span class="text-5xl">❤️</span>
+                        <h3 class="text-xl font-bold mt-2">換位思考</h3>
+                    </div>
+                    <div class="bg-white/20 p-6 rounded-xl">
+                        <span class="text-5xl">💬</span>
+                        <h3 class="text-xl font-bold mt-2">尊重回饋</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊一：我的百變角色屋 -->
+        <section id="module1-view" class="view-content">
+            <h2 class="text-3xl font-bold text-pink-600 mb-6">🚀 區塊一：我的百變角色屋</h2>
+            <div class="bg-white p-6 rounded-xl card-shadow">
+                <div class="mb-6 p-4 bg-pink-50 rounded-lg border-l-4 border-pink-400">
+                    <p id="m1-scenario-desc" class="text-xl font-bold text-gray-800"></p>
+                </div>
+                
+                <div id="m1-step1">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">第一步：這時候，你的主要角色是什麼？</h3>
+                    <div id="m1-role-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"></div>
+                </div>
+
+                <div id="m1-step2" class="hidden border-t-2 border-dashed border-gray-200 pt-6 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">第二步：身為這個角色，最好的行動是？</h3>
+                    <div id="m1-action-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"></div>
+                </div>
+
+                <div class="mt-6">
+                    <button id="m1-submit-btn" onclick="checkM1Step()" class="btn-game btn-primary-sel px-6 py-3 rounded-full font-bold w-full text-xl shadow-md">確認我的角色</button>
+                </div>
+
+                <div id="m1-result" class="mt-4 p-4 rounded-xl hidden border-2"></div>
+
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+                    <button onclick="changeScenario1(-1)" class="btn-game bg-gray-200 text-gray-700 px-4 py-2 rounded-full font-bold">← 上一個</button>
+                    <div id="m1-page-indicator" class="flex items-center gap-1"></div>
+                    <button onclick="changeScenario1(1)" class="btn-game btn-primary-sel px-4 py-2 rounded-full font-bold shadow">下一個 →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊二：換位思考體驗站 -->
+        <section id="module2-view" class="view-content">
+            <h2 class="text-3xl font-bold text-pink-600 mb-6">🎭 區塊二：換位思考體驗站</h2>
+            <div class="bg-white p-6 rounded-xl card-shadow">
+                <div class="bg-yellow-50 p-6 rounded-xl border-l-4 border-yellow-400 mb-6">
+                    <h3 id="m2-scenario-title" class="text-xl font-bold mb-2"></h3>
+                    <p id="m2-scenario-desc" class="text-gray-600 text-lg mb-4"></p>
+                    <p id="m2-question-text" class="text-pink-600 font-bold text-xl italic"></p>
+                </div>
+                <div id="m2-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+                <div id="m2-result" class="mt-4 p-4 rounded-xl hidden border-2"></div>
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+                    <button onclick="changeScenario2(-1)" class="btn-game bg-gray-200 text-gray-700 px-4 py-2 rounded-full font-bold">← 上一個</button>
+                    <div id="m2-page-indicator" class="flex items-center gap-1"></div>
+                    <button onclick="changeScenario2(1)" class="btn-game btn-primary-sel px-4 py-2 rounded-full font-bold shadow">下一個 →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊三：尊重的回饋練習場 -->
+        <section id="module3-view" class="view-content">
+            <h2 class="text-3xl font-bold text-pink-600 mb-6">🗣️ 區塊三：尊重的回饋練習場</h2>
+            <div class="bg-white p-6 rounded-xl card-shadow">
+                <div class="bg-blue-50 p-4 rounded-t-xl border-l-4 border-blue-500 mb-0">
+                    <h3 class="text-lg font-bold text-blue-700">👩‍🏫 老師在課堂上問：</h3>
+                    <p id="m3-context" class="mt-1 text-gray-700 italic"></p>
+                </div>
+                <div class="bg-pink-50 p-6 rounded-b-xl border-l-4 border-pink-500 mb-6 shadow-inner relative">
+                    <div class="flex items-start gap-4">
+                        <div id="m3-avatar" class="text-4xl bg-white p-2 rounded-full shadow-sm"></div>
+                        <div class="flex-grow">
+                            <span class="inline-block bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded mb-2 font-bold">同學發言中...</span>
+                            <p class="text-gray-800 text-lg font-medium">
+                                <span id="m3-speaker-name" class="font-bold text-pink-600"></span> 說：
+                                「<span id="m3-viewpoint"></span>」
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-3">✍️ 仔細思考，你會選哪一個回應？</h4>
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-6">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <select id="m3-select-agree" class="p-3 border-2 border-pink-100 rounded-xl bg-white focus:border-pink-500 outline-none font-bold text-pink-700 text-lg shadow-sm">
+                            <option value="agree">我同意</option>
+                            <option value="disagree">我不同意</option>
+                        </select>
+                        <span id="m3-target-name" class="font-bold text-pink-600 text-xl underline decoration-pink-300"></span>
+                        <span class="text-gray-600 text-lg font-medium">的觀點，因為...</span>
+                    </div>
+                    <div id="m3-reason-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                    <button id="m3-submit-btn" onclick="checkModule3Feedback()" class="btn-game btn-primary-sel px-6 py-4 rounded-full font-bold w-full shadow-md text-xl">提交我的回饋</button>
+                </div>
+                <div id="m3-feedback-result" class="mt-6 p-4 rounded-xl hidden border-2">
+                    <h5 class="font-bold text-lg mb-2" id="m3-feedback-title"></h5>
+                    <p id="m3-feedback-text"></p>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="changeScenario3(-1)" class="btn-game bg-gray-200 text-gray-700 px-4 py-2 rounded-full font-bold">← 上一個</button>
+                    <div id="m3-page-indicator" class="flex items-center gap-1"></div>
+                    <button onclick="changeScenario3(1)" class="btn-game btn-primary-sel px-4 py-2 rounded-full font-bold shadow">下一個 →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 給大人的話：Support Zone -->
+        <section id="support-zone" class="mt-12 pt-8 border-t-4 border-gray-200">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">💡</span>
+                <h2 class="text-2xl font-bold text-gray-700">給大人的話：SEL 探險教學指南</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 教育意義卡片 1 -->
+                <div class="guide-section p-6 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-pink-600 flex items-center gap-2 mb-3">
+                        <span>🏠</span> 區塊一：社會角色與責任
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        <b>核心：</b> 培養學生的「社會覺察」與「責任感」。讓孩子理解人在不同情境中（家、學校、公共場域）會轉換角色，並需承擔對應的行動。
+                        <br><br>
+                        <b>引導策略：</b> 當孩子選對後，可以進一步問：「除了收玩具，家裡還有什麼事情是你身為『小家人』可以主動做的？」
+                    </p>
+                </div>
+
+                <!-- 教育意義卡片 2 -->
+                <div class="guide-section p-6 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-yellow-600 flex items-center gap-2 mb-3">
+                        <span>❤️</span> 區塊二：情緒同理心
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        <b>核心：</b> 練習「換位思考」。三年級的孩子正處於減少自我中心、開始理解他人感受的關鍵期。
+                        <br><br>
+                        <b>引導策略：</b> 如果孩子選錯，不要直接否定。問問他：「如果你自己辛苦練習卻跌倒，旁邊有人說『這沒什麼』，你會覺得被安慰，還是覺得更受傷？」
+                    </p>
+                </div>
+
+                <!-- 教育意義卡片 3 -->
+                <div class="guide-section p-6 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-blue-600 flex items-center gap-2 mb-3">
+                        <span>💬</span> 區塊三：負責任的決定
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        <b>核心：</b> 溝通素養。學習在「不同意他人」時，仍能維持「尊重」的態度，並提供有邏輯的支持理由。
+                        <br><br>
+                        <b>引導策略：</b> 鼓勵孩子思考「觀點」與「人」是分開的。我們反對的是想法，而不是攻擊那個人。
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-gray-800 text-white p-6 rounded-2xl">
+                <h3 class="font-bold mb-2">🎓 引導者小叮嚀：建立安全的討論場域</h3>
+                <ul class="text-sm text-gray-300 list-disc list-inside space-y-2">
+                    <li><b>接納所有情緒：</b> SEL 沒有標準答案，情緒是主觀的，首要目標是讓孩子願意「觀察」與「說出」感受。</li>
+                    <li><b>連結真實生活：</b> 網頁中的情境若在日常發生，可以隨時回顧：「這是不是很像那天在公車上的情況？」</li>
+                    <li><b>練習正向肯定：</b> 當孩子展現出體貼或尊重的發言時，具體稱讚他的觀察力。</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-8">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
+            小小觀察家社會覺察探險隊 - 教育互動版
+        </div>
+    </footer>
+
+    <script>
+        function changeView(id) {
+            document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
+            const target = document.getElementById(id + '-view');
+            if(target) target.style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        // --- 區塊一資料 ---
+        let m1Idx = 0;
+        let m1CurrentStep = 1; 
+        let m1SelectedRole = null;
+        let m1SelectedAction = null;
+        const M1_SCENARIOS = [
+            {
+                desc: "場景：在「家裡」，媽媽正在廚房忙著煮晚餐，地板上還有一些剛才玩完、還沒收好的玩具...",
+                roles: [
+                    { name: "小家人", icon: "🧒", correct: true },
+                    { name: "老師", icon: "👩‍🏫", correct: false, msg: "家裡是放鬆的地方，這裡沒有老師喔！" },
+                    { name: "乘客", icon: "🚌", correct: false, msg: "家裡不是公車，你是家裡的一份子。" },
+                    { name: "客人", icon: "🍰", correct: false, msg: "家不是旅館，我們不是來作客的喔！" }
+                ],
+                actions: [
+                    { text: "主動把地板上的玩具收整齊", correct: true, priority: 'best', msg: "太棒了！這是最好的行動。先收好自己玩的玩具，不僅是負責任的表現，也能防止媽媽忙碌中踩到受傷喔！" },
+                    { text: "去廚房幫忙拿碗筷，準備開飯", correct: true, priority: 'good', msg: "很有心！幫忙分擔家務很體貼，不過如果能先收好地板上的玩具，消除潛在的危險會更專業喔！" },
+                    { text: "繼續看電視，等媽媽叫我吃飯", correct: false, msg: "身為小家人，看到家人辛苦、環境凌亂時，我們可以更主動參與。" },
+                    { text: "大聲問媽媽：『我好餓，到底煮好了沒？』", correct: false, msg: "這會讓辛苦的媽媽壓力更大。換個方式表達關心吧！" }
+                ]
+            },
+            {
+                desc: "場景：在「學校」走廊，你看到老師正抱著一大疊作業簿，風一吹，最上面的幾張紙飄落在地上了...",
+                roles: [
+                    { name: "學生", icon: "🎒", correct: true },
+                    { name: "醫生", icon: "👨‍⚕️", correct: false, msg: "這裡沒有病人，老師需要的是幫手喔！" },
+                    { name: "店員", icon: "🏪", correct: false, msg: "學校不是便利商店，老師也不是客人的身份。" },
+                    { name: "乘客", icon: "🚌", correct: false, msg: "這裡不是公車站。" }
+                ],
+                actions: [
+                    { text: "趕快跑過去幫忙撿起掉在地上的紙", correct: true, priority: 'best', msg: "太棒了！這是展現禮貌與協助師長的最好行動。" },
+                    { text: "跟老師說：『老師，您的紙掉了。』", correct: true, priority: 'good', msg: "提醒老師很好，但如果能直接動手幫忙，老師會更輕鬆！" },
+                    { text: "假裝沒看到，趕快跑去操場玩", correct: false, msg: "身為學生，看到老師遇到困難，可以練習主動協助。" },
+                    { text: "站在旁邊看老師會不會自己撿", correct: false, msg: "這時候伸出援手會更溫暖！" }
+                ]
+            },
+            {
+                desc: "場景：在「公車」上，人很多很擠。這時有一位拿著重物的老奶奶上車，她看起來站不太穩...",
+                roles: [
+                    { name: "乘客", icon: "🚌", correct: true },
+                    { name: "小家人", icon: "🧒", correct: false, msg: "在公共運輸工具上，你的身份是？" },
+                    { name: "裁判", icon: "⚖️", correct: false, msg: "這裡不需要判輸贏，需要的是禮讓的人。" },
+                    { name: "店員", icon: "🏪", correct: false, msg: "公車不是商店喔。" }
+                ],
+                actions: [
+                    { text: "站起來，請老奶奶坐你的位置", correct: true, priority: 'best', msg: "這就是優秀乘客的最佳表現，非常有同理心且安全！" },
+                    { text: "幫老奶奶拿一下重物，減輕負擔", correct: true, priority: 'good', msg: "幫忙拿東西很體貼，但讓老奶奶坐穩是防止她摔倒的最優先行動。" },
+                    { text: "眼睛閉起來假裝在睡覺", correct: false, msg: "社會覺察就是觀察周遭，看看有沒有需要幫助的人。" },
+                    { text: "大聲叫司機趕快停車", correct: false, msg: "突然停車很危險。直接讓座是更好的方式。" }
+                ]
+            }
+        ];
+
+        function setupM1() {
+            const data = M1_SCENARIOS[m1Idx];
+            document.getElementById('m1-scenario-desc').textContent = data.desc;
+            m1CurrentStep = 1; m1SelectedRole = null; m1SelectedAction = null;
+            document.getElementById('m1-step1').classList.remove('hidden');
+            document.getElementById('m1-step2').classList.add('hidden');
+            document.getElementById('m1-result').classList.add('hidden');
+            document.getElementById('m1-submit-btn').textContent = "確認我的角色";
+            const rc = document.getElementById('m1-role-container'); 
+            rc.innerHTML = '';
+            data.roles.forEach(role => {
+                const div = document.createElement('div');
+                div.className = "role-card bg-gray-50 p-4 rounded-xl text-center card-shadow border-2";
+                div.innerHTML = `<span class="text-4xl">${role.icon}</span><br><span class="font-bold">${role.name}</span>`;
+                div.onclick = () => { 
+                    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected')); 
+                    div.classList.add('selected'); 
+                    m1SelectedRole = role; 
+                };
+                rc.appendChild(div);
+            });
+            const ac = document.getElementById('m1-action-container'); 
+            ac.innerHTML = '';
+            data.actions.forEach(act => {
+                const b = document.createElement('button');
+                b.className = "action-option p-4 bg-white rounded-xl font-bold shadow-sm border-2";
+                b.textContent = act.text;
+                b.onclick = () => { 
+                    document.querySelectorAll('.action-option').forEach(el => el.classList.remove('active')); 
+                    b.classList.add('active'); 
+                    m1SelectedAction = act; 
+                };
+                ac.appendChild(b);
+            });
+            const indicator = document.getElementById('m1-page-indicator'); 
+            indicator.innerHTML = '';
+            M1_SCENARIOS.forEach((_, i) => { 
+                const dot = document.createElement('div'); 
+                dot.className = `w-2 h-2 rounded-full ${i === m1Idx ? 'bg-pink-500' : 'bg-gray-300'}`; 
+                indicator.appendChild(dot); 
+            });
+        }
+
+        function checkM1Step() {
+            const res = document.getElementById('m1-result'); 
+            res.classList.remove('hidden');
+            if (m1CurrentStep === 1) {
+                if (!m1SelectedRole) {
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-yellow-50 border-yellow-300 text-yellow-800";
+                    res.innerHTML = "💡 請先選一個角色喔！";
+                    return;
+                }
+                if (m1SelectedRole.correct) { 
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-green-100 border-green-400 text-green-800 animate-emoji-pop"; 
+                    res.innerHTML = `🌟 答對了！這時候你是一個「${m1SelectedRole.name}」。接著，這個角色應該怎麼做？`; 
+                    m1CurrentStep = 2; 
+                    document.getElementById('m1-step2').classList.remove('hidden'); 
+                    document.getElementById('m1-submit-btn').textContent = "確認我的行動"; 
+                } else { 
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-orange-100 border-orange-400 text-orange-800"; 
+                    res.innerHTML = `🤔 再想想：${m1SelectedRole.msg}`; 
+                }
+            } else {
+                if (!m1SelectedAction) {
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-yellow-50 border-yellow-300 text-yellow-800";
+                    res.innerHTML = "💡 請選一個你覺得最好的行動！";
+                    return;
+                }
+                if (m1SelectedAction.correct) { 
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-green-100 border-green-400 text-green-800 animate-emoji-pop"; 
+                    res.innerHTML = `🎉 ${m1SelectedAction.msg}`; 
+                } else { 
+                    res.className = "mt-4 p-4 rounded-xl border-2 bg-orange-100 border-orange-400 text-orange-800"; 
+                    res.innerHTML = `💡 換個角度想想：${m1SelectedAction.msg}`; 
+                }
+            }
+        }
+
+        function changeScenario1(d) { m1Idx = (m1Idx+d+M1_SCENARIOS.length)%M1_SCENARIOS.length; setupM1(); }
+
+        // --- 區塊二資料 ---
+        let m2Idx = 0;
+        const M2_SCENARIOS = [
+            {
+                title: "情境一：比賽的失誤",
+                target: "小華",
+                desc: "小華練習很久的大隊接力，結果比賽時跌倒了，導致班上落後...",
+                options: [
+                    { t: "😢 難過：覺得努力白費了", correct: true, reason: "沒錯！辛苦練習卻發生失誤，心裡一定很難受。" },
+                    { t: "😳 不好意思：對不起大家", correct: true, reason: "對！這是一種責任感，會擔心影響到團隊。" },
+                    { t: "😊 開心：終於跑完了", correct: false, reason: "跌倒導致落後時，通常不會感到開心喔。" },
+                    { t: "😡 生氣：怪跑道太滑", correct: false, reason: "雖然可能會有情緒，但更多的是對自己的失望。" }
+                ]
+            },
+            {
+                title: "情境二：分組的尷尬",
+                target: "小明",
+                desc: "下課時，你看到小明想加入大家的遊戲，但其他同學卻說『我們人滿了，你去別組吧！』小明默默低頭走開了...",
+                options: [
+                    { t: "😔 孤單：覺得沒人想跟我玩", correct: true, reason: "是的，被拒絕時常會產生被排擠、孤單的感受。" },
+                    { t: "😣 尷尬：大家都看著我被拒絕", correct: true, reason: "沒錯！在同學面前被拒絕，心裡會覺得很彆扭。" },
+                    { t: "😒 沒感覺：那是他的事", correct: false, reason: "想一想，如果你是被拒絕的那個人，真的會沒感覺嗎？" },
+                    { t: "😎 自在：剛好可以休息", correct: false, reason: "小明是『默默低頭走開』，代表他其實很想玩。" }
+                ]
+            },
+            {
+                title: "情境三：努力後的成果",
+                target: "美美",
+                desc: "美美這週每天都留下來練習吹直笛，今天上台發表時，她順利吹完了整首歌，大家都給她熱烈的掌聲！",
+                options: [
+                    { t: "🤩 自信：覺得自己的努力有成果", correct: true, reason: "沒錯！成功的發表能大幅提升信心。" },
+                    { t: "😌 放鬆：終於完成這項任務了", correct: true, reason: "是的，緊張的練習後順利完成，會感到輕鬆。" },
+                    { t: "😥 難過：以後沒機會練習了", correct: false, reason: "這通常是值得慶祝的時刻，難過的機會較少喔。" },
+                    { t: "😡 生氣：大家鼓掌太大聲", correct: false, reason: "大家的掌聲是讚美，通常會感到開心而非生氣。" }
+                ]
+            }
+        ];
+
+        function setupM2() {
+            const data = M2_SCENARIOS[m2Idx];
+            document.getElementById('m2-scenario-title').textContent = data.title;
+            document.getElementById('m2-scenario-desc').textContent = data.desc;
+            document.getElementById('m2-question-text').textContent = `「如果你是${data.target}，你有什麼感覺？」`;
+            const container = document.getElementById('m2-options-container'); container.innerHTML = '';
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "empathy-option p-4 bg-gray-50 rounded-xl font-bold border-2 border-transparent text-left shadow-sm";
+                btn.textContent = opt.t;
+                btn.onclick = () => {
+                    const res = document.getElementById('m2-result'); res.classList.remove('hidden');
+                    if(opt.correct) { res.className = "mt-4 p-4 rounded-xl border-2 bg-green-100 border-green-400 text-green-800 animate-emoji-pop"; res.innerHTML = `❤️ 沒錯！你能感受到這份心情。${opt.reason}`; }
+                    else { res.className = "mt-4 p-4 rounded-xl border-2 bg-red-50 border-red-300 text-red-800"; res.innerHTML = `🤔 換位思考看看：${opt.reason}`; }
+                };
+                container.appendChild(btn);
+            });
+            const indicator = document.getElementById('m2-page-indicator'); indicator.innerHTML = '';
+            M2_SCENARIOS.forEach((_, i) => { const dot = document.createElement('div'); dot.className = `w-2 h-2 rounded-full ${i === m2Idx ? 'bg-pink-500' : 'bg-gray-300'}`; indicator.appendChild(dot); });
+            document.getElementById('m2-result').classList.add('hidden');
+        }
+
+        function changeScenario2(d) { m2Idx = (m2Idx+d+M2_SCENARIOS.length)%M2_SCENARIOS.length; setupM2(); }
+
+        // --- 區塊三資料 ---
+        let m3Idx = 0;
+        let m3SelectedReason = null;
+        const M3_SCENARIOS = [
+            { 
+                n: '小安', a: '👦', c: '「大家覺得班上適合養倉鼠當寵物嗎？」', 
+                v: '我覺得養寵物很棒，這樣下課就有可愛的小動物可以玩了！',
+                reasons: [
+                    { t: "養寵物可以讓我們學習照顧生命，變更有責任感。", respect: true, logic: 'agree' },
+                    { t: "雖然養寵物很好，但我擔心有人會對毛過敏，所以不建議現在養。", respect: true, logic: 'disagree' },
+                    { t: "這是我聽過最笨的主意，我才不想清理籠子！", respect: false, feedback: "直接說別人的想法「很笨」會讓人難過。" },
+                    { t: "聽你在胡說八道，倉鼠只會變髒。", respect: false, feedback: "「胡說八道」是不尊重的言論。" }
+                ]
+            },
+            { 
+                n: '大山', a: '🐻', c: '「我們該如何對待瀕臨絕種的動物呢？」', 
+                v: '我覺得應該把所有動物都關進動物園，這樣才不會受傷。',
+                reasons: [
+                    { t: "動物園有專業的人可以保護牠們，這能確保牠們的安全。", respect: true, logic: 'agree' },
+                    { t: "我認為自然環境才是牠們的家，關起來反而會讓牠們不快樂，我更支持野生保育。", respect: true, logic: 'disagree' },
+                    { t: "你根本不懂動物，你的想法完全是錯誤的。", respect: false, feedback: "攻擊別人的專業度是不尊重的表達方式。" },
+                    { t: "好無聊的話題，我不想討論這個。", respect: false, feedback: "直接說別人的話題「無聊」是很失禮的。" }
+                ]
+            },
+            { 
+                n: '佳佳', a: '👧', c: '「玩電子遊戲對我們的學習有幫助嗎？」', 
+                v: '電子遊戲會讓我學到更多英文單字和解決問題的方法！',
+                reasons: [
+                    { t: "有些英文冒險遊戲確實能練習閱讀單字和邏輯思考。", respect: true, logic: 'agree' },
+                    { t: "雖然能學英文，但我擔心長時間玩會影響視力，所以我不太贊成。", respect: true, logic: 'disagree' },
+                    { t: "你只是想偷懶玩遊戲，別拿學習當藉口！", respect: false, feedback: "這是在質疑別人的誠實度，會破壞友誼。" },
+                    { t: "隨便啦，反正我說什麼你也不會聽。", respect: false, feedback: "這種消極的回應無法建立好的對話。" }
+                ]
+            }
+        ];
+
+        function setupM3() {
+            const data = M3_SCENARIOS[m3Idx]; m3SelectedReason = null;
+            document.getElementById('m3-context').textContent = data.c;
+            document.getElementById('m3-speaker-name').textContent = data.n;
+            document.getElementById('m3-target-name').textContent = data.n;
+            document.getElementById('m3-viewpoint').textContent = data.v;
+            document.getElementById('m3-avatar').textContent = data.a;
+            const rc = document.getElementById('m3-reason-options-container'); rc.innerHTML = '';
+            [...data.reasons].sort(() => Math.random() - 0.5).forEach(r => {
+                const b = document.createElement('button');
+                b.className = 'reason-option p-4 bg-white rounded-xl text-left text-gray-700 hover:bg-pink-50 shadow-sm';
+                b.textContent = r.t;
+                b.onclick = () => { document.querySelectorAll('.reason-option').forEach(el => el.classList.remove('active', 'wrong-flash')); b.classList.add('active'); m3SelectedReason = r; };
+                rc.appendChild(b);
+            });
+            const indicator = document.getElementById('m3-page-indicator'); indicator.innerHTML = '';
+            M3_SCENARIOS.forEach((_, i) => { const dot = document.createElement('div'); dot.className = `w-2 h-2 rounded-full ${i === m3Idx ? 'bg-pink-500' : 'bg-gray-300'}`; indicator.appendChild(dot); });
+            document.getElementById('m3-feedback-result').classList.add('hidden');
+        }
+
+        function checkModule3Feedback() {
+            const res = document.getElementById('m3-feedback-result');
+            const tit = document.getElementById('m3-feedback-title');
+            const txt = document.getElementById('m3-feedback-text');
+            const stance = document.getElementById('m3-select-agree').value;
+            if(!m3SelectedReason) return;
+            res.classList.remove('hidden');
+            if (!m3SelectedReason.respect) {
+                tit.textContent = `💡 有點受傷喔...`; txt.textContent = m3SelectedReason.feedback;
+                res.className = "mt-6 p-4 rounded-xl bg-red-100 border-red-300 text-red-800 border-2";
+                document.querySelector('.reason-option.active').classList.add('wrong-flash');
+                return;
+            }
+            if (m3SelectedReason.logic && m3SelectedReason.logic !== stance) {
+                tit.textContent = `❓ 邏輯不一致`;
+                txt.textContent = `既然你的理由是「${m3SelectedReason.t}」，這與你選擇的「${stance === 'agree' ? '同意' : '不同意'}」立場不合喔。請再想想！`;
+                res.className = "mt-6 p-4 rounded-xl bg-yellow-100 border-yellow-300 text-yellow-800 border-2";
+                return;
+            }
+            tit.textContent = `🌟 很棒的表達！`; txt.textContent = `你選擇了「${stance === 'agree' ? '同意' : '不同意'}」，且理由清晰、態度尊重。這是一個非常高品質的回饋！`;
+            res.className = "mt-6 p-4 rounded-xl bg-green-100 border-green-300 text-green-800 border-2 animate-emoji-pop";
+        }
+
+        function changeScenario3(d) { m3Idx = (m3Idx+d+M3_SCENARIOS.length)%M3_SCENARIOS.length; setupM3(); }
+
+        window.onload = () => { changeView('home'); setupM1(); setupM2(); setupM3(); };
+    </script>
+</body>
+</html>

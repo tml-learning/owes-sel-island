@@ -1,0 +1,656 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的自管超能力基地 - 國小五年級 SEL 訓練</title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 設置 Inter 字體 */
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 輔助 SVG 動畫平滑過渡 */
+        #timer-circle {
+            transition: stroke-dashoffset 1s linear, stroke 0.5s;
+        }
+        /* 設置容器滾動時的平滑效果 */
+        .scrollable-content {
+            transition: max-height 0.5s ease-in-out, padding-top 0.5s;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+    <div id="app-container" class="p-4 sm:p-8">
+        
+        <!-- 標題區 -->
+        <header class="text-center mb-10 p-6 bg-indigo-600 rounded-3xl shadow-2xl max-w-4xl mx-auto">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                🚀 我的自管超能力基地
+            </h1>
+            <p class="mt-2 text-xl font-medium text-indigo-200">
+                國小五年級：成為掌控情緒與目標的超級隊長
+            </p>
+        </header>
+
+        <main class="max-w-4xl mx-auto space-y-8">
+            
+            <!-- 歡迎區 -->
+            <section class="p-6 bg-yellow-100 rounded-xl shadow-md border-l-4 border-yellow-500">
+                <h2 class="text-3xl font-bold text-yellow-700 mb-2 flex items-center">
+                    🌟 歡迎！
+                </h2>
+                <p class="text-gray-700 leading-relaxed">
+                    嗨，五年級的探險家們！在這個基地裡，你將學會如何成為自己情緒和目標的超級隊長。準備好解鎖你的「**自我管理超能力**」了嗎？
+                </p>
+            </section>
+
+            <!-- 核心策略區 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- 1. 90 秒規則 (第一項超能力) -->
+                <section id="ninety-second-timer" class="bg-white p-6 rounded-xl shadow-lg border border-indigo-100 transition-all hover:shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-700 flex items-center">
+                        <span class="mr-2">🧠</span> 第一項超能力：情緒的「90 秒規則」
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm">當你感到憤怒或緊張時，身體的強烈生理反應通常只持續 **90 秒**！學會撐過去，你就是情緒的主人。</p>
+                    
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="relative w-20 h-20">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle
+                                    class="text-gray-200"
+                                    stroke-width="6"
+                                    stroke="currentColor"
+                                    fill="transparent"
+                                    r="35"
+                                    cx="40"
+                                    cy="40"
+                                />
+                                <circle
+                                    id="timer-circle"
+                                    class="text-yellow-500" 
+                                    stroke-width="6"
+                                    stroke-dasharray="219.911"
+                                    stroke-dashoffset="219.911"
+                                    stroke-linecap="round"
+                                    stroke="currentColor"
+                                    fill="transparent"
+                                    r="35"
+                                    cx="40"
+                                    cy="40"
+                                />
+                            </svg>
+                            <span id="timer-display" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg font-extrabold text-indigo-600">
+                                01:30
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col space-y-2">
+                            <button
+                                id="start-timer-btn"
+                                class="px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-yellow-500 text-indigo-800 hover:bg-yellow-600 hover:shadow-lg active:scale-95"
+                            >
+                                開始 90 秒練習
+                            </button>
+                            <button
+                                id="toggle-pause-btn"
+                                class="hidden px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                            >
+                                ⏸️ 暫停
+                            </button>
+                        </div>
+                    </div>
+
+                    <p id="timer-message" class="mt-2 p-3 rounded-lg text-sm font-semibold bg-gray-50 text-gray-500">
+                        點擊開始，練習度過情緒的 90 秒!
+                    </p>
+                </section>
+
+                <!-- 2. 目標設定與「B 計畫」 (第二項超能力) -->
+                <section id="goal-planner" class="bg-white p-6 rounded-xl shadow-lg border border-green-100 transition-all hover:shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-green-700 flex items-center">
+                        <span class="mr-2">🗺️</span> 第二項超能力：目標設定與「B 計畫」
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm">目標設定就像解鎖密碼！回答以下三個問題，讓你的目標更明確！</p>
+                    
+                    <!-- Goal Setting Form -->
+                    <form id="goal-form" class="space-y-3 p-4 bg-green-50 rounded-lg mb-6 shadow-inner">
+                        <!-- Q1: 我要達成什麼？ -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-green-800 flex items-center">
+                                <span class="text-xl mr-1">🤔</span> 1. 我的目標是什麼？
+                            </label>
+                            <input type="text" id="goal-name" placeholder="例如：學會游泳，或數學成績進步 10 分" class="w-full p-2 border-2 border-green-200 rounded-lg focus:ring-green-500 focus:border-green-500 transition-shadow" required>
+                        </div>
+
+                        <!-- Q2: 什麼時候達成？ -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-green-800 flex items-center">
+                                <span class="text-xl mr-1">⏳</span> 2. 什麼時候會達成目標？
+                            </label>
+                            <input type="text" id="goal-time" placeholder="例如：這個學期結束前，或三個月後" class="w-full p-2 border-2 border-green-200 rounded-lg focus:ring-green-500 focus:border-green-500 transition-shadow" required>
+                        </div>
+                        
+                        <!-- Q3: 如何知道達成？ (A計畫) -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-green-800 flex items-center">
+                                <span class="text-xl mr-1">✅</span> 3. 我該如何知道自己已經達成目標了？ (A 計畫)
+                            </label>
+                            <textarea id="goal-measure" placeholder="例如：通過游泳測試，或完成 5 份數學練習卷" class="w-full p-2 border-2 border-green-200 rounded-lg focus:ring-green-500 focus:border-green-500 resize-none h-16 transition-shadow" required></textarea>
+                        </div>
+                        
+                        <!-- B 計畫：為挫折做準備 -->
+                        <div class="space-y-1 pt-3 border-t border-green-200">
+                            <label class="text-sm font-bold text-red-600 flex items-center">
+                                <span class="text-xl mr-1">🚧</span> 制訂「B 計畫」：為挫折做準備
+                            </label>
+                            <textarea id="plan-b" placeholder="🚨 如果我在達成目標的過程中遇到困難或挫折，我的「B 計畫」是什麼？" class="w-full p-2 border-2 border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500 resize-none h-16 transition-shadow" required></textarea>
+                        </div>
+
+                        <button type="submit" id="save-goal-btn" class="w-full py-3 rounded-xl font-bold shadow-md transition-all duration-300 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg active:scale-95">
+                            儲存我的超能力目標！
+                        </button>
+                    </form>
+                    
+                    <!-- Goal List -->
+                    <h4 class="text-lg font-bold text-green-700 mb-3 border-b pb-2 flex justify-between items-center">
+                        我已儲存的目標 
+                        <span id="goal-count" class="text-sm font-normal">(共 0 個)</span>
+                        <button id="clear-all-goals-btn" class="text-red-500 hover:text-red-700 text-sm font-normal flex items-center p-1 rounded-md bg-red-100 transition-colors active:scale-95 hidden" title="清除所有目標">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                            </svg>
+                            一鍵清除
+                        </button>
+                    </h4>
+                    <div id="goal-list-container" class="space-y-3">
+                        <p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">你還沒有設定目標喔，快來新增第一個！</p>
+                    </div>
+                </section>
+
+                <!-- 3. 自我激勵引擎 (第三項超能力) -->
+                <section id="motivation-engine" class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-purple-100 transition-all hover:shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-purple-700 flex items-center">
+                        <span class="mr-2">🌟</span> 第三項超能力：啟動「自我激勵」引擎
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm">現在，啟動你的專屬動力！回答以下問題，幫自己充電！</p>
+                    
+                    <!-- Motivation Form -->
+                    <form id="motivation-form" class="space-y-3 p-4 bg-purple-50 rounded-lg mb-6 shadow-inner">
+                        
+                        <!-- Step 1: 設定成功目標 -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-purple-800 flex items-center">
+                                <span class="text-xl mr-1">🎯</span> 步驟 1: 我今天要完成的「小成功目標」是什麼？
+                            </label>
+                            <input type="text" id="motivation-goal" placeholder="例如：今天準時完成所有作業，或整理好我的書桌" class="w-full p-2 border-2 border-purple-200 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition-shadow" required>
+                        </div>
+
+                        <!-- Step 2: 設定獎勵 -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-purple-800 flex items-center">
+                                <span class="text-xl mr-1">🎁</span> 步驟 2: 如果我達成目標，我要給自己什麼獎勵？
+                            </label>
+                            <input type="text" id="reward" placeholder="例如：玩 30 分鐘遊戲，或吃一個小點心" class="w-full p-2 border-2 border-purple-200 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition-shadow" required>
+                        </div>
+                        
+                        <!-- Step 3: 感受掌控 -->
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-purple-800 flex items-center">
+                                <span class="text-xl mr-1">👑</span> 步驟 3: 我對自己說一句有掌控感的鼓勵話！
+                            </label>
+                            <textarea id="control-statement" placeholder="例如：我是我學習的主人！這就是我的超能力！" class="w-full p-2 border-2 border-purple-200 rounded-lg focus:ring-purple-500 focus:border-purple-500 resize-none h-16 transition-shadow" required></textarea>
+                        </div>
+
+                        <button type="submit" id="save-motivation-btn" class="w-full py-3 rounded-xl font-bold shadow-md transition-all duration-300 bg-purple-500 text-white hover:bg-purple-600 hover:shadow-lg active:scale-95">
+                            啟動我的動力計畫！
+                        </button>
+                    </form>
+                    
+                    <!-- Motivation List -->
+                    <h4 class="text-lg font-bold text-purple-700 mb-3 border-b pb-2 flex justify-between items-center">
+                        我的動力計畫卡 
+                        <span id="motivation-count" class="text-sm font-normal">(共 0 個)</span>
+                        <button id="clear-all-motivation-btn" class="text-red-500 hover:text-red-700 text-sm font-normal flex items-center p-1 rounded-md bg-red-100 transition-colors active:scale-95 hidden" title="清除所有計畫">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                            </svg>
+                            一鍵清除
+                        </button>
+                    </h4>
+                    <div id="motivation-list-container" class="space-y-3">
+                        <p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">還沒有動力計畫喔！完成上面步驟來啟動吧！</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 自我檢視區 -->
+            <section class="p-6 bg-blue-100 rounded-xl shadow-md border-l-4 border-blue-500">
+                <h2 class="text-3xl font-bold text-blue-700 mb-4 flex items-center">
+                    💬 自我檢視時間！
+                </h2>
+                <p class="text-gray-700 mb-4">
+                    你學會了哪一項超能力？想想看，你今天會怎麼運用它們？
+                </p>
+                <div class="bg-white p-4 rounded-lg shadow-inner space-y-2">
+                    <p class="font-bold text-blue-800">1. 情緒的 90 秒規則:</p>
+                    <p class="text-sm text-gray-600 pl-4">當我想生氣時，我會點擊計時器，先深呼吸 15 次。</p>
+                    <p class="font-bold text-blue-800">2. 制訂 B 計畫:</p>
+                    <p class="text-sm text-gray-600 pl-4">我的目標是...，如果遇到挫折，我的 B 計畫是...</p>
+                    <p class="font-bold text-blue-800">3. 啟動自我激勵引擎:</p>
+                    <p class="text-sm text-gray-600 pl-4">我今天的小成功目標是...，達成後我會給自己...獎勵！</p>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- 教師/家長專區 (Support Zone) -->
+        <section id="support-zone" class="mt-10 max-w-4xl mx-auto p-6 rounded-xl shadow-2xl bg-gray-800 text-white">
+            <div 
+                id="support-zone-toggle"
+                class="flex justify-between items-center cursor-pointer p-2 rounded-lg transition-all hover:bg-gray-700 active:scale-[0.99]"
+            >
+                <h2 class="text-3xl font-bold text-yellow-300 flex items-center">
+                    <span class="mr-3 text-4xl">📘</span> 教師/家長專區 (Support Zone)
+                </h2>
+                <button id="support-zone-arrow" class="text-xl font-bold p-1">
+                    <!-- Arrow Icon Down -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+            </div>
+            
+            <!-- 內容區 -->
+            <div id="support-zone-content" class="scrollable-content max-h-0 overflow-hidden">
+                <div class="border-t border-gray-700 pt-4 space-y-6">
+                    
+                    <h3 class="text-xl font-semibold text-yellow-300 mb-4">給大人的話：SEL 教學指南</h3>
+                    <p class="text-gray-300">
+                        本應用程式專注於培養國小五年級學生在「自我覺察 (Self-Awareness)」與「**自我管理 (Self-Management)**」這兩個核心社會情緒學習 (SEL) 領域的能力。
+                        以下為三個訓練模組背後的教育原理與實施建議：
+                    </p>
+
+                    <!-- Module 1: 90-Second Rule -->
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-inner border-l-4 border-indigo-400">
+                        <h4 class="font-bold text-indigo-300 text-lg mb-2">第一項超能力：1. 情緒的「90 秒規則」（衝動控制）</h4>
+                        <p class="text-sm text-gray-400 mb-2">
+                            **原理依據：** 衝動控制與杏仁核 (Amygdala) 的生理反應。科學研究指出，強烈情緒的生理高峰（化學反應）通常只持續約 90 秒。
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            **實施建議：** 教導孩子這 90 秒是他們「奪回控制權」的關鍵時間。鼓勵他們在這段時間內使用「靜止策略」：深呼吸、喝水、走開或在計時器上觀察數字跳動。這讓他們從反應模式切換到思考模式。
+                        </p>
+                    </div>
+
+                    <!-- Module 2: Goal Setting & Plan B -->
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-inner border-l-4 border-green-400">
+                        <h4 class="font-bold text-green-300 text-lg mb-2">第二項超能力：2. 目標設定與「B 計畫」（韌性與規劃）</h4>
+                        <p class="text-sm text-gray-400 mb-2">
+                            **原理依據：** 成長心態 (Growth Mindset) 與問題解決能力。要求孩子設定目標時考慮「時間性」、「衡量性」和「備案」，是將 SMART 原則簡化為孩子能理解的行動規劃。
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            **實施建議：** 「B 計畫」是本模組的精髓。它不是鼓勵失敗，而是提前演練韌性，讓孩子知道挫折是過程的一部分，並擁有預備的應對工具，從而減少遇到困難時的焦慮和放棄傾向。
+                        </p>
+                    </div>
+
+                    <!-- Module 3: Motivation Engine -->
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-inner border-l-4 border-purple-400">
+                        <h4 class="font-bold text-purple-300 text-lg mb-2">第三項超能力：3. 啟動「自我激勵」引擎（內在掌控感）</h4>
+                        <p class="text-sm text-gray-400 mb-2">
+                            **原理依據：** 行為主義 (Positive Reinforcement) 與自我效能 (Self-Efficacy)。利用小目標和立即獎勵來建立成功的正向回饋循環。
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            **實施建議：** 鼓勵孩子自己設計獎勵（必須是健康的），並大聲說出或寫下「掌控宣言」。這類宣言能增強他們的「內在控制歸因」，相信成功是源於自己的努力和能力，而非運氣。
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-10 text-center text-gray-400 text-xs max-w-4xl mx-auto">
+            &copy; 2024 自我管理超能力基地 - SEL 學習
+        </footer>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // =================================================================
+            // 狀態管理 (使用 localStorage 模擬持久化，但在 Canvas 環境中，數據會在瀏覽器關閉時清除)
+            // =================================================================
+
+            let goals = JSON.parse(localStorage.getItem('goals')) || [];
+            let motivationPlans = JSON.parse(localStorage.getItem('motivationPlans')) || [];
+
+            // =================================================================
+            // 輔助函數
+            // =================================================================
+            
+            /**
+             * 渲染目標清單到 DOM
+             */
+            const renderGoals = () => {
+                const container = document.getElementById('goal-list-container');
+                const countSpan = document.getElementById('goal-count');
+                const clearBtn = document.getElementById('clear-all-goals-btn');
+
+                countSpan.textContent = `(共 ${goals.length} 個)`;
+                if (goals.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+
+                if (goals.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">你還沒有設定目標喔，快來新增第一個！</p>';
+                    return;
+                }
+
+                container.innerHTML = goals.map(goal => `
+                    <div class="p-4 border-l-4 border-green-400 bg-green-50 rounded-lg shadow-sm flex justify-between items-start">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-green-800 mb-1 truncate">🎯 目標 (What): ${goal.goalName}</p>
+                            <p class="text-sm text-gray-700 ml-2">⏳ 時間 (When): ${goal.goalTime}</p>
+                            <p class="text-sm text-gray-700 ml-2">✅ 成功指標 (How): ${goal.goalMeasure}</p>
+                            <p class="text-sm text-red-500 ml-2">🚨 B. 備案: ${goal.planB}</p>
+                        </div>
+                        <button data-id="${goal.id}" class="delete-goal-btn ml-4 p-2 text-red-400 hover:text-red-600 rounded-full transition-colors active:scale-95" title="刪除目標">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+                localStorage.setItem('goals', JSON.stringify(goals));
+            };
+
+            /**
+             * 渲染激勵計畫清單到 DOM
+             */
+            const renderMotivationPlans = () => {
+                const container = document.getElementById('motivation-list-container');
+                const countSpan = document.getElementById('motivation-count');
+                const clearBtn = document.getElementById('clear-all-motivation-btn');
+
+                countSpan.textContent = `(共 ${motivationPlans.length} 個)`;
+                if (motivationPlans.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+
+                if (motivationPlans.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">還沒有動力計畫喔！完成上面步驟來啟動吧！</p>';
+                    return;
+                }
+
+                container.innerHTML = motivationPlans.map(plan => `
+                    <div class="p-4 border-l-4 border-purple-400 bg-purple-50 rounded-lg shadow-sm flex justify-between items-start">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-purple-800 mb-1 truncate">🎯 目標：${plan.motivationGoal}</p>
+                            <p class="text-sm text-gray-700 ml-2">🎁 達成獎勵：${plan.reward}</p>
+                            <p class="text-sm text-indigo-600 font-medium ml-2">👑 掌控宣言：${plan.controlStatement}</p>
+                        </div>
+                        <button data-id="${plan.id}" class="delete-motivation-btn ml-4 p-2 text-red-400 hover:text-red-600 rounded-full transition-colors active:scale-95" title="刪除計畫">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+                localStorage.setItem('motivationPlans', JSON.stringify(motivationPlans));
+            };
+            
+            // 初始化渲染
+            renderGoals();
+            renderMotivationPlans();
+
+            // =================================================================
+            // 90 秒規則 (Timer) 邏輯
+            // =================================================================
+
+            let secondsRemaining = 90;
+            let timerInterval = null;
+            let isTimerActive = false;
+            let isTimerPaused = false;
+            const circumference = 2 * Math.PI * 35; // SVG Circle 半徑 35
+
+            const timerDisplay = document.getElementById('timer-display');
+            const timerMessage = document.getElementById('timer-message');
+            const timerCircle = document.getElementById('timer-circle');
+            const startBtn = document.getElementById('start-timer-btn');
+            const pauseBtn = document.getElementById('toggle-pause-btn');
+
+            timerCircle.setAttribute('stroke-dasharray', circumference);
+            timerCircle.setAttribute('stroke-dashoffset', 0); // 初始值為 90 秒
+
+            /**
+             * 格式化秒數為 MM:SS
+             * @param {number} totalSeconds 
+             */
+            const formatTime = (totalSeconds) => {
+                const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+                const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+                return `${minutes}:${seconds}`;
+            };
+
+            /**
+             * 根據秒數獲取 Tailwind 顏色類別
+             * @param {number} s 
+             */
+            const getColorClass = (s) => {
+                if (s > 75) return 'text-red-500';      // 75-90s: 紅
+                if (s > 60) return 'text-purple-500';   // 60-75s: 紫
+                if (s > 45) return 'text-orange-500';   // 45-60s: 橘
+                if (s > 30) return 'text-yellow-500';   // 30-45s: 黃
+                if (s > 15) return 'text-green-500';    // 15-30s: 綠
+                return 'text-blue-500';                 // 0-15s: 淺藍
+            };
+
+            /**
+             * 更新計時器 UI
+             */
+            const updateTimerUI = () => {
+                const progress = (90 - secondsRemaining) / 90;
+                const offset = circumference * (1 - progress);
+                const colorClass = isTimerActive ? getColorClass(secondsRemaining) : 'text-yellow-500';
+
+                // 移除舊顏色類別
+                timerCircle.className = 'stroke-width-6 stroke-linecap-round fill-transparent transition-all duration-1000 ' + colorClass;
+                timerCircle.setAttribute('stroke-dashoffset', offset);
+                
+                timerDisplay.textContent = formatTime(secondsRemaining);
+            };
+
+            /**
+             * 重置計時器
+             */
+            const resetTimer = () => {
+                clearInterval(timerInterval);
+                isTimerActive = false;
+                isTimerPaused = false;
+                secondsRemaining = 90;
+                
+                startBtn.textContent = '開始 90 秒練習';
+                startBtn.disabled = false;
+                startBtn.className = 'px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-yellow-500 text-indigo-800 hover:bg-yellow-600 hover:shadow-lg active:scale-95';
+                
+                pauseBtn.classList.add('hidden');
+                
+                timerMessage.textContent = '點擊開始，練習度過情緒的 90 秒!';
+                timerMessage.className = 'mt-2 p-3 rounded-lg text-sm font-semibold bg-gray-50 text-gray-500';
+                
+                updateTimerUI();
+            };
+
+            /**
+             * 執行每一秒的計時邏輯
+             */
+            const tick = () => {
+                if (isTimerPaused) return;
+
+                secondsRemaining--;
+                updateTimerUI();
+
+                if (secondsRemaining <= 0) {
+                    resetTimer();
+                    timerMessage.textContent = '🎉 90 秒結束！你成功了！現在，你有選擇權！';
+                    timerMessage.className = 'mt-2 p-3 rounded-lg text-sm font-semibold bg-green-100 text-green-700';
+                }
+            };
+            
+            /**
+             * 啟動計時器
+             */
+            const startTimer = () => {
+                if (isTimerActive) return;
+                
+                isTimerActive = true;
+                isTimerPaused = false;
+                secondsRemaining = 90;
+                timerInterval = setInterval(tick, 1000);
+
+                startBtn.disabled = true;
+                startBtn.className = 'px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-gray-400 text-white cursor-not-allowed';
+                
+                pauseBtn.classList.remove('hidden');
+                pauseBtn.textContent = '⏸️ 暫停';
+                pauseBtn.className = 'px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-red-500 text-white hover:bg-red-600 active:scale-95';
+
+                timerMessage.textContent = '🚀 90 秒化學反應啟動！深呼吸...';
+                timerMessage.className = 'mt-2 p-3 rounded-lg text-sm font-semibold bg-indigo-100 text-indigo-700';
+                
+                updateTimerUI();
+            };
+
+            /**
+             * 暫停/繼續計時器
+             */
+            const togglePause = () => {
+                if (!isTimerActive || secondsRemaining <= 0) return;
+
+                isTimerPaused = !isTimerPaused;
+                
+                if (isTimerPaused) {
+                    pauseBtn.textContent = '▶️ 繼續';
+                    pauseBtn.className = 'px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-indigo-500 text-white hover:bg-indigo-600 active:scale-95';
+                    timerMessage.textContent = '⏸️ 計時已暫停。';
+                    timerMessage.className = 'mt-2 p-3 rounded-lg text-sm font-semibold bg-gray-200 text-gray-700';
+                } else {
+                    pauseBtn.textContent = '⏸️ 暫停';
+                    pauseBtn.className = 'px-6 py-3 rounded-full font-bold shadow-md transition-all duration-300 bg-red-500 text-white hover:bg-red-600 active:scale-95';
+                    timerMessage.textContent = '🚀 90 秒化學反應啟動！深呼吸...';
+                    timerMessage.className = 'mt-2 p-3 rounded-lg text-sm font-semibold bg-indigo-100 text-indigo-700';
+                }
+            };
+
+            // 初始顯示
+            updateTimerUI();
+
+            // =================================================================
+            // 事件監聽器
+            // =================================================================
+
+            // 1. Timer
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', togglePause);
+
+            // 2. Goal Planner (長期目標)
+            document.getElementById('goal-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const goalName = document.getElementById('goal-name').value.trim();
+                const goalTime = document.getElementById('goal-time').value.trim();
+                const goalMeasure = document.getElementById('goal-measure').value.trim();
+                const planB = document.getElementById('plan-b').value.trim();
+
+                if (goalName && goalTime && goalMeasure && planB) {
+                    const newGoal = {
+                        id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
+                        goalName,
+                        goalTime,
+                        goalMeasure,
+                        planB
+                    };
+                    goals.unshift(newGoal); // 新增到最前面
+                    renderGoals();
+                    e.target.reset(); // 清空表單
+                }
+            });
+
+            // 刪除個別目標 (事件代理)
+            document.getElementById('goal-list-container').addEventListener('click', (e) => {
+                if (e.target.closest('.delete-goal-btn')) {
+                    const id = e.target.closest('.delete-goal-btn').dataset.id;
+                    goals = goals.filter(goal => goal.id !== id);
+                    renderGoals();
+                }
+            });
+
+            // 清除所有目標
+            document.getElementById('clear-all-goals-btn').addEventListener('click', () => {
+                goals = [];
+                renderGoals();
+            });
+
+
+            // 3. Motivation Engine (自我激勵計畫)
+            document.getElementById('motivation-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const motivationGoal = document.getElementById('motivation-goal').value.trim();
+                const reward = document.getElementById('reward').value.trim();
+                const controlStatement = document.getElementById('control-statement').value.trim();
+
+                if (motivationGoal && reward && controlStatement) {
+                    const newPlan = {
+                        id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
+                        motivationGoal,
+                        reward,
+                        controlStatement
+                    };
+                    motivationPlans.unshift(newPlan); // 新增到最前面
+                    renderMotivationPlans();
+                    e.target.reset(); // 清空表單
+                }
+            });
+
+            // 刪除個別計畫 (事件代理)
+            document.getElementById('motivation-list-container').addEventListener('click', (e) => {
+                if (e.target.closest('.delete-motivation-btn')) {
+                    const id = e.target.closest('.delete-motivation-btn').dataset.id;
+                    motivationPlans = motivationPlans.filter(plan => plan.id !== id);
+                    renderMotivationPlans();
+                }
+            });
+
+            // 清除所有計畫
+            document.getElementById('clear-all-motivation-btn').addEventListener('click', () => {
+                motivationPlans = [];
+                renderMotivationPlans();
+            });
+            
+            // 4. 教師/家長專區 展開/收合
+            const zoneToggle = document.getElementById('support-zone-toggle');
+            const zoneContent = document.getElementById('support-zone-content');
+            const zoneArrow = document.getElementById('support-zone-arrow').querySelector('svg');
+
+            zoneToggle.addEventListener('click', () => {
+                const isExpanded = zoneContent.classList.contains('max-h-0');
+                
+                if (isExpanded) {
+                    zoneContent.classList.remove('max-h-0');
+                    zoneContent.classList.add('max-h-[2000px]', 'pt-4');
+                    zoneArrow.classList.add('rotate-180');
+                } else {
+                    zoneContent.classList.add('max-h-0');
+                    zoneContent.classList.remove('max-h-[2000px]', 'pt-4');
+                    zoneArrow.classList.remove('rotate-180');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

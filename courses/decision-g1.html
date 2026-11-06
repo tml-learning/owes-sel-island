@@ -1,0 +1,659 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>小汪的魔法選擇大冒險</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            /* Use dynamic viewport height with fallback */
+            height: 100vh;
+            height: 100dvh; 
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .scene {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .scene.active {
+            display: flex;
+            opacity: 1;
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-bounce-slow {
+            animation: bounce 3s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+            50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+        }
+        .leaf {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: leafGrow 0.5s forwards;
+        }
+        @keyframes leafGrow {
+            from { transform: scale(0) rotate(-20deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .choice-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .choice-card:active {
+            transform: scale(0.96);
+        }
+        
+        /* 隱藏滾動條但保留滾動功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 針對小螢幕與橫向模式的響應式微調 */
+        @media (max-height: 650px) {
+            .scene-title { font-size: 1.25rem !important; margin-bottom: 0.25rem !important; }
+            .scene-subtitle { font-size: 0.875rem !important; margin-bottom: 0.5rem !important; }
+            .hero-emoji { font-size: 3.5rem !important; }
+        }
+    </style>
+</head>
+<body class="w-full flex flex-col bg-slate-50 selection:bg-sky-200">
+
+    <!-- 頂部進度條與標題 -->
+    <header class="w-full bg-white shadow-sm px-3 py-2 sm:px-6 sm:py-3 z-50 flex justify-between items-center shrink-0 border-b border-slate-100">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <span class="text-xl sm:text-2xl md:text-3xl">🐶</span>
+            <h1 class="text-base sm:text-xl md:text-2xl font-black text-sky-600 truncate max-w-[160px] sm:max-w-none">魔法選擇大冒險</h1>
+        </div>
+        <div class="flex gap-1.5 sm:gap-2 items-center">
+            <!-- 進度圓點 -->
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-0"></div>
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-1"></div>
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-2"></div>
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-3"></div>
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-4"></div>
+            <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-200 transition-all duration-300 indicator" id="ind-5"></div>
+        </div>
+    </header>
+
+    <!-- 主要內容區：所有場景 -->
+    <main class="flex-1 relative w-full h-full overflow-hidden">
+
+        <!-- 場景 0：封面 -->
+        <div id="scene-0" class="scene active flex-col justify-center items-center h-full w-full bg-gradient-to-b from-sky-100 via-sky-50 to-white text-center p-4 sm:p-6 md:p-10 no-scrollbar overflow-y-auto">
+            <div class="hero-emoji text-6xl sm:text-7xl md:text-8xl mb-3 sm:mb-6 animate-bounce-slow">✨🐶✨</div>
+            <h2 class="scene-title text-2xl sm:text-4xl md:text-5xl font-black text-slate-800 mb-2 sm:mb-4 tracking-wider px-2">魔法選擇大冒險</h2>
+            <p class="scene-subtitle text-base sm:text-xl md:text-2xl text-slate-600 mb-6 sm:mb-10 font-bold px-4 max-w-lg">準備好一起學習「負責任的選擇」了嗎？</p>
+            <button onclick="nextScene()" class="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-yellow-950 text-lg sm:text-2xl md:text-3xl font-bold py-3 px-8 sm:py-4 sm:px-12 rounded-full shadow-[0_6px_0_#b45309] active:shadow-[0_1px_0_#b45309] active:translate-y-1.5 transition-all shrink-0 min-h-[48px]">
+                開始冒險 🚀
+            </button>
+        </div>
+
+        <!-- 場景 1：活動一 - 魔法二選一 -->
+        <div id="scene-1" class="scene flex-col justify-start items-center h-full w-full bg-orange-50/60 p-3 sm:p-6 md:p-8 no-scrollbar overflow-y-auto">
+            <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs sm:text-sm md:text-base font-bold mb-2 shrink-0">活動一：暖身遊戲</div>
+            <h2 class="scene-title text-xl sm:text-3xl md:text-4xl font-black text-slate-800 mb-1 sm:mb-2 text-center shrink-0">魔法二選一</h2>
+            <p class="scene-subtitle text-sm sm:text-lg md:text-xl text-slate-600 mb-3 sm:mb-6 text-center font-bold shrink-0">早餐你想吃什麼？請用動作告訴老師！</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 w-full max-w-3xl justify-center mt-1 shrink-0">
+                <!-- 選項 A -->
+                <div class="choice-card bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-xl border-2 sm:border-4 border-orange-200 flex flex-col items-center cursor-pointer min-h-[140px] justify-between" onclick="showChoiceResult('起司蛋餅')">
+                    <div class="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2">🥞</div>
+                    <h3 class="text-lg sm:text-2xl font-bold text-orange-600 mb-2 text-center">香噴噴起司蛋餅</h3>
+                    <div class="bg-orange-100 rounded-xl sm:rounded-2xl py-1.5 px-3 text-xs sm:text-base font-bold text-orange-800 w-full text-center">
+                        🙌 雙手放在頭上
+                    </div>
+                </div>
+                <!-- 選項 B -->
+                <div class="choice-card bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-xl border-2 sm:border-4 border-blue-200 flex flex-col items-center cursor-pointer min-h-[140px] justify-between" onclick="showChoiceResult('冰淇淋餅乾')">
+                    <div class="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2">🍨</div>
+                    <h3 class="text-lg sm:text-2xl font-bold text-blue-600 mb-2 text-center">冰淇淋配餅乾</h3>
+                    <div class="bg-blue-100 rounded-xl sm:rounded-2xl py-1.5 px-3 text-xs sm:text-base font-bold text-blue-800 w-full text-center">
+                        🤲 雙手摸摸肚子
+                    </div>
+                </div>
+            </div>
+
+            <div id="choice-result" class="hidden mt-4 sm:mt-6 bg-green-50 border-2 sm:border-4 border-green-400 text-green-900 text-sm sm:text-xl md:text-2xl font-bold p-4 sm:p-6 rounded-2xl sm:rounded-3xl animate-bounce-slow text-center shrink-0 w-full max-w-3xl shadow-lg transition-all duration-300">
+                <div class="mb-2">✨ 你選擇了 <span id="choice-text" class="text-green-700 text-base sm:text-2xl bg-green-200 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full"></span>！</div>
+                
+                <!-- 具體結果展示區 -->
+                <div id="choice-consequence" class="text-slate-700 text-xs sm:text-lg bg-white p-3 rounded-xl sm:rounded-2xl border border-green-200 mb-2 shadow-inner leading-relaxed">
+                    <!-- 結果文字會在這裡動態生成 -->
+                </div>
+                
+                <div class="text-xs sm:text-base text-green-700 font-black">👇 發現了嗎？每一個選擇，都會帶來不一樣的結果喔！</div>
+            </div>
+        </div>
+
+        <!-- 場景 2：活動二 - 停！問題是什麼？ -->
+        <div id="scene-2" class="scene flex-col justify-start items-center h-full w-full bg-rose-50/60 p-3 sm:p-6 md:p-8 no-scrollbar overflow-y-auto">
+            <div class="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-xs sm:text-sm md:text-base font-bold mb-2 shrink-0">活動二：情境挑戰</div>
+            <h2 class="scene-title text-xl sm:text-3xl md:text-4xl font-black text-slate-800 mb-2 text-center shrink-0">停！問題是什麼？</h2>
+            
+            <div class="w-full max-w-3xl bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-md border-2 sm:border-4 border-rose-200 mt-1 shrink-0">
+                <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center sm:text-left">
+                    <div class="text-5xl sm:text-7xl md:text-8xl leading-none">😠🐶</div>
+                    <div class="flex-1">
+                        <p class="text-base sm:text-xl md:text-2xl leading-relaxed text-slate-700 font-bold">
+                            下課了，小汪很想玩積木 🧱。<br>
+                            可是積木區客滿了，大家都在玩。<br>
+                            小汪覺得好生氣，握緊了小拳頭... ✊
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-sm sm:text-xl md:text-2xl text-rose-600 font-black mt-4 sm:mt-6 text-center animate-pulse shrink-0">
+                🔭 請全班比出望遠鏡！<br>找找看，現在的「問題」是什麼？
+            </p>
+
+            <button onclick="revealProblem()" class="mt-4 sm:mt-6 bg-rose-500 hover:bg-rose-600 text-white text-base sm:text-xl font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-full shadow-[0_4px_0_#be123c] active:translate-y-1 active:shadow-none shrink-0 transition-all min-h-[44px]">
+                點我看答案 💡
+            </button>
+
+            <div id="problem-answer" class="hidden mt-4 sm:mt-6 bg-yellow-100 border-2 sm:border-4 border-yellow-400 text-slate-800 text-base sm:text-xl md:text-2xl font-bold p-3 sm:p-5 rounded-2xl sm:rounded-3xl shrink-0 text-center w-full max-w-3xl">
+                ⚠️ 問題是：<br class="sm:hidden"><span class="text-rose-600">小汪想玩積木，但沒有位子了，他不知道怎麼辦。</span>
+            </div>
+        </div>
+
+        <!-- 場景 3：活動二 - 紅綠牌結果預測 -->
+        <div id="scene-3" class="scene flex-col justify-start items-center h-full w-full bg-slate-50 p-3 sm:p-6 md:p-8 no-scrollbar overflow-y-auto">
+            <div class="bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-xs sm:text-sm md:text-base font-bold mb-2 shrink-0">活動二：預測結果</div>
+            <h2 class="scene-title text-xl sm:text-3xl md:text-4xl font-black text-slate-800 mb-3 sm:mb-6 text-center shrink-0">如果你是小汪，你會怎麼做？</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 w-full max-w-4xl justify-center shrink-0">
+                <!-- 紅牌 -->
+                <div class="bg-red-50/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md border-2 sm:border-4 border-red-400 flex flex-col items-center">
+                    <div class="w-full bg-red-500 text-white text-center py-1.5 text-base sm:text-lg font-black rounded-xl mb-3 shadow-sm">🔴 紅牌選擇</div>
+                    <div class="text-4xl sm:text-6xl mb-2 sm:mb-3">💥</div>
+                    <h3 class="text-base sm:text-xl font-bold text-red-700 mb-4 text-center min-h-[40px] flex items-center justify-center">把別人的積木推倒</h3>
+                    <button onclick="showCardResult('red')" class="w-full bg-red-600 text-white text-sm sm:text-base py-2.5 px-4 rounded-full hover:bg-red-700 mb-3 font-bold shadow-md active:scale-95 transition-all min-h-[44px]">會發生什麼事？</button>
+                    <div id="red-result" class="hidden text-xs sm:text-base font-bold text-red-800 bg-white p-3 rounded-xl border border-red-300 w-full text-center leading-relaxed">
+                        😭 別人會哭、吵架<br>自己會被老師處罰
+                    </div>
+                </div>
+
+                <!-- 綠牌 -->
+                <div class="bg-green-50/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md border-2 sm:border-4 border-green-400 flex flex-col items-center">
+                    <div class="w-full bg-green-500 text-white text-center py-1.5 text-base sm:text-lg font-black rounded-xl mb-3 shadow-sm">🟢 綠牌選擇</div>
+                    <div class="text-4xl sm:text-6xl mb-2 sm:mb-3">🙋‍♂️</div>
+                    <h3 class="text-base sm:text-xl font-bold text-green-700 mb-4 text-center min-h-[40px] flex items-center justify-center">開口問：「我可以一起玩嗎？」</h3>
+                    <button onclick="showCardResult('green')" class="w-full bg-green-600 text-white text-sm sm:text-base py-2.5 px-4 rounded-full hover:bg-green-700 mb-3 font-bold shadow-md active:scale-95 transition-all min-h-[44px]">會發生什麼事？</button>
+                    <div id="green-result" class="hidden text-xs sm:text-base font-bold text-green-800 bg-white p-3 rounded-xl border border-green-300 w-full text-center leading-relaxed">
+                        😃 大家一起蓋城堡<br>交到新的好朋友！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 場景 4：活動三 - 友誼許願樹 -->
+        <div id="scene-4" class="scene flex-col justify-start items-center h-full w-full bg-green-50/60 p-3 sm:p-4 no-scrollbar overflow-hidden relative">
+            <div class="bg-green-200 text-green-900 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full text-xs sm:text-base font-bold mb-1 sm:mb-2 z-10 shrink-0">活動三：建立規範</div>
+            <h2 class="scene-title text-xl sm:text-3xl md:text-4xl font-black text-slate-800 z-10 bg-white/80 px-4 sm:px-6 py-1 rounded-full shrink-0 text-center shadow-sm">我們的友誼許願樹 🌳</h2>
+            <p class="scene-subtitle text-xs sm:text-base text-slate-700 mt-1 z-10 bg-white/80 px-3 sm:px-4 py-0.5 rounded-full shrink-0 text-center font-bold">你希望別人怎麼對待你？把願望變成樹葉吧！</p>
+            
+            <!-- 互動按鈕區 -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-3 justify-center mt-2 sm:mt-4 z-10 w-full max-w-3xl bg-white/70 p-2 sm:p-4 rounded-2xl sm:rounded-3xl border border-white backdrop-blur-sm shrink-0">
+                <button onclick="addLeaf('😊 微笑', 'bg-lime-400')" class="choice-card px-3 py-1.5 sm:px-4 sm:py-2 bg-lime-400 text-lime-950 font-bold rounded-full text-xs sm:text-base shadow-sm border border-lime-500 min-h-[38px]">😊 對我微笑</button>
+                <button onclick="addLeaf('🤝 分享', 'bg-emerald-400')" class="choice-card px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-400 text-emerald-950 font-bold rounded-full text-xs sm:text-base shadow-sm border border-emerald-500 min-h-[38px]">🤝 跟我分享</button>
+                <button onclick="addLeaf('🗣️ 輕輕說', 'bg-teal-400')" class="choice-card px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-400 text-teal-950 font-bold rounded-full text-xs sm:text-base shadow-sm border border-teal-500 min-h-[38px]">🗣️ 輕輕說話</button>
+                <button onclick="addLeaf('🤗 安慰', 'bg-green-400')" class="choice-card px-3 py-1.5 sm:px-4 sm:py-2 bg-green-400 text-green-950 font-bold rounded-full text-xs sm:text-base shadow-sm border border-green-500 min-h-[38px]">🤗 安慰我</button>
+                <button onclick="addLeaf('✋ 守秩序', 'bg-cyan-400')" class="choice-card px-3 py-1.5 sm:px-4 sm:py-2 bg-cyan-400 text-cyan-950 font-bold rounded-full text-xs sm:text-base shadow-sm border border-cyan-500 min-h-[38px]">✋ 守秩序</button>
+            </div>
+
+            <!-- 樹木繪圖區 -->
+            <div class="absolute bottom-0 w-full h-[50%] sm:h-[60%] flex justify-center items-end pb-6 sm:pb-10 pointer-events-none z-0">
+                <!-- 樹幹 -->
+                <div class="w-12 sm:w-20 md:w-24 h-40 sm:h-56 md:h-64 bg-amber-800 rounded-t-xl relative z-0 shadow-inner">
+                    <!-- 樹根 -->
+                    <div class="absolute -bottom-3 -left-6 sm:-left-10 w-24 sm:w-40 md:w-48 h-6 sm:h-8 bg-amber-800 rounded-[100%] shadow-lg"></div>
+                </div>
+                <!-- 葉子容器 -->
+                <div id="tree-leaves-container" class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none flex justify-center">
+                    <div id="leaf-canvas" class="relative w-full max-w-xl sm:max-w-2xl h-full">
+                        <!-- 葉子會動態加在這裡 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 總結文字 (滿 5 片葉子顯示) -->
+            <div id="tree-summary" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 border-2 sm:border-4 border-green-500 p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl z-20 text-center w-11/12 max-w-lg pointer-events-auto">
+                <div class="text-3xl sm:text-4xl mb-2 sm:mb-4">🌟</div>
+                <h3 class="text-lg sm:text-2xl font-black text-green-700 mb-2 sm:mb-4">這就是我們的班級約定！</h3>
+                <p class="text-sm sm:text-xl text-slate-700 font-bold leading-relaxed">因為我們都「希望別人對我們好」，<br>所以我們也要「這樣對待別人」喔！</p>
+                <button onclick="document.getElementById('tree-summary').classList.add('hidden')" class="mt-4 sm:mt-6 bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded-full font-bold transition-colors min-h-[40px]">繼續</button>
+            </div>
+        </div>
+
+        <!-- 場景 5：活動四 - 時光倒流機 -->
+        <div id="scene-5" class="scene flex-col justify-start items-center h-full w-full bg-indigo-950 p-3 sm:p-6 md:p-8 text-white no-scrollbar overflow-y-auto">
+            <div class="bg-indigo-800 text-indigo-100 px-3 py-1 rounded-full text-xs sm:text-sm md:text-base font-bold mb-2 shrink-0">活動四：決策後反思</div>
+            <h2 class="scene-title text-2xl sm:text-4xl md:text-5xl font-black mb-2 sm:mb-4 text-center text-yellow-300 shrink-0">時光倒流機 ⏳</h2>
+            
+            <div class="flex flex-col items-center shrink-0 w-full max-w-4xl z-10">
+                <!-- 啟動區 -->
+                <div id="time-machine-container" class="flex flex-col items-center transition-all duration-500 w-full">
+                    <div id="time-machine" class="text-6xl sm:text-8xl md:text-[100px] mb-2 transition-transform duration-1000 origin-center drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] cursor-pointer" onclick="activateTimeMachine()">🌀</div>
+                    <p id="time-intro-text" class="text-sm sm:text-xl md:text-2xl text-center font-bold mb-4 sm:mb-6 leading-relaxed text-indigo-200 transition-opacity duration-500">
+                        想一想今天不小心做錯的事...<br>準備好要回到過去了嗎？
+                    </p>
+                    <button id="btn-rewind" onclick="activateTimeMachine()" class="bg-purple-600 hover:bg-purple-500 text-white text-base sm:text-xl md:text-2xl font-bold py-2.5 px-6 sm:py-3 sm:px-10 rounded-full shadow-[0_5px_0_#581c87] active:shadow-[0_1px_0_#581c87] active:translate-y-1 transition-all w-full sm:w-auto min-h-[48px]">
+                        啟動時光機 咻——！
+                    </button>
+                </div>
+
+                <!-- 反思區 (初始隱藏) -->
+                <div id="reflection-zone" class="hidden w-full flex-col sm:flex-row gap-3 sm:gap-6 mt-3 sm:mt-6">
+                    <!-- 步驟一：承認錯誤 -->
+                    <div class="flex-1 bg-white/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-pink-400/40 backdrop-blur-md flex flex-col items-center text-center transform opacity-0 translate-y-4 transition-all duration-500 delay-100" id="step-1-card">
+                        <div class="text-4xl sm:text-6xl mb-2">🔍</div>
+                        <h3 class="text-base sm:text-xl font-black text-pink-300 mb-2 bg-pink-900/60 px-3 py-1 rounded-full w-full">1. 誠實放大鏡</h3>
+                        <p class="text-lg sm:text-2xl font-bold text-white mb-1">「我剛剛不小心...」</p>
+                        <p class="text-xs sm:text-sm text-pink-200 font-medium">鼓勵大聲說出剛剛發生的事<br>(例如：我生氣推了人)</p>
+                    </div>
+
+                    <!-- 步驟二：想新方法 -->
+                    <div class="flex-1 bg-white/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-emerald-400/40 backdrop-blur-md flex flex-col items-center text-center transform opacity-0 translate-y-4 transition-all duration-500 delay-300" id="step-2-card">
+                        <div class="text-4xl sm:text-6xl mb-2">🪄</div>
+                        <h3 class="text-base sm:text-xl font-black text-emerald-300 mb-2 bg-emerald-900/60 px-3 py-1 rounded-full w-full">2. 魔法遙控器</h3>
+                        <p class="text-lg sm:text-2xl font-bold text-white mb-1">「下次我可以改成...」</p>
+                        <p class="text-xs sm:text-sm text-emerald-200 font-medium">如果重新選擇，你會怎麼做？<br>(例如：我可以用嘴巴說借過)</p>
+                    </div>
+                </div>
+
+                <!-- 結語 (初始隱藏) -->
+                <div id="time-message" class="hidden mt-4 sm:mt-6 bg-yellow-400/20 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-yellow-400/50 backdrop-blur-md text-center shrink-0 w-full transform opacity-0 translate-y-4 transition-all duration-500 delay-500">
+                    <h3 class="text-base sm:text-2xl font-bold text-yellow-300 mb-1">勇敢說出來，就是最棒的學習！🌟</h3>
+                    <p class="text-xs sm:text-base font-medium text-yellow-100">做錯選擇沒關係，重要的是下次做更好的選擇！</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 底部控制列 (老師操作用) -->
+    <footer class="w-full bg-white border-t border-slate-200 px-3 py-2 sm:px-6 sm:py-3 flex justify-between items-center z-50 shrink-0 shadow-md">
+        <button onclick="prevScene()" id="btn-prev" class="invisible bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-base font-bold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 transition-colors min-h-[40px]">
+            ◀ <span class="hidden sm:inline">上一關</span>
+        </button>
+        
+        <!-- 教師/家長專區按鈕 -->
+        <button onclick="toggleTeacherGuide()" class="text-sky-600 font-bold text-xs sm:text-sm md:text-base text-center px-2 flex-1 hover:text-sky-800 transition-colors flex justify-center items-center gap-1 group min-h-[40px]">
+            <span class="text-base sm:text-xl group-hover:scale-110 transition-transform">📖</span> 
+            <span class="underline underline-offset-4 decoration-sky-300 group-hover:decoration-sky-600">教師 / 家長專區</span>
+        </button>
+
+        <button onclick="nextScene()" id="btn-next" class="bg-sky-500 hover:bg-sky-400 text-white text-xs sm:text-base font-bold py-2 px-3 sm:px-5 rounded-full shadow-[0_3px_0_#0284c7] active:translate-y-0.5 active:shadow-none transition-all flex items-center gap-1.5 min-h-[40px]">
+            <span class="hidden sm:inline">下一關</span> ▶
+        </button>
+    </footer>
+
+    <!-- 教師/家長教學指南 Modal (預設隱藏) -->
+    <div id="teacher-guide-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-3 sm:p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-4xl max-h-[85dvh] sm:h-[85vh] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col transform scale-95 translate-y-4 transition-all duration-300 overflow-hidden">
+            
+            <!-- Modal 標題區 -->
+            <div class="bg-sky-50 p-3 sm:p-5 rounded-t-2xl sm:rounded-t-3xl border-b border-sky-100 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <span class="text-2xl sm:text-4xl">💡</span>
+                    <div>
+                        <h2 class="text-base sm:text-2xl font-black text-slate-800">SEL 教學實施指南</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 font-bold mt-0.5">給大人的話：如何引導孩子學習「負責任的決策」</p>
+                    </div>
+                </div>
+                <button onclick="toggleTeacherGuide()" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex justify-center items-center transition-colors shrink-0">
+                    <span class="text-lg sm:text-xl font-black">✕</span>
+                </button>
+            </div>
+
+            <!-- Modal 內容區 (可滾動) -->
+            <div class="p-3 sm:p-6 overflow-y-auto no-scrollbar flex-1 bg-slate-50">
+                <div class="space-y-4 sm:space-y-6">
+                    
+                    <!-- 前言 -->
+                    <div class="bg-white p-4 rounded-xl sm:rounded-2xl shadow-sm border border-slate-100">
+                        <p class="text-xs sm:text-base text-slate-700 leading-relaxed font-medium">
+                            親愛的老師 / 家長：<br>
+                            對於低年級的孩子來說，「為自己的行為負責」是一個抽象的概念。這個互動教案的設計核心，是透過<b>具體的視覺、肢體動作與生活情境</b>，讓孩子不帶壓力地覺察「選擇」與「結果」的關係。引導時，<b>請多以「好奇的提問」取代「對錯的指責」</b>。
+                        </p>
+                    </div>
+
+                    <!-- 活動指南區塊 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
+                        
+                        <!-- 活動一 -->
+                        <div class="bg-orange-50 p-4 rounded-xl sm:rounded-2xl border-l-4 border-orange-400">
+                            <h3 class="text-base sm:text-lg font-bold text-orange-800 mb-1 flex items-center gap-2"><span>🥞</span> 活動一：魔法二選一</h3>
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium mb-2"><b>教育意義：</b>建立「因果關係」的認知。讓孩子明白，每個選擇都會帶來必然的結果，無論是好是壞。</p>
+                            <div class="bg-white p-2.5 rounded-lg text-xs sm:text-sm text-slate-600">
+                                <b>💡 實施技巧：</b><br>在課堂外，可以開始將生活指令改為選擇題。例如：「你要現在收玩具，還是五分鐘後收？」讓他們習慣做出選擇並承擔結果。
+                            </div>
+                        </div>
+
+                        <!-- 活動二 -->
+                        <div class="bg-rose-50 p-4 rounded-xl sm:rounded-2xl border-l-4 border-rose-400">
+                            <h3 class="text-base sm:text-lg font-bold text-rose-800 mb-1 flex items-center gap-2"><span>🔭</span> 活動二：停！問題是什麼？</h3>
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium mb-2"><b>教育意義：</b>練習「衝動控制」。生氣時大腦會當機，比出「望遠鏡」動作是為了創造一個心理上的「暫停鍵」。</p>
+                            <div class="bg-white p-2.5 rounded-lg text-xs sm:text-sm text-slate-600">
+                                <b>💡 實施技巧：</b><br>未來當孩子發生衝突時，大人可以先不急著調解，而是跟孩子一起比出望遠鏡：「我們一起看看，現在的問題是什麼？」
+                            </div>
+                        </div>
+
+                        <!-- 活動三 -->
+                        <div class="bg-green-50 p-4 rounded-xl sm:rounded-2xl border-l-4 border-green-400">
+                            <h3 class="text-base sm:text-lg font-bold text-green-800 mb-1 flex items-center gap-2"><span>🌳</span> 活動三：友誼許願樹</h3>
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium mb-2"><b>教育意義：</b>培養「同理心」。將單向的「老師規定」，轉換為基於同理心的「我們共同的期望」。</p>
+                            <div class="bg-white p-2.5 rounded-lg text-xs sm:text-sm text-slate-600">
+                                <b>💡 實施技巧：</b><br>將這棵樹的畫面印下來或畫在教室佈告欄。當孩子違反規範時，提醒他：「記得嗎？在許願樹上，你也希望別人對你溫柔喔。」
+                            </div>
+                        </div>
+
+                        <!-- 活動四 -->
+                        <div class="bg-indigo-50 p-4 rounded-xl sm:rounded-2xl border-l-4 border-indigo-400">
+                            <h3 class="text-base sm:text-lg font-bold text-indigo-800 mb-1 flex items-center gap-2"><span>⏳</span> 活動四：時光倒流機</h3>
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium mb-2"><b>教育意義：</b>建立「成長型思維」。做錯事不可怕，誠實面對並找出「下次可以怎麼做」才是最重要的。</p>
+                            <div class="bg-white p-2.5 rounded-lg text-xs sm:text-sm text-slate-600">
+                                <b>💡 實施技巧：</b><br>「時光機」是一個降低防衛心的遊戲語彙。當孩子犯錯怕被罵而說謊時，啟動時光機讓他們擁有「安全重來」的心理空間。
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- Modal 底部按鈕 -->
+            <div class="bg-white p-3 sm:p-4 border-t border-slate-100 flex justify-center shrink-0 rounded-b-2xl sm:rounded-b-3xl">
+                <button onclick="toggleTeacherGuide()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-base font-bold py-2.5 px-8 rounded-full transition-colors active:scale-95 shadow-md min-h-[40px]">
+                    我了解了，回到課程
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScene = 0;
+        const totalScenes = 6;
+        let leafCount = 0;
+        let timeMachineRotation = 0; // 新增全域變數紀錄時光機的旋轉角度
+
+        function updateUI() {
+            // 隱藏所有場景
+            document.querySelectorAll('.scene').forEach((scene, index) => {
+                if (index === currentScene) {
+                    scene.classList.add('active');
+                } else {
+                    scene.classList.remove('active');
+                }
+            });
+
+            // 更新進度條圓點
+            document.querySelectorAll('.indicator').forEach((ind, index) => {
+                if (index === currentScene) {
+                    ind.classList.replace('bg-gray-200', 'bg-sky-500');
+                    ind.classList.add('scale-125');
+                } else {
+                    ind.classList.replace('bg-sky-500', 'bg-gray-200');
+                    ind.classList.remove('scale-125');
+                }
+            });
+
+            // 更新按鈕狀態
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            
+            if (currentScene === 0) {
+                btnPrev.classList.add('invisible');
+            } else {
+                btnPrev.classList.remove('invisible');
+            }
+
+            if (currentScene === totalScenes - 1) {
+                btnNext.innerHTML = '<span class="hidden sm:inline">✨ 完美結束</span><span class="sm:hidden">✨ 完成</span>';
+                btnNext.classList.replace('bg-sky-500', 'bg-green-500');
+                btnNext.classList.replace('shadow-[0_4px_0_#0284c7]', 'shadow-[0_4px_0_#15803d]');
+                btnNext.classList.replace('hover:bg-sky-400', 'hover:bg-green-400');
+            } else {
+                btnNext.innerHTML = '<span class="hidden sm:inline">下一關</span> ▶';
+                btnNext.classList.replace('bg-green-500', 'bg-sky-500');
+                btnNext.classList.replace('shadow-[0_4px_0_#15803d]', 'shadow-[0_4px_0_#0284c7]');
+                btnNext.classList.replace('hover:bg-green-400', 'hover:bg-sky-400');
+            }
+        }
+
+        // 新增：重置遊戲狀態，確保重玩時畫面乾淨
+        function resetGameStates() {
+            // 重置場景 1 (選擇結果)
+            document.getElementById('choice-result').classList.add('hidden');
+            
+            // 重置場景 2 (問題解答)
+            document.getElementById('problem-answer').classList.add('hidden');
+            
+            // 重置場景 3 (紅綠牌結果)
+            document.getElementById('red-result').classList.add('hidden');
+            document.getElementById('green-result').classList.add('hidden');
+            
+            // 重置場景 4 (許願樹)
+            document.getElementById('leaf-canvas').innerHTML = '';
+            leafCount = 0;
+            document.getElementById('tree-summary').classList.add('hidden');
+            
+            // 重置場景 5 (時光機)
+            timeMachineRotation = 0; // 重置旋轉角度為 0
+            const machine = document.getElementById('time-machine');
+            const btn = document.getElementById('btn-rewind');
+            const introText = document.getElementById('time-intro-text');
+            const container = document.getElementById('time-machine-container');
+            const reflectionZone = document.getElementById('reflection-zone');
+            const step1 = document.getElementById('step-1-card');
+            const step2 = document.getElementById('step-2-card');
+            const msg = document.getElementById('time-message');
+            
+            machine.style.transform = 'rotate(0deg) scale(1)';
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerText = "啟動時光機 咻——！";
+            introText.classList.remove('opacity-0', 'h-0', 'mb-0', 'overflow-hidden');
+            container.classList.remove('mb-0');
+            
+            reflectionZone.classList.add('hidden');
+            reflectionZone.classList.remove('flex');
+            msg.classList.add('hidden');
+            
+            step1.classList.add('opacity-0', 'translate-y-4');
+            step2.classList.add('opacity-0', 'translate-y-4');
+            msg.classList.add('opacity-0', 'translate-y-4');
+        }
+
+        function nextScene() {
+            if (currentScene < totalScenes - 1) {
+                currentScene++;
+                updateUI();
+            } else {
+                // 已在最後一關，點擊完美結束返回首頁，並重置所有狀態
+                currentScene = 0;
+                resetGameStates();
+                updateUI();
+            }
+        }
+
+        function prevScene() {
+            if (currentScene > 0) {
+                currentScene--;
+                updateUI();
+            }
+        }
+
+        // --- 場景 1 互動功能 ---
+        function showChoiceResult(choice) {
+            const resultDiv = document.getElementById('choice-result');
+            const choiceText = document.getElementById('choice-text');
+            const consequenceText = document.getElementById('choice-consequence');
+            
+            choiceText.textContent = choice;
+            
+            // 根據選擇給出具體、貼近生活的結果範例
+            if (choice === '起司蛋餅') {
+                consequenceText.innerHTML = "👉 <b>結果：</b>肚子吃得暖呼呼的，上課充滿力氣，下課可以跑很快！💪";
+            } else if (choice === '冰淇淋餅乾') {
+                consequenceText.innerHTML = "👉 <b>結果：</b>吃的時候很開心，但到了第二節課肚子可能會痛痛的，還會餓得沒力氣玩... 🥺";
+            }
+            
+            resultDiv.classList.remove('hidden');
+            
+            // 每次點擊重新觸發彈跳動畫
+            resultDiv.classList.remove('animate-bounce-slow');
+            void resultDiv.offsetWidth; // 觸發 reflow
+            resultDiv.classList.add('animate-bounce-slow');
+        }
+
+        // --- 場景 2 互動功能 ---
+        function revealProblem() {
+            document.getElementById('problem-answer').classList.remove('hidden');
+            document.getElementById('problem-answer').classList.add('animate-bounce');
+            setTimeout(() => {
+                document.getElementById('problem-answer').classList.remove('animate-bounce');
+            }, 1000);
+        }
+
+        // --- 場景 3 互動功能 ---
+        function showCardResult(color) {
+            if (color === 'red') {
+                document.getElementById('red-result').classList.remove('hidden');
+            } else {
+                document.getElementById('green-result').classList.remove('hidden');
+            }
+        }
+
+        // --- 場景 4 互動功能 (友誼許願樹) ---
+        function addLeaf(text, bgColor) {
+            const container = document.getElementById('leaf-canvas');
+            const leaf = document.createElement('div');
+            
+            // 隨機位置 (設定在樹幹上方的樹冠區域)
+            const left = Math.random() * 80 + 10; // 10% to 90%
+            const top = Math.random() * 60 + 5;  // 5% to 65% 避免蓋到最下方樹幹
+            
+            // 隨機些微旋轉角度
+            const rotate = Math.floor(Math.random() * 40) - 20; // -20 to 20 degrees
+            
+            leaf.className = `leaf absolute ${bgColor} text-gray-900 font-bold px-3 py-1 md:px-4 md:py-2 rounded-tl-full rounded-br-full rounded-tr-xl rounded-bl-xl shadow-md border border-white/50 z-10 text-xs md:text-sm whitespace-nowrap`;
+            leaf.style.left = `${left}%`;
+            leaf.style.top = `${top}%`;
+            leaf.style.transform = `scale(0) rotate(${rotate}deg)`; // Initial state for animation
+            leaf.innerText = text;
+            
+            container.appendChild(leaf);
+            leafCount++;
+
+            // 動態修改 animation 的目標 rotation
+            setTimeout(() => {
+                leaf.style.transform = `scale(1) rotate(${rotate}deg)`;
+            }, 50); // Small delay to allow DOM update before animating
+
+            // 加入滿5片葉子，顯示總結
+            if(leafCount === 5) {
+                setTimeout(() => {
+                    document.getElementById('tree-summary').classList.remove('hidden');
+                }, 800);
+            }
+        }
+
+        // --- 場景 5 互動功能 (時光機) ---
+        function activateTimeMachine() {
+            const machine = document.getElementById('time-machine');
+            const btn = document.getElementById('btn-rewind');
+            const introText = document.getElementById('time-intro-text');
+            const container = document.getElementById('time-machine-container');
+            const reflectionZone = document.getElementById('reflection-zone');
+            const step1 = document.getElementById('step-1-card');
+            const step2 = document.getElementById('step-2-card');
+            const msg = document.getElementById('time-message');
+            
+            // 避免動畫中重複點擊
+            if(btn.disabled) return;
+
+            // 每次點擊都增加旋轉角度 (每次多轉 1080 度 / 3圈)
+            timeMachineRotation -= 1080;
+
+            // 如果是「再倒流一次」，先將下方的卡片淡出，製造重新載入的過場感
+            step1.classList.add('opacity-0', 'translate-y-4');
+            step2.classList.add('opacity-0', 'translate-y-4');
+            msg.classList.add('opacity-0', 'translate-y-4');
+
+            // 加入旋轉特效與按鈕禁用 (使用動態計算的角度)
+            machine.style.transform = `rotate(${timeMachineRotation}deg) scale(1.5)`;
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerText = "時光倒流中...";
+            introText.classList.add('opacity-0', 'h-0', 'mb-0', 'overflow-hidden'); // 隱藏說明文字節省空間
+            
+            setTimeout(() => {
+                // 動畫後半段：縮小且保持當前累積的旋轉角度
+                machine.style.transform = `rotate(${timeMachineRotation}deg) scale(0.7)`;
+                container.classList.add('mb-0');
+                
+                // 顯示反思區塊
+                reflectionZone.classList.remove('hidden');
+                reflectionZone.classList.add('flex'); // 確保使用 flex 佈局
+                msg.classList.remove('hidden');
+                
+                // 觸發進場動畫 (移除隱藏類別，觸發 transition)
+                setTimeout(() => {
+                    step1.classList.remove('opacity-0', 'translate-y-4');
+                    step2.classList.remove('opacity-0', 'translate-y-4');
+                    msg.classList.remove('opacity-0', 'translate-y-4');
+                    
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.innerText = "再倒流一次！";
+                }, 50);
+
+            }, 1200);
+        }
+
+        // --- 教師/家長專區 Modal 控制 ---
+        function toggleTeacherGuide() {
+            const modal = document.getElementById('teacher-guide-modal');
+            const modalContent = modal.children[0];
+
+            if (modal.classList.contains('hidden')) {
+                // 顯示 Modal
+                modal.classList.remove('hidden');
+                // 留一點時間讓 display:block 生效，再觸發動畫
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95', 'translate-y-4');
+                }, 10);
+            } else {
+                // 隱藏 Modal
+                modal.classList.add('opacity-0');
+                modalContent.classList.add('scale-95', 'translate-y-4');
+                // 等待淡出動畫結束後，加上 hidden 徹底隱藏
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // 初始化
+        updateUI();
+    </script>
+</body>
+</html>

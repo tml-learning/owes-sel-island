@@ -1,0 +1,1058 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我是自己的小超人：三年級自我管理基地</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Inter 字體 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* 淺藍色背景 */
+            min-height: 100vh;
+        }
+        .section-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .section-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* 專為深呼吸動畫設計的 CSS */
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            background-color: #3b82f6; /* 藍色 */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+            animation: breathe 8s infinite ease-in-out; /* 4s吸氣 + 4s吐氣 = 8s 循環 */
+            animation-play-state: paused; /* 預設暫停，等待使用者點擊開始 */
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+        }
+        @keyframes breathe {
+            0% { transform: scale(1); opacity: 1; background-color: #3b82f6; }
+            50% { transform: scale(1.5); opacity: 0.8; background-color: #1e40af; }
+            100% { transform: scale(1); opacity: 1; background-color: #3b82f6; }
+        }
+        /* 冷靜區背景 */
+        .cooldown-background {
+            background: linear-gradient(135deg, #a7f3d0 0%, #d1fae5 100%);
+        }
+        
+        /* 雲朵視覺區容器 */
+        .cloud-visual {
+            height: 80px; 
+            overflow: hidden; 
+            position: relative; 
+            background-color: #e0f2fe; /* 淺藍天色 */
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #93c5fd;
+        }
+
+        /* 雲朵的視覺化樣式 (使用 CSS 繪製) */
+        .cloud-main {
+            width: 100px;
+            height: 50px;
+            position: relative;
+        }
+        .cloud-main::before,
+        .cloud-main::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .cloud-main::before {
+            width: 80px;
+            height: 80px;
+            top: -40px;
+            left: 10px;
+        }
+        .cloud-main::after {
+            width: 50px;
+            height: 50px;
+            top: -20px;
+            right: 0px;
+        }
+    </style>
+    <!-- 引入 Tone.js for sound generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+</head>
+<body class="p-4 sm:p-8">
+
+    <!-- 緊急按鈕 (區塊 2: 情緒調節) -->
+    <button id="emergencyButton" class="fixed top-4 right-4 bg-red-500 hover:bg-red-600 text-white font-extrabold py-3 px-6 rounded-full shadow-lg z-50 transition transform hover:scale-105" onclick="showCoolDown()">
+        🚨 暫停！緊急冷靜區
+    </button>
+
+    <!-- 主標題與導覽 -->
+    <div id="mainView" class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-3xl shadow-2xl transition-all duration-500">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-center text-blue-600 mb-2">
+            我是自己的小超人！
+        </h1>
+        <p class="text-xl text-center text-gray-500 mb-10">
+            三年級自我管理祕密基地 (SEL 任務)
+        </p>
+        
+        <!-- 任務卡片區 (導覽) -->
+        <div class="grid md:grid-cols-2 gap-6 mb-10">
+            
+            <!-- 區塊 1: 專注與覺察 -->
+            <div class="section-card bg-yellow-100 p-6 rounded-2xl shadow-md border-4 border-yellow-400" onclick="showSection('mindfulness')">
+                <h2 class="text-2xl font-bold text-yellow-800 flex items-center mb-2">
+                    🔭 區塊 1: 我的心力望遠鏡
+                </h2>
+                <p class="text-gray-600">
+                    學習將心力放在當下，覺察情緒。
+                </p>
+            </div>
+
+            <!-- 區塊 2: 情緒調節 (主要透過緊急按鈕，這裡作為提醒/入口) -->
+            <div class="section-card bg-green-100 p-6 rounded-2xl shadow-md border-4 border-green-400" onclick="showCoolDown()">
+                <h2 class="text-2xl font-bold text-green-800 flex items-center mb-2">
+                    🧘 區塊 2: 暫停！冷靜小站
+                </h2>
+                <p class="text-gray-600">
+                    主動使用冷靜空間，調整呼吸和心情。
+                </p>
+            </div>
+
+            <!-- 區塊 3: 目標設定 -->
+            <div class="section-card bg-purple-100 p-6 rounded-2xl shadow-md border-4 border-purple-400" onclick="showSection('goalsetting')">
+                <h2 class="text-2xl font-bold text-purple-800 flex items-center mb-2">
+                    🚀 區塊 3: 我的火箭發射計畫
+                </h2>
+                <p class="text-gray-600">
+                    設定簡單的短期目標，知道「我要達成什麼？」
+                </p>
+            </div>
+
+            <!-- 區塊 4: 專注度 -->
+            <div class="section-card bg-red-100 p-6 rounded-2xl shadow-md border-4 border-red-400" onclick="showSection('brainbreak')">
+                <h2 class="text-2xl font-bold text-red-800 flex items-center mb-2">
+                    🔋 區塊 4: 活力充電站
+                </h2>
+                <p class="text-gray-600">
+                    大腦休息時間，用身體活動來提升專注力。
+                </p>
+            </div>
+        </div>
+
+        <!-- 教師/家長專區入口按鈕 -->
+        <div class="mt-8 pt-4 border-t-2 border-gray-100">
+            <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition transform hover:scale-[1.01]" onclick="toggleSupportZone()">
+                📖 教師/家長專區 (SEL 教育指南)
+            </button>
+        </div>
+        
+        <!-- 教師/家長專區內容 (預設隱藏) -->
+        <div id="supportZone" class="hidden mt-8 p-8 bg-indigo-50 rounded-3xl shadow-inner border-4 border-indigo-200">
+            <h2 class="text-3xl font-extrabold text-indigo-700 mb-6 border-b pb-2">
+                給大人的話：SEL 實施指南與依據
+            </h2>
+
+            <div class="space-y-8 text-gray-700">
+                <!-- 總體 SEL 依據 -->
+                <div>
+                    <h3 class="text-xl font-bold text-indigo-600 mb-3">📘 整體教育依據：CASEL 核心能力</h3>
+                    <p class="mb-2">
+                        本應用程式的設計目標在於培養社交與情緒學習（SEL）中的三大核心能力：**自我覺察 (Self-Awareness)**、**自我管理 (Self-Management)**，以及部分**負責的決策 (Responsible Decision-Making)**。
+                    </p>
+                    <ul class="list-disc list-inside ml-4 text-sm bg-indigo-100 p-3 rounded-lg">
+                        <li>**目標：** 讓孩子從「被動管理」轉為「主動執行」。</li>
+                        <li>**實施：** 鼓勵孩子在遇到困難時，主動點擊緊急按鈕或選擇任務卡。</li>
+                    </ul>
+                </div>
+
+                <!-- 區塊 1: 心力望遠鏡 Rationale -->
+                <div>
+                    <h3 class="text-xl font-bold text-yellow-700 mb-3 flex items-center">
+                        🔭 區塊 1: 我的心力望遠鏡 (正念覺察)
+                    </h3>
+                    <p class="font-semibold mb-2">
+                        來源依據：專注力訓練 (Attention Training) 與情緒命名 (Affect Labeling)。
+                    </p>
+                    <p>
+                        透過 **1 分鐘聽力遊戲** 訓練孩子將心力導向當下（即「正念」），這能強化前額葉的專注功能，有效對抗分心。而 **情緒天氣瓶** 則是鼓勵孩子為自己的感覺貼上標籤，研究顯示，為情緒命名能有效降低情緒的強度。
+                    </p>
+                    <p class="mt-2 text-sm text-yellow-600 font-medium">
+                        **實施指南：** 引導孩子在情緒低落或高漲時，先用「天氣圖」來形容，而非直接詢問「你怎麼了」，這能降低他們的防禦心。
+                    </p>
+                </div>
+
+                <!-- 區塊 2: 冷靜小站 Rationale -->
+                <div>
+                    <h3 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+                        🧘 區塊 2: 暫停！冷靜小站 (情緒調節)
+                    </h3>
+                    <p class="font-semibold mb-2">
+                        來源依據：生理回饋 (Biofeedback) 與感官替代 (Sensory Grounding)。
+                    </p>
+                    <p>
+                        深呼吸訓練是標準的情緒管理工具，它直接啟動副交感神經系統，幫助身體從戰鬥或逃跑的狀態中脫離。**感官工具箱（聲音/視覺）** 則屬於「落地」技巧 (Grounding)，讓孩子將注意力集中於當下的感官輸入，避免情緒過度擴大。
+                    </p>
+                    <p class="mt-2 text-sm text-green-600 font-medium">
+                        **實施指南：** 在孩子尚未失控時，練習使用緊急按鈕。例如，在考試前或感到焦慮時，主動帶領他們進行 3 個循環的深呼吸。
+                    </p>
+                </div>
+
+                <!-- 區塊 3: 火箭發射計畫 Rationale -->
+                <div>
+                    <h3 class="text-xl font-bold text-purple-700 mb-3 flex items-center">
+                        🚀 區塊 3: 我的火箭發射計畫 (目標設定)
+                    </h3>
+                    <p class="font-semibold mb-2">
+                        來源依據：SMART 原則與自我效能感 (Self-Efficacy)。
+                    </p>
+                    <p>
+                        「目標、執行、獎勵」的三段式結構，是將複雜任務轉化為 **S (具體)、M (可衡量)、A (可達成)** 的小目標。這種方式能讓孩子對任務擁有掌控感 (Control)，每次完成任務都會獲得獎勵，從而建立**「我做得到」**的自我效能感。
+                    </p>
+                    <p class="mt-2 text-sm text-purple-600 font-medium">
+                        **實施指南：** 務必讓孩子**自己**決定獎勵，並確保獎勵是**立即且合理的**。例如，完成 10 分鐘專注，獎勵 5 分鐘休息；避免使用「考 100 分」這種難以控制的結果作為目標。
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- 內容展示區 (所有子頁面/任務都在這裡) -->
+    <div id="contentView" class="hidden fixed inset-0 z-40 bg-white overflow-y-auto">
+        <div class="max-w-3xl mx-auto p-4 sm:p-8 relative">
+            
+            <!-- 關閉按鈕 -->
+            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-2" onclick="hideSection()">
+                &times;
+            </button>
+            
+            <h2 id="contentTitle" class="text-3xl font-bold text-center mb-8 pt-4"></h2>
+            <div id="contentBody">
+                <!-- 內容將由 JavaScript 動態插入 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 虛擬冷靜區 Modal (區塊 2: 情緒調節) -->
+    <div id="coolDownModal" class="hidden fixed inset-0 z-50 flex items-center justify-center cooldown-background transition-opacity duration-300">
+        <div class="max-w-2xl w-full p-8 rounded-3xl shadow-2xl bg-white/95 backdrop-blur-sm text-center border-8 border-green-500 relative">
+            <h3 class="text-3xl font-extrabold text-green-700 mb-4">
+                🌿 冷靜小站：給自己一個深呼吸！
+            </h3>
+            <p class="text-xl text-gray-600 mb-6">
+                感覺壓力大或生氣時，來這裡重新集中。
+            </p>
+
+            <!-- 1. 深呼吸動畫與控制 -->
+            <div class="flex flex-col items-center mb-8">
+                <div id="breathingInstruction" class="text-2xl font-bold text-blue-600 mb-4">
+                    請跟著圓圈的變化，深呼吸
+                </div>
+                <div id="breathingCircle" class="breathing-circle">
+                    準備
+                </div>
+                
+                <div id="breathingControls" class="mt-6 flex space-x-4">
+                    <button id="startBreathingBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition" onclick="initiateBreathing()">
+                        ▶️ 開始深呼吸 (8秒循環)
+                    </button>
+                    <button id="resetBreathingBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow-md transition hidden" onclick="resetBreathing()">
+                        🔄 重新開始
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. 感官工具箱 (已加入聲響與視覺動畫) -->
+            <div class="mb-8">
+                <h4 class="text-xl font-bold text-gray-700 mb-3">💧 感官工具箱 (模擬平靜)</h4>
+                <div class="flex justify-center space-x-4">
+                    <!-- 雨聲按鈕 -->
+                    <button id="rainBtn" data-playing="false" 
+                            class="p-3 bg-blue-200 text-blue-800 rounded-lg font-semibold hover:bg-blue-300 transition" 
+                            onclick="playRainSound(this)">
+                        🌧️ 想像聽雨聲 (Sound)
+                    </button>
+                    <!-- 雲朵按鈕 -->
+                    <button id="cloudBtn" data-showing="false"
+                            class="p-3 bg-indigo-200 text-indigo-800 rounded-lg font-semibold hover:bg-indigo-300 transition"
+                            onclick="showSlowClouds()">
+                        ☁️ 看著雲朵慢速飄動 (Sight)
+                    </button>
+                </div>
+                
+                <!-- 雲朵視覺區 wrapper (最小寬度 max-w-48) -->
+                <div class="max-w-48 mx-auto"> 
+                    <!-- 雲朵視覺區 (H: 80px) -->
+                    <div id="cloudVisual" class="cloud-visual hidden mt-4">
+                        <!-- 雲朵元素 (Top/4 讓雲朵視覺上置中) -->
+                        <div id="theCloud" class="absolute top-1/4" style="transform: translateX(-150px);">
+                            <div class="cloud-main"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="mt-2 text-sm text-gray-500">（點擊按鈕啟動，雲朵飄出邊界會自動停止）</p>
+            </div>
+            
+            <!-- 3. 動一動 -->
+            <div class="mb-8">
+                <h4 class="text-xl font-bold text-gray-700 mb-3">🤸 動一動，身體放鬆</h4>
+                <p class="text-lg text-gray-600">
+                    伸展操：站起來，雙手向上伸一個大懶腰，感覺身體被拉長，停留 5 秒。
+                </p>
+            </div>
+
+            <!-- 實作延伸 -->
+            <p class="text-sm text-gray-500 mb-6">
+                💡 **實作延伸：** 記得在教室或家裡找一個專屬你的**「安靜的角落」**喔！
+            </p>
+
+            <button class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 px-8 rounded-xl shadow-lg transition" onclick="hideCoolDown()">
+                我冷靜了，回到任務基地！
+            </button>
+        </div>
+    </div>
+    
+    <!-- Custom Confirmation Modal (取代 window.confirm()) -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl text-center max-w-sm w-full">
+            <p id="confirmMessage" class="text-lg font-semibold mb-6 text-gray-700">您確定要執行此操作嗎？</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirmYesBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition">確定</button>
+                <button id="confirmNoBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition">取消</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        // --- 核心共用變數 (非資料庫) ---
+        let currentSection = '';
+        let timerInterval;
+        let breathingTimer;
+        let rainNoise = null;
+        let rainReverb = null;
+
+        // *** 任務卡數據儲存 (僅限於當前瀏覽器工作階段) ***
+        let missionCards = []; 
+        
+        const mainView = document.getElementById('mainView');
+        const contentView = document.getElementById('contentView');
+        const contentTitle = document.getElementById('contentTitle');
+        const contentBody = document.getElementById('contentBody');
+        const coolDownModal = document.getElementById('coolDownModal');
+        const breathingCircle = document.getElementById('breathingCircle');
+        const breathingInstruction = document.getElementById('breathingInstruction');
+        const startBreathingBtn = document.getElementById('startBreathingBtn');
+        const resetBreathingBtn = document.getElementById('resetBreathingBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const supportZone = document.getElementById('supportZone');
+        
+        // 雲朵動畫變數
+        const CLOUD_WIDTH = 150; 
+        let currentTranslateX = -CLOUD_WIDTH; 
+        let speed = 0.1; 
+        let cloudAnimationFrameId = null;
+        let isCloudMoving = false;
+        
+        // 將刪除函式暴露給全局，讓 onclick 事件可以使用
+        window.deleteCardWithConfirm = deleteCardWithConfirm;
+
+        // --- 核心導覽功能 ---
+
+        function showSection(section) {
+            currentSection = section;
+            mainView.classList.add('hidden');
+            contentView.classList.remove('hidden');
+            contentView.scrollTo(0, 0); // 回到頂部
+
+            switch (section) {
+                case 'mindfulness':
+                    renderMindfulness();
+                    break;
+                case 'goalsetting':
+                    renderGoalSetting();
+                    break;
+                case 'brainbreak':
+                    renderBrainBreak();
+                    break;
+                default:
+                    hideSection();
+            }
+        }
+
+        function hideSection() {
+            mainView.classList.remove('hidden');
+            contentView.classList.add('hidden');
+            contentTitle.innerHTML = '';
+            contentBody.innerHTML = '';
+            clearInterval(timerInterval);
+        }
+
+        // --- 教師/家長專區功能 ---
+        function toggleSupportZone() {
+            supportZone.classList.toggle('hidden');
+            const button = document.querySelector('.mt-8 > button');
+            if (!supportZone.classList.contains('hidden')) {
+                button.innerText = '🔼 關閉 教師/家長專區';
+            } else {
+                button.innerText = '📖 教師/家長專區 (SEL 教育指南)';
+            }
+            // 讓頁面滾動到底部，以便看到專區
+            if (!supportZone.classList.contains('hidden')) {
+                supportZone.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+
+        function showCoolDown() {
+            coolDownModal.classList.remove('hidden');
+            resetBreathing();
+            stopAllSensory(); 
+        }
+
+        function stopAllSensory() {
+            const rainBtn = document.getElementById('rainBtn');
+            if (rainBtn && rainBtn.dataset.playing === 'true') {
+                playRainSound(rainBtn); 
+            }
+            const cloudBtn = document.getElementById('cloudBtn');
+            if (cloudBtn && cloudBtn.dataset.showing === 'true') {
+                stopCloudAnimation(cloudBtn); 
+            }
+        }
+
+        function hideCoolDown() {
+            coolDownModal.classList.add('hidden');
+            resetBreathing(); 
+            stopAllSensory();
+        }
+
+        // --- 區塊 2: 冷靜區功能 (深呼吸/聲音/視覺) ---
+        
+        function updateBreathingInstruction(action) {
+            if (action === '吸') {
+                breathingInstruction.innerText = '💪 吸氣 (4 秒) - 圓圈正在變大';
+                breathingCircle.innerText = '吸';
+            } else {
+                breathingInstruction.innerText = '😌 吐氣 (4 秒) - 圓圈正在縮小';
+                breathingCircle.innerText = '吐';
+            }
+        }
+
+        function initiateBreathing() {
+            startBreathingBtn.classList.add('hidden');
+            resetBreathingBtn.classList.remove('hidden');
+            breathingCircle.style.animationPlayState = 'running';
+            updateBreathingInstruction('吸');
+            clearInterval(breathingTimer);
+            let step = 0; 
+            breathingTimer = setInterval(() => {
+                const action = (step % 2 === 0) ? '吐' : '吸';
+                updateBreathingInstruction(action);
+                step++;
+            }, 4000);
+        }
+
+        function resetBreathing() {
+            breathingCircle.style.animationPlayState = 'paused';
+            clearInterval(breathingTimer);
+            breathingInstruction.innerText = '請跟著圓圈的變化，深呼吸';
+            breathingCircle.innerText = '準備';
+            startBreathingBtn.classList.remove('hidden');
+            resetBreathingBtn.classList.add('hidden');
+        }
+
+        function initAudio() {
+            if (rainNoise === null) {
+                // Initialize Tone.js components
+                rainNoise = new Tone.Noise('pink').toDestination();
+                rainReverb = new Tone.Reverb({
+                    decay: 3.5, 
+                    wet: 0.7 
+                }).toDestination();
+                rainNoise.connect(rainReverb);
+                rainNoise.volume.value = -Infinity;
+                rainNoise.start(); 
+            }
+        }
+
+        async function playRainSound(button) {
+            // Must start context on user interaction
+            await Tone.start();
+            initAudio();
+            const isPlaying = button.dataset.playing === 'true';
+            
+            if (isPlaying) {
+                rainNoise.volume.rampTo(-Infinity, 2);
+                button.dataset.playing = 'false';
+                button.innerHTML = '🌧️ 想像聽雨聲 (Sound)';
+                button.classList.remove('bg-red-400', 'text-white');
+                button.classList.add('bg-blue-200', 'text-blue-800');
+            } else {
+                const cloudBtn = document.getElementById('cloudBtn');
+                if (cloudBtn && cloudBtn.dataset.showing === 'true') {
+                    stopCloudAnimation(cloudBtn); 
+                }
+                button.dataset.playing = 'true';
+                button.innerHTML = '🌧️ 正在播放雨聲... 點擊停止';
+                button.classList.remove('bg-blue-200', 'text-blue-800');
+                button.classList.add('bg-red-400', 'text-white');
+                rainNoise.volume.value = -Infinity; 
+                rainNoise.volume.rampTo(-24, 4); // Soft rain volume
+            }
+        }
+        
+        function checkBoundary() {
+            const cloudVisual = document.getElementById('cloudVisual');
+            const skyWidth = cloudVisual.offsetWidth;
+            // Cloud stops when its left edge reaches the container's right edge
+            if (currentTranslateX > skyWidth) {
+                stopCloudAnimation(document.getElementById('cloudBtn'), true); 
+                return true;
+            }
+            return false;
+        }
+
+        function cloudDriftAnimate() {
+            if (!isCloudMoving) return;
+            currentTranslateX += speed;
+            document.getElementById('theCloud').style.transform = `translateX(${currentTranslateX}px)`;
+            if (checkBoundary()) {
+                return; 
+            }
+            cloudAnimationFrameId = requestAnimationFrame(cloudDriftAnimate);
+        }
+
+        function stopCloudAnimation(button, autoStopped = false) {
+            const cloudVisual = document.getElementById('cloudVisual');
+            const theCloud = document.getElementById('theCloud');
+            
+            if (cloudAnimationFrameId) {
+                cancelAnimationFrame(cloudAnimationFrameId);
+                cloudAnimationFrameId = null;
+            }
+            isCloudMoving = false;
+            cloudVisual.classList.add('hidden');
+            currentTranslateX = -CLOUD_WIDTH;
+            theCloud.style.transform = `translateX(${currentTranslateX}px)`; 
+            button.dataset.showing = 'false';
+            button.innerHTML = '☁️ 看著雲朵慢速飄動 (Sight)';
+            button.classList.remove('bg-red-400', 'text-white');
+            button.classList.add('bg-indigo-200', 'text-indigo-800');
+            
+            if (autoStopped) {
+                 alertMessage('雲朵已完全飄出邊界，視覺放鬆時間結束。', 'info');
+            }
+        }
+
+        function showSlowClouds() {
+            const cloudBtn = document.getElementById('cloudBtn');
+            const isShowing = cloudBtn.dataset.showing === 'true';
+            
+            if (isShowing) {
+                stopCloudAnimation(cloudBtn);
+            } else {
+                const rainBtn = document.getElementById('rainBtn');
+                if (rainBtn && rainBtn.dataset.playing === 'true') {
+                    playRainSound(rainBtn); 
+                }
+                document.getElementById('cloudVisual').classList.remove('hidden');
+                cloudBtn.dataset.showing = 'true';
+                cloudBtn.innerHTML = '☁️ 正在飄動... 點擊停止';
+                cloudBtn.classList.remove('bg-indigo-200', 'text-indigo-800');
+                cloudBtn.classList.add('bg-red-400', 'text-white');
+                currentTranslateX = -CLOUD_WIDTH; // Reset position
+                document.getElementById('theCloud').style.transform = `translateX(${currentTranslateX}px)`; 
+                isCloudMoving = true;
+                cloudDriftAnimate();
+            }
+        }
+        
+        // --- 區塊 1: 專注與覺察 (Mindfulness) ---
+
+        function renderMindfulness() {
+            contentTitle.innerHTML = '🔭 區塊 1: 我的心力望遠鏡';
+            contentBody.innerHTML = `
+                <div class="bg-yellow-50 p-6 rounded-xl border-l-4 border-yellow-500 mb-8">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-2">💡 什麼是正念？</h3>
+                    <p class="text-gray-600">
+                        正念就是把你的心力**百分百放在現在**，就像照相機只拍**當下的畫面**一樣！它能讓你的大腦變強壯喔 💪。
+                    </p>
+                </div>
+
+                <!-- 任務 1: 當下的超級英雄 (聽力遊戲) -->
+                <div class="mb-10 p-6 bg-white rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-blue-600 mb-4">⭐ 任務 1: 當下的超級英雄</h3>
+                    <p class="mb-4 text-gray-600">
+                        點擊開始，閉上眼睛，專心聽你周圍環境中的聲音。
+                    </p>
+                    <button id="startMindfulnessBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition" onclick="startMindfulnessTimer()">
+                        ▶️ 開始 1 分鐘專注
+                    </button>
+                    <div id="mindfulnessTimerDisplay" class="text-xl font-bold text-red-500 mt-4 hidden">
+                        計時中：<span id="mindfulnessTime">60</span> 秒
+                    </div>
+                    <div id="mindfulnessInput" class="mt-6 hidden">
+                        <p class="font-semibold text-gray-700 mb-2">
+                            寫下你聽到的 3 種聲音：
+                        </p>
+                        <input type="text" placeholder="聲音 1 (例如：鳥叫聲)" class="w-full p-2 border-2 border-gray-300 rounded-lg mb-2">
+                        <input type="text" placeholder="聲音 2 (例如：冷氣機的聲音)" class="w-full p-2 border-2 border-gray-300 rounded-lg mb-2">
+                        <input type="text" placeholder="聲音 3 (例如：心跳聲)" class="w-full p-2 border-2 border-gray-300 rounded-lg">
+                        <button class="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg" onclick="alertMessage('任務完成！你成功當了當下的小超人！', 'success')">
+                            完成任務
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 任務 2: 情緒天氣瓶 -->
+                <div class="p-6 bg-white rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-pink-600 mb-4">🌡️ 任務 2: 情緒天氣瓶</h3>
+                    <p class="font-semibold text-gray-700 mb-4">
+                        點擊「我現在的感覺」，選擇一個天氣圖案：
+                    </p>
+                    <div id="emotionContainer" class="flex justify-around flex-wrap gap-4 mb-6">
+                        <div class="emotion-item p-4 rounded-xl cursor-pointer hover:bg-red-200 transition text-center" data-emotion="開心太陽" style="background-color:#ffe4e6;" onclick="selectEmotion('開心太陽', '☀️')">
+                            <span class="text-4xl">☀️</span><br>開心太陽
+                        </div>
+                        <div class="emotion-item p-4 rounded-xl cursor-pointer hover:bg-yellow-200 transition text-center" data-emotion="生氣火山" style="background-color:#fffad1;" onclick="selectEmotion('生氣火山', '🌋')">
+                            <span class="text-4xl">🌋</span><br>生氣火山
+                        </div>
+                        <div class="emotion-item p-4 rounded-xl cursor-pointer hover:bg-blue-200 transition text-center" data-emotion="緊張閃電" style="background-color:#e0f2fe;" onclick="selectEmotion('緊張閃電', '⚡')">
+                            <span class="text-4xl">⚡</span><br>緊張閃電
+                        </div>
+                        <div class="emotion-item p-4 rounded-xl cursor-pointer hover:bg-green-200 transition text-center" data-emotion="平靜湖水" style="background-color:#d1fae5;" onclick="selectEmotion('平靜湖水', '💧')">
+                            <span class="text-4xl">💧</span><br>平靜湖水
+                        </div>
+                    </div>
+                    <div id="emotionDetail" class="hidden p-4 bg-gray-100 rounded-lg">
+                        <p class="font-bold text-lg mb-2" id="emotionPrompt"></p>
+                        <textarea id="emotionReason" class="w-full p-2 border-2 border-pink-300 rounded-lg h-20" placeholder="請簡單描述「為什麼」你現在是這種感覺？"></textarea>
+                        <button class="mt-3 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg" onclick="alertMessage('情緒覺察完成！你很棒，能說出自己的感覺！', 'info')">
+                            記錄情緒
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function startMindfulnessTimer() {
+            const btn = document.getElementById('startMindfulnessBtn');
+            const display = document.getElementById('mindfulnessTimerDisplay');
+            const timeSpan = document.getElementById('mindfulnessTime');
+            const inputDiv = document.getElementById('mindfulnessInput');
+            
+            btn.classList.add('hidden');
+            display.classList.remove('hidden');
+            inputDiv.classList.add('hidden');
+            
+            let timeLeft = 60; // 1 分鐘
+            timeSpan.innerText = timeLeft;
+            
+            clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeSpan.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    display.innerText = '計時結束！';
+                    inputDiv.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function selectEmotion(emotion, icon) {
+            const prompt = document.getElementById('emotionPrompt');
+            const detail = document.getElementById('emotionDetail');
+            
+            prompt.innerHTML = `${icon} 你選了 **${emotion}**！`;
+            detail.classList.remove('hidden');
+
+            document.querySelectorAll('.emotion-item').forEach(el => {
+                el.style.border = 'none';
+                if (el.getAttribute('data-emotion') === emotion) {
+                    el.style.border = '3px solid #ff7f99';
+                }
+            });
+        }
+        
+        // --- 區塊 3: 目標設定 (Goal Setting) ---
+
+        function renderGoalSetting() {
+            contentTitle.innerHTML = '🚀 區塊 3: 我的火箭發射計畫';
+            contentBody.innerHTML = `
+                <div class="p-6 bg-white rounded-xl shadow-md">
+                    <div class="bg-purple-50 p-6 rounded-xl border-l-4 border-purple-500 mb-8">
+                        <h3 class="text-xl font-bold text-purple-800 mb-2">💡 目標設定超級英雄祕訣：</h3>
+                        <p class="text-gray-600">
+                            你的目標要像一個**小小的、可以馬上開始的任務**，就像 **S.M.A.R.T.** 的目標一樣！越具體越好喔！
+                        </p>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-purple-600 mb-4">🎯 步驟一：選擇你的短期目標任務卡類型</h3>
+                    <div id="goalCategory" class="flex justify-around flex-wrap gap-4 mb-6">
+                        <button class="category-btn p-3 bg-purple-200 text-purple-800 rounded-lg font-semibold hover:bg-purple-300 transition" data-type="上課目標" onclick="selectGoalCategory('上課目標', this)">
+                            上課目標
+                        </button>
+                        <button class="category-btn p-3 bg-purple-200 text-purple-800 rounded-lg font-semibold hover:bg-purple-300 transition" data-type="寫作業目標" onclick="selectGoalCategory('寫作業目標', this)">
+                            寫作業目標
+                        </button>
+                        <button class="category-btn p-3 bg-purple-200 text-purple-800 rounded-lg font-semibold hover:bg-purple-300 transition" data-type="回家目標" onclick="selectGoalCategory('回家目標', this)">
+                            回家目標
+                        </button>
+                    </div>
+                    
+                    <span id="selectedGoalType" class="text-lg font-bold text-pink-500 block mb-4 hidden">已選擇：</span>
+
+                    <div id="goalQuestions" class="hidden p-4 bg-gray-100 rounded-lg">
+                        <h4 class="text-xl font-bold text-gray-700 mb-4">步驟二：填寫你的「可達成」短期計畫：</h4>
+                        
+                        <div class="mb-4">
+                            <label class="font-semibold text-gray-700 mb-1 block">1. 我要達成什麼目標？ (要具體)</label>
+                            <input id="goalInput" type="text" placeholder="例如：在數學課上，我會專心聽講 10 分鐘。" class="w-full p-2 border-2 border-purple-300 rounded-lg">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="font-semibold text-gray-700 mb-1 block">2. 我會怎麼做？ (執行步驟)</label>
+                            <input id="actionInput" type="text" placeholder="例如：不看旁邊的同學，眼睛看著老師。" class="w-full p-2 border-2 border-purple-300 rounded-lg">
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="font-semibold text-gray-700 mb-1 block">3. 完成後，我會給自己一個什麼獎勵？</label>
+                            <input id="rewardInput" type="text" placeholder="例如：下課玩 5 分鐘。" class="w-full p-2 border-2 border-purple-300 rounded-lg">
+                        </div>
+
+                        <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition" onclick="generateGoalCard()">
+                            💾 步驟三：儲存我的任務卡 (當前頁面紀錄)
+                        </button>
+                    </div>
+                    
+                    <!-- 任務卡列表區 (新功能) -->
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-extrabold text-gray-700 border-b-2 border-gray-300 pb-2 mb-4">⭐ 我的所有短期任務卡</h3>
+                        <!-- 任務卡列表容器 -->
+                        <div id="missionCardsList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <p class="text-center text-gray-500 col-span-full py-4">目前還沒有任務卡！快點在上方新增一張吧！</p>
+                        </div>
+                        <p class="text-sm text-red-500 mt-4 text-center font-bold">⚠️ 注意：任務卡只會保留在當前頁面。重新整理後會消失！</p>
+                    </div>
+
+                    <!-- 任務卡範例區 -->
+                    <div class="mt-12">
+                        <h3 class="text-2xl font-extrabold text-gray-700 border-b-2 border-gray-300 pb-2 mb-4">📘 任務卡範例參考</h3>
+
+                        <!-- 範例 1: 上課目標 -->
+                        <div class="p-5 bg-purple-50 rounded-xl border-2 border-purple-400 mb-6">
+                            <h4 class="text-xl font-extrabold text-purple-700 mb-2">🚀 範例 1: 上課目標 (專注力提升)</h4>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-purple-600">🎯 目標：</span> 在今天的數學課上，我會專心聽老師講課的**前 15 分鐘**。</p>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-purple-600">🛠️ 執行：</span> 我會讓我的身體像「超級膠水」一樣黏在椅子上不動，眼睛看著黑板，並且在心裡默唸老師講的**關鍵字**。</p>
+                            <p class="text-gray-600"><span class="font-bold text-purple-600">🎁 獎勵：</span> 數學課下課時，我會去窗戶邊站著，對天空做一個**勝利的姿勢**。</p>
+                        </div>
+
+                        <!-- 範例 2: 寫作業目標 -->
+                        <div class="p-5 bg-blue-50 rounded-xl border-2 border-blue-400 mb-6">
+                            <h4 class="text-xl font-extrabold text-blue-700 mb-2">📝 範例 2: 寫作業目標 (任務管理)</h4>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-blue-600">🎯 目標：</span> 我會在寫國語生字作業時，每寫完 **3 排字** 就休息一下。</p>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-blue-600">🛠️ 執行：</span> 我會先把筆放下，站起來做 **5 次**「超人飛行」的伸展動作，然後再繼續。</p>
+                            <p class="text-gray-600"><span class="font-bold text-blue-600">🎁 獎勵：</span> 寫完所有作業後，可以獲得 **15 分鐘** 的樂高遊戲時間。</p>
+                        </div>
+
+                        <!-- 範例 3: 上課目標 (管理疑惑 / 提問) -->
+                        <div class="p-5 bg-purple-50 rounded-xl border-2 border-purple-400 mb-6">
+                            <h4 class="text-xl font-extrabold text-purple-700 mb-2">🙋 範例 3: 上課目標 (管理疑惑 / 提問)</h4>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-purple-600">🎯 目標：</span> 在上自然課時，如果遇到「完全聽不懂」的地方，我會舉手**問一個問題**，而不是自己放棄。</p>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-purple-600">🛠️ 執行：</span> 我會先在心裡默唸我的問題 **兩次**，確定自己真的需要幫忙，然後數到三後，勇敢地把手舉起來。</p>
+                            <p class="text-gray-600"><span class="font-bold text-purple-600">🎁 獎勵：</span> 成功提問後，我會允許自己喝一小口水，並告訴自己：「我超勇敢！」</p>
+                        </div>
+
+                        <!-- 範例 4: 回家目標 (書包整理 / 物品管理) -->
+                        <div class="p-5 bg-pink-50 rounded-xl border-2 border-pink-400 mb-6">
+                            <h4 class="text-xl font-extrabold text-pink-700 mb-2">🎒 範例 4: 回家目標 (書包整理 / 物品管理)</h4>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-pink-600">🎯 目標：</span> 我會在這週的每天放學後，在 **10 分鐘** 內將書包裡的物品全部拿出來並歸位。</p>
+                            <p class="text-gray-600 mb-1"><span class="font-bold text-pink-600">🛠️ 執行：</span> 我會先將書包裡所有東西倒在桌上，然後把功課放進「功課區」，把空的餐盒放進「廚房區」，再把用不到的雜物丟進垃圾桶。</p>
+                            <p class="text-gray-600"><span class="font-bold text-pink-600">🎁 獎勵：</span> 整理完畢，我會給自己一個 **5 分鐘** 的故事時間，或是喝一杯喜歡的牛奶。</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // 初次進入時，更新顯示已儲存的任務卡
+            displayMissionCards();
+        }
+
+        // ... (其他 JavaScript 函數保持不變) ...
+        
+        /**
+         * @brief 處理目標類別選擇的視覺回饋和儲存當前類型。
+         */
+        function selectGoalCategory(type, buttonElement) {
+            document.getElementById('goalQuestions').classList.remove('hidden');
+            document.getElementById('selectedGoalType').classList.remove('hidden');
+            document.getElementById('selectedGoalType').innerText = `已選擇：${type}`;
+            
+            // 視覺回饋
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-500', 'text-white');
+                btn.classList.add('bg-purple-200', 'text-purple-800');
+            });
+            buttonElement.classList.remove('bg-purple-200', 'text-purple-800');
+            buttonElement.classList.add('bg-purple-500', 'text-white');
+        }
+
+        /**
+         * @brief 從表單獲取數據並儲存到本地陣列。
+         */
+        function generateGoalCard() {
+            const selectedTypeElement = document.getElementById('selectedGoalType');
+            const typeText = selectedTypeElement.innerText;
+            // 提取 '已選擇：' 後面的內容
+            const type = typeText.includes('已選擇：') ? typeText.split('：')[1].trim() : '';
+
+            const goal = document.getElementById('goalInput').value.trim();
+            const action = document.getElementById('actionInput').value.trim();
+            const reward = document.getElementById('rewardInput').value.trim();
+
+            if (!type) {
+                return alertMessage('請先選擇目標類型 (上課/作業/回家)！', 'error');
+            }
+            if (!goal || !action || !reward) {
+                return alertMessage('請完成所有三個提問才能儲存任務卡喔！', 'error');
+            }
+            
+            // 儲存到記憶體陣列
+            missionCards.unshift({ // unshift: 將新卡片放在最前面
+                id: Date.now().toString(), // 使用時間戳記作為唯一 ID
+                type: type,
+                goal: goal,
+                action: action,
+                reward: reward,
+                timestamp: new Date().toLocaleTimeString(),
+            });
+
+            alertMessage('短期任務卡已成功紀錄！', 'success');
+                
+            // 清空輸入框
+            document.getElementById('goalInput').value = '';
+            document.getElementById('actionInput').value = '';
+            document.getElementById('rewardInput').value = '';
+            
+            // 更新列表顯示
+            displayMissionCards();
+        }
+        
+        /**
+         * @brief 從本地陣列刪除任務卡。
+         */
+        function deleteMissionCard(cardId) {
+            const initialLength = missionCards.length;
+            missionCards = missionCards.filter(card => card.id !== cardId);
+
+            if (missionCards.length < initialLength) {
+                alertMessage('任務卡已刪除。', 'info');
+                displayMissionCards(); // 重新渲染
+            } else {
+                alertMessage('刪除失敗。', 'error');
+            }
+        }
+
+        /**
+         * @brief 渲染已儲存的任務卡列表。
+         */
+        function displayMissionCards() {
+            const listContainer = document.getElementById('missionCardsList');
+            if (!listContainer) return; 
+
+            if (missionCards.length === 0) {
+                listContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full py-4">目前還沒有任務卡！快點在上方新增一張吧！</p>';
+                return;
+            }
+
+            // 渲染卡片列表 (並列顯示: grid sm:grid-cols-2 lg:grid-cols-3)
+            listContainer.innerHTML = missionCards.map(card => `
+                <div class="p-4 bg-white rounded-xl shadow-lg border-2 border-purple-300 relative hover:shadow-xl transition-shadow">
+                    <h4 class="text-lg font-extrabold text-purple-700 mb-2 truncate">
+                        ${card.type}
+                    </h4>
+                    <p class="text-sm mb-1 text-gray-700"><span class="font-bold text-purple-600">🚀 目標：</span> ${card.goal}</p>
+                    <p class="text-sm mb-1 text-gray-700"><span class="font-bold text-purple-600">🛠️ 執行：</span> ${card.action}</p>
+                    <p class="text-sm"><span class="font-bold text-purple-600">🎁 獎勵：</span> ${card.reward}</p>
+                    
+                    <button class="absolute top-2 right-2 text-red-400 hover:text-red-600 transition" 
+                            onclick="deleteCardWithConfirm('${card.id}')">
+                        &times; <!-- Delete icon -->
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2 text-right">紀錄於: ${card.timestamp}</p>
+                </div>
+            `).join('');
+        }
+
+        // --- 區塊 4: 活力充電站 (Brain Break) ---
+
+        function renderBrainBreak() {
+            contentTitle.innerHTML = '🔋 區塊 4: 活力充電站';
+            contentBody.innerHTML = `
+                <div class="bg-red-50 p-6 rounded-xl border-l-4 border-red-500 mb-8">
+                    <h3 class="text-xl font-bold text-red-800 mb-2">💡 小超人祕訣</h3>
+                    <p class="text-gray-600">
+                        大腦休息不是發呆，而是**換一種方式動一動**，會讓你的電量快速充滿，學習更有效率！
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 遊戲 1: 國語體操 -->
+                    <div class="p-6 bg-white rounded-xl shadow-md border-2 border-red-300">
+                        <h3 class="text-2xl font-bold text-red-600 mb-3">🗣️ 任務 1: 找字體操</h3>
+                        <p class="mb-4 text-gray-700">
+                            **活動：** 站起來！在你的周圍（教室、螢幕上）找出所有**「有ㄔ的字」**。
+                        </p>
+                        <p class="mb-4 text-gray-700">
+                            **動作：** 找到一個字，就**跳一下**！找到 3 個字後，請坐下。
+                        </p>
+                        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition" onclick="alertMessage('開始尋找「ㄔ」字體操！', 'info')">
+                            開始動一動
+                        </button>
+                    </div>
+
+                    <!-- 遊戲 2: 數字拍拍樂 (改為簡易版) -->
+                    <div class="p-6 bg-white rounded-xl shadow-md border-2 border-red-300">
+                        <h3 class="text-2xl font-bold text-red-600 mb-3">🔢 任務 2: 數字拍拍樂</h3>
+                        <p class="mb-4 text-gray-700">
+                            **活動：** 老師或家長說一個數字 **8**。
+                        </p>
+                        <p class="mb-4 text-gray-700">
+                            **動作：** 你要找到 2 個數字加起來是 8 的**物件**（例如：一隻手 + 七個積木），然後**輕輕拍手**。
+                        </p>
+                        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition" onclick="alertMessage('找到 8 的組合了嗎？拍手一下！', 'info')">
+                            開始動一動
+                        </button>
+                    </div>
+
+                    <!-- 遊戲 3: 大腦伸展操 -->
+                    <div class="md:col-span-2 p-6 bg-white rounded-xl shadow-md border-2 border-red-300">
+                        <h3 class="text-2xl font-bold text-red-600 mb-3">🧠 任務 3: 左右腦協調動作</h3>
+                        <p class="mb-4 text-gray-700 font-bold text-xl">
+                            動作：左手摸右耳，右手摸左膝！
+                        </p>
+                        <p class="mb-4 text-gray-700">
+                            **規則：** 搭配下方的計時器，試著**快速交換動作**，維持 30 秒不卡住！
+                        </p>
+                        <button id="startBrainBreakBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition" onclick="startBrainBreakTimer()">
+                            ▶️ 開始 30 秒挑戰
+                        </button>
+                        <div id="brainBreakTimerDisplay" class="text-xl font-bold text-green-600 mt-4 hidden">
+                            剩餘時間：<span id="brainBreakTime">30</span> 秒
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startBrainBreakTimer() {
+            const btn = document.getElementById('startBrainBreakBtn');
+            const display = document.getElementById('brainBreakTimerDisplay');
+            const timeSpan = document.getElementById('brainBreakTime');
+            
+            btn.classList.add('hidden');
+            display.classList.remove('hidden');
+            
+            let timeLeft = 30;
+            timeSpan.innerText = timeLeft;
+            
+            clearInterval(timerInterval); 
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeSpan.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    display.innerText = '完成！大腦已充電完畢！';
+                    btn.classList.remove('hidden');
+                    btn.innerText = '再次挑戰 30 秒';
+                }
+            }, 1000);
+        }
+
+        // --- 彈出視窗與確認功能 (取代 alert/confirm) ---
+        
+        /**
+         * @brief 顯示自定義通知訊息。
+         */
+        function alertMessage(message, type) {
+            const alertBox = document.createElement('div');
+            let color = '';
+            if (type === 'success') color = 'bg-green-500';
+            else if (type === 'error') color = 'bg-red-500';
+            else color = 'bg-blue-500';
+
+            alertBox.className = `fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 p-4 rounded-lg shadow-xl text-white font-bold z-50 transition-all duration-300 ${color}`;
+            alertBox.style.opacity = 0;
+            alertBox.innerText = message;
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.opacity = 1;
+            }, 10);
+
+            setTimeout(() => {
+                alertBox.style.opacity = 0;
+                alertBox.addEventListener('transitionend', () => alertBox.remove());
+            }, 3000);
+        }
+        
+        /**
+         * @brief 顯示自定義確認視窗 (取代 window.confirm)。
+         */
+        function customConfirm(message, callback) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmMessage').innerText = message;
+            
+            modal.classList.remove('hidden');
+            
+            const yesBtn = document.getElementById('confirmYesBtn');
+            const noBtn = document.getElementById('confirmNoBtn');
+            
+            // 清除舊的事件監聽器並替換元素
+            // 這是為了確保每次點擊只觸發一次事件，避免重複綁定
+            const newYes = yesBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYes, yesBtn);
+            
+            const newNo = noBtn.cloneNode(true);
+            noBtn.parentNode.replaceChild(newNo, noBtn);
+
+            newYes.onclick = () => {
+                modal.classList.add('hidden');
+                callback(true);
+            };
+            
+            newNo.onclick = () => {
+                modal.classList.add('hidden');
+                callback(false);
+            };
+        }
+        
+        /**
+         * @brief 呼叫確認視窗後執行刪除任務卡。
+         */
+        function deleteCardWithConfirm(cardId) {
+            customConfirm('你確定要刪除這張任務卡嗎？', (confirmed) => {
+                if (confirmed) {
+                    deleteMissionCard(cardId);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

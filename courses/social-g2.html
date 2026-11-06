@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社交小雷達：星際探險隊</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        
+        /* --- Professional Blue Color Palette --- */
+        :root {
+            --color-main-accent: #007BFF;      /* Primary Blue (for titles/main emphasis) */
+            --color-button-primary: #17A2B8;   /* Teal/Cyan Blue (for main actions/progress) */
+            --color-success-green: #28A745;    /* Standard Success Green */
+            --color-error-red: #DC3545;        /* Standard Error Red */
+            --color-light-bg: #E6F3FF;         /* Very Light Blue for light accents/alerts */
+            --color-dark-text: #212529;        /* Dark Text/Charcoal */
+            
+            /* Specific colors for Start Screen cards borders/accents */
+            --color-p1-accent: #007BFF;     /* Planet 1: Primary Blue */
+            --color-p2-accent: #17A2B8;     /* Planet 2: Teal/Cyan Blue */
+            --color-p3-accent: #004085;     /* Planet 3: Deep Blue */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Calm Blue/Light Grey Gradient */
+            background: linear-gradient(135deg, #F8F9FA 0%, #CCE5FF 100%);
+            color: var(--color-dark-text);
+            /* Base font size increase for better mobile legibility */
+            font-size: 1.125rem; 
+        }
+        #app {
+            min-height: 10vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem; /* Responsive padding */
+        }
+        .card {
+            background-color: #FFFFFF; 
+            border-radius: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); 
+            transition: transform 0.3s ease;
+            /* Ensure the card's content is readable and wraps correctly on small screens */
+            width: 100%; 
+        }
+        .card:hover {
+            /* Softer lift */
+            transform: translateY(-3px); 
+            /* Softer blue shadow on hover */
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3); 
+        }
+        /* Override default hover for start screen cards to use the specific border color for shadow */
+        .start-screen-card:hover {
+             /* When unlocked, add a light lift and shadow effect */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .game-button {
+            padding: 1rem 2rem; /* Adjusted for mobile */
+            border-radius: 1.25rem; 
+            font-weight: 800;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0px rgba(33, 37, 41, 0.5); 
+            font-size: 1.25rem; 
+        }
+        /* Desktop specific button size */
+        @media (min-width: 768px) {
+             .game-button {
+                padding: 1.25rem 2.5rem; 
+                font-size: 1.5rem;
+            }
+        }
+
+        .game-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0px rgba(33, 37, 41, 0.5);
+        }
+        .game-button:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px rgba(33, 37, 41, 0.5);
+        }
+        .game-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+            box-shadow: none;
+            transform: none;
+        }
+        .progress-bar-container {
+            background-color: #EEEEEE;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            border-radius: 9999px;
+            height: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-button-primary); /* Teal/Cyan Blue */
+            transition: width 0.5s ease;
+        }
+        /* Draggable element style */
+        .draggable {
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        /* Visual cues: Bubbles (Fixed pixel size for game logic consistency) */
+        .bubble-person {
+            position: relative;
+            padding: 1.5rem; /* Increased base padding for better touch target */
+            text-align: center;
+            z-index: 10;
+        }
+        /* *** FIX: Increase touch target significantly on small screens for easier dragging *** */
+        @media (max-width: 639px) { /* Under sm breakpoint (Mobile) */
+            .bubble-person {
+                padding: 2.5rem; /* Large padding for easy finger interaction */
+            }
+        }
+        
+        .bubble-shield {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 6px dashed var(--color-light-bg); /* Light Blue */
+            transition: all 0.1s ease; /* Faster transition for responsive feedback */
+            pointer-events: none;
+        }
+        .bubble-shield.happy {
+            border-color: var(--color-success-green); /* Standard Success Green */
+            box-shadow: 0 0 20px rgba(40, 167, 69, 1);
+        }
+        .bubble-shield.broken {
+            border-color: var(--color-error-red); /* Standard Error Red */
+            box-shadow: 0 0 20px rgba(220, 53, 69, 1);
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            20%, 60% { transform: translate(-53%, -50%) rotate(-2deg); }
+            40%, 80% { transform: translate(-47%, -50%) rotate(2deg); }
+        }
+
+        /* Breathing animation - Modified for 3s inhale / 3s exhale (6s total) */
+        @keyframes pulse-grow {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .breathing-pulse {
+            animation: pulse-grow 6s infinite ease-in-out;
+        }
+        
+        #p1-game-area {
+            height: 120vw; 
+            min-height: 30rem; /* Increased minimum height for usability */
+            max-height: 40rem; /* Maximum height for desktop */
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            #p1-game-area {
+                height: 36rem; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="w-full max-w-6xl mx-auto">
+        <!-- Top Information Bar (Score) -->
+        <div class="w-full flex justify-between items-center p-3 sm:p-4 bg-white/90 rounded-xl mb-6 shadow-xl">
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-[var(--color-main-accent)] tracking-wider">🌟 社交小雷達探險隊</h1>
+            <div class="flex items-center space-x-2 sm:space-x-4 text-base font-semibold">
+                <div class="flex items-center space-x-1 sm:space-x-2">
+                    <span class="text-3xl sm:text-4xl" style="color: var(--color-button-primary);">⭐</span>
+                    <span id="score-display" class="text-2xl sm:text-3xl font-bold text-[var(--color-dark-text)]">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Render Area -->
+        <div id="game-content" class="w-full">
+            <div class="text-center p-8 sm:p-12 card">
+                <p class="text-2xl">正在啟動遊戲...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Core Application State (Default) ---
+        const defaultGameState = {
+            currentPlanet: 'Start', // Start, Planet1, Planet2, Planet3, End
+            score: 0,
+            progress: {
+                planet1: 'unlocked', // unlocked, completed (Start is always unlocked)
+                planet2: 'locked',
+                planet3: 'locked',
+            },
+            planet1_scenario: 1, // 1 or 2
+            planet2_scenario: 1, // 1, 2, or 3
+            planet3_scenario: 1, // 1, 2
+        };
+        
+        let gameState = { ...defaultGameState }; 
+        
+        let isPositionCorrect = false;
+
+        const loadProgress = () => {
+            try {
+                const savedState = localStorage.getItem('socialRadarGameState');
+                if (savedState) {
+                    const parsedState = JSON.parse(savedState);
+                    gameState = { ...defaultGameState, ...parsedState };
+                }
+            } catch (error) {
+                console.error("Failed to load progress from localStorage:", error);
+            }
+        };
+
+        const saveProgress = () => {
+            try {
+                localStorage.setItem('socialRadarGameState', JSON.stringify(gameState));
+            } catch (error) {
+                console.error("Failed to save progress to localStorage:", error);
+            }
+        };
+
+        const toggleSupportZone = () => {
+            const content = document.getElementById('support-zone-content');
+            const icon = document.getElementById('support-zone-icon');
+            if (!content || !icon) return; 
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.innerHTML = '🔽'; 
+                setTimeout(() => {
+                    document.getElementById('support-zone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 50); 
+            } else {
+                content.classList.add('hidden');
+                icon.innerHTML = '▶️'; 
+            }
+        };
+        window.toggleSupportZone = toggleSupportZone; 
+
+        const renderApp = () => {
+            const contentDiv = document.getElementById('game-content');
+            const scoreDisplay = document.getElementById('score-display');
+
+            scoreDisplay.textContent = gameState.score;
+
+            let htmlContent = '';
+
+            if (window.breathingInterval) {
+                clearInterval(window.breathingInterval);
+                delete window.breathingInterval;
+            }
+
+            switch (gameState.currentPlanet) {
+                case 'Start':
+                    htmlContent = renderStartScreen();
+                    break;
+                case 'Planet1':
+                    htmlContent = renderPlanet1();
+                    break;
+                case 'Planet2':
+                    htmlContent = renderPlanet2();
+                    break;
+                case 'Planet3':
+                    htmlContent = renderPlanet3();
+                    break;
+                case 'End':
+                    htmlContent = renderEndScreen();
+                    break;
+                default:
+                    htmlContent = renderStartScreen();
+            }
+
+            contentDiv.innerHTML = htmlContent;
+            
+            if (gameState.currentPlanet === 'Planet1') {
+                setupPlanet1DragAndDrop();
+            }
+            if (gameState.currentPlanet === 'Planet3' && gameState.planet3_scenario === 2) {
+                 setupBreathingExercise();
+            }
+        };
+
+        const goToPlanet = (planet) => {
+            const planetKey = planet.toLowerCase();
+            
+            if (window.breathingInterval) {
+                clearInterval(window.breathingInterval);
+                delete window.breathingInterval;
+            }
+            
+            if (planet === 'Planet1') {
+                gameState.planet1_scenario = 1;
+                if (gameState.progress.planet1 === 'completed') {
+                    gameState.progress.planet1 = 'unlocked';
+                }
+            } else if (planet === 'Planet2') {
+                gameState.planet2_scenario = 1;
+                if (gameState.progress.planet2 === 'completed') {
+                    gameState.progress.planet2 = 'unlocked';
+                }
+            } else if (planet === 'Planet3') {
+                gameState.planet3_scenario = 1;
+                if (gameState.progress.planet3 === 'completed') {
+                    gameState.progress.planet3 = 'unlocked';
+                }
+            }
+
+            if (gameState.progress[planetKey] === 'unlocked' || gameState.progress[planetKey] === 'completed' || planet === 'Start' || planet === 'End') {
+                gameState.currentPlanet = planet;
+                saveProgress();
+                renderApp();
+            } else {
+                showFeedback("此星球尚未解鎖！請完成前一個關卡。", 'error');
+            }
+        };
+
+        const showFeedback = (message, type = 'success') => {
+            const color = type === 'success' ? 'bg-[var(--color-success-green)] text-[var(--color-dark-text)]' : 'bg-[var(--color-error-red)] text-white';
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = `fixed bottom-4 right-4 p-3 sm:p-4 rounded-lg shadow-xl font-bold transition-opacity duration-300 z-50 border-2 border-black ${color}`;
+            feedbackDiv.textContent = message;
+            document.body.appendChild(feedbackDiv);
+            
+            setTimeout(() => {
+                feedbackDiv.style.opacity = '0';
+                feedbackDiv.addEventListener('transitionend', () => feedbackDiv.remove());
+            }, 3000);
+        };
+        
+        const completePlanet = (planetKey) => {
+            const wasCompleted = gameState.progress[planetKey] === 'completed';
+            gameState.progress[planetKey] = 'completed';
+            
+            if (!wasCompleted) {
+                gameState.score += 100;
+                showFeedback(`恭喜！${planetKey.toUpperCase()} 關卡完成，獲得 100 星星！下一星球已解鎖！`, 'success');
+            } else {
+                 showFeedback(`恭喜！${planetKey.toUpperCase()} 關卡複習完成！`, 'success');
+            }
+
+            if (planetKey === 'planet3' && window.breathingInterval) {
+                clearInterval(window.breathingInterval);
+                delete window.breathingInterval;
+            }
+
+            let nextPlanet = '';
+            if (planetKey === 'planet1') {
+                nextPlanet = 'planet2';
+            } else if (planetKey === 'planet2') {
+                nextPlanet = 'planet3';
+            } else if (planetKey === 'planet3') {
+                nextPlanet = 'End'; 
+            }
+
+            if (nextPlanet !== 'End') {
+                if (gameState.progress[nextPlanet] === 'locked') {
+                    gameState.progress[nextPlanet] = 'unlocked';
+                }
+                gameState.currentPlanet = nextPlanet.charAt(0).toUpperCase() + nextPlanet.slice(1);
+            } else {
+                gameState.currentPlanet = 'End';
+            }
+            
+            saveProgress();
+            renderApp();
+        };
+
+        const renderStartScreen = () => {
+            const isGameCompleted = Object.values(gameState.progress).every(status => status === 'completed');
+
+            const planetData = [
+                { key: 'Planet1', title: '🪐 關卡一：泡泡星球', subtitle: '學習個人空間與界線', statusKey: 'planet1', color: 'var(--color-p1-accent)', bgColorClass: 'bg-blue-50' },
+                { key: 'Planet2', title: '🚀 關卡二：變色龍星球', subtitle: '覺察整體氣氛，調整行為', statusKey: 'planet2', color: 'var(--color-p2-accent)', bgColorClass: 'bg-cyan-50' },
+                { key: 'Planet3', title: '🎮 關卡三：遙控器星球', subtitle: '練習控制情緒，按下暫停鍵', statusKey: 'planet3', color: 'var(--color-p3-accent)', bgColorClass: 'bg-purple-50' },
+            ];
+
+            return `
+                <div class="text-center p-6 sm:p-8 card max-w-3xl mx-auto">
+                    <h2 class="text-4xl sm:text-5xl font-extrabold text-[var(--color-main-accent)] mb-6">歡迎來到星際探險隊！</h2>
+                    <p class="text-xl sm:text-2xl text-gray-700 mb-8 font-semibold">請使用您的「社交小雷達」完成所有星球的任務！</p>
+                    
+                    ${isGameCompleted ? `
+                        <div class="p-4 bg-[var(--color-success-green)]/50 text-[var(--color-dark-text)] font-bold rounded-xl mb-8 shadow-md text-xl">
+                            🎉 所有關卡都已完成！您可以重新挑戰以複習知識。
+                        </div>
+                    ` : ''}
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${planetData.map(planet => {
+                            const status = gameState.progress[planet.statusKey];
+                            const isLocked = status === 'locked';
+                            const icon = status === 'completed' ? '✅' : (isLocked ? '🔒' : '👉');
+                            const accentColor = planet.color; 
+                            const bgColorClass = isLocked ? 'bg-gray-100' : planet.bgColorClass; 
+                            const [line1, line2] = planet.title.split('：');
+                            
+                            return `
+                                <div class="card start-screen-card p-4 text-center ${isLocked ? 'opacity-50 cursor-not-allowed border-gray-300' : 'cursor-pointer border-4' } ${bgColorClass}"
+                                    style="border-color: ${isLocked ? 'transparent' : accentColor};"
+                                    onclick="${isLocked ? '' : `goToPlanet('${planet.key}')`}">
+                                    <p class="text-4xl sm:text-5xl mb-2" style="color: ${status === 'completed' ? 'var(--color-success-green)' : accentColor};">${icon}</p>
+                                    <h3 class="font-extrabold text-gray-800">
+                                        <span class="text-xl sm:text-2xl">${line1}：</span>
+                                        <span class="block text-2xl sm:text-3xl font-black mt-1" style="color: ${status === 'completed' ? 'var(--color-success-green)' : accentColor};">${line2}</span>
+                                    </h3>
+                                    <p class="text-lg text-gray-500 mt-2">${planet.subtitle}</p>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div id="support-zone" class="mt-8 text-left border-4 border-[var(--color-p3-accent)] rounded-2xl shadow-xl overflow-hidden">
+                        <div class="bg-[var(--color-p3-accent)] hover:bg-[var(--color-p3-accent)]/90 text-white p-4 sm:p-5 cursor-pointer flex justify-between items-center transition duration-200"
+                            onclick="toggleSupportZone()">
+                            <h3 class="text-xl sm:text-2xl font-extrabold flex items-center">🧑‍🎓 教師/家長專區：SEL 教學指南</h3>
+                            <span id="support-zone-icon" class="text-2xl">▶️</span>
+                        </div>
+                        <div id="support-zone-content" class="p-4 sm:p-6 bg-white hidden">
+                            <p class="mb-4 text-base sm:text-lg text-gray-700">本網頁旨在透過情境模擬，培養學童的核心社會情緒學習 (SEL) 技能。</p>
+                            <div class="p-3 mb-6 rounded-lg bg-[var(--color-light-bg)]">
+                                <p class="text-xl sm:text-2xl font-black text-[var(--color-main-accent)] mb-1">🎯 總體目標：</p>
+                                <p class="text-lg sm:text-xl text-gray-800">提升學生的社會覺察、自我管理、和人際關係技巧。</p>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="border-l-4 pl-4" style="border-color: var(--color-p1-accent);">
+                                    <p class="text-xl sm:text-2xl font-black text-[var(--color-p1-accent)] mb-2">🪐 關卡一：泡泡星球</p>
+                                    <p class="text-base sm:text-lg text-gray-700">理解「隱形的個人空間泡泡」。</p>
+                                </div>
+                                <div class="border-l-4 pl-4" style="border-color: var(--color-p2-accent);">
+                                    <p class="text-xl sm:text-2xl font-black text-[var(--color-p2-accent)] mb-2">🚀 關卡二：氣氛偵測鏡</p>
+                                    <p class="text-base sm:text-lg text-gray-700">學習觀察線索，調整行為。</p>
+                                </div>
+                                <div class="border-l-4 pl-4" style="border-color: var(--color-p3-accent);">
+                                    <p class="text-xl sm:text-2xl font-black text-[var(--color-p3-accent)] mb-2">🎮 關卡三：情緒暫停鍵</p>
+                                    <p class="text-base sm:text-lg text-gray-700">認識暫停機制與深呼吸冷靜工具。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+        
+        const handleP1Confirm = () => {
+            if (isPositionCorrect) {
+                if (gameState.planet1_scenario < 2) {
+                    showFeedback("做得好！您保持了適當的界線。進入下一個情境！", 'success');
+                    gameState.planet1_scenario++;
+                    isPositionCorrect = false; 
+                    saveProgress(); 
+                    renderApp();
+                } else {
+                    completePlanet('planet1');
+                    gameState.planet1_scenario = 1; 
+                }
+            } else {
+                showFeedback("請先調整探險員的位置，確保位置正確且距離安全！", 'error');
+            }
+        };
+        window.handleP1Confirm = handleP1Confirm; 
+
+        const renderPlanet1 = () => {
+            const scenario = gameState.planet1_scenario;
+            const iconSvg = `
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 inline-block mr-2 align-text-bottom" 
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="stroke: var(--color-p1-accent);">
+                    <circle cx="12" cy="12" r="10" stroke-width="2.5"></circle>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11a4 4 0 100-8 4 4 0 000 8zM12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"></path>
+                </svg>
+            `;
+            const title =`🪐關卡一：泡泡星球 (神奇防護罩)`;
+
+            let instruction = '';
+            let characters = [];
+            let successCriteria = [];
+
+            if (scenario === 1) {
+                instruction = "任務：在**排隊**時，請將你的探險員移動到「老師」的**左側**，並保持**恰當的距離**。";
+                successCriteria = ["距離安全：防護罩不碰觸時顯示綠色。", "位置正確：探險員必須在老師的左側。"];
+                characters = [
+                    { id: 'char-teacher', label: '老師', emoji: '🧑‍🏫', position: 'top-right', bubbleRadius: 75, style: 'static', initialStyle: 'top: 20%; right: 20%; transform: none;' },
+                    { id: 'char-explorer', label: '你的探險員', emoji: '👦', position: 'overlap', bubbleRadius: 75, style: 'draggable', initialStyle: 'top: 25%; right: 15%; transform: none;' }
+                ];
+            } else if (scenario === 2) {
+                instruction = "任務：在**閱讀角**，請讓你的探險員保持在**安全範圍**內，避免靠近「同學」太近。";
+                successCriteria = ["距離安全：防護罩不碰觸時顯示綠色。", "位置正確：只需保持安全距離。"];
+                characters = [
+                    { id: 'char-student', label: '看書的同學', emoji: '👧', position: 'center', bubbleRadius: 75, style: 'static', initialStyle: 'top: 50%; right: 20%; transform: translateY(-50%);' }, 
+                    { id: 'char-explorer', label: '你的探險員', emoji: '👦', position: 'overlap', bubbleRadius: 75, style: 'draggable', initialStyle: 'top: 50%; right: 20%; transform: translateY(-50%);' }
+                ];
+            }
+            
+            const totalScenarios = 2;
+            const progressWidth = (scenario / totalScenarios) * 100;
+
+            return `
+                <div class="card p-6 sm:p-8 max-w-3xl mx-auto">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-[var(--color-main-accent)] mb-4 flex items-center justify-center">
+                        ${iconSvg} ${title} (情境 ${scenario} / ${totalScenarios})
+                    </h2>
+                    <p class="mb-4 text-lg sm:text-xl text-gray-700">學習目標：理解個人空間與界線的重要性。</p>
+                    <p class="text-xl sm:text-2xl font-extrabold bg-[var(--color-light-bg)]/80 p-4 rounded-xl text-[var(--color-main-accent)] mb-6 shadow-md">
+                        💡 **遊戲指南：** 請使用滑鼠或手指拖曳「你的探險員」${characters.find(c => c.id === 'char-explorer').emoji}。
+                    </p>
+                    <p class="mb-4 text-xl sm:text-2xl font-extrabold text-gray-800">${instruction}</p>
+                    <div class="bg-[var(--color-light-bg)] p-4 sm:p-6 rounded-xl mb-6 shadow-lg">
+                        <p class="font-extrabold text-[var(--color-button-primary)] mb-1 text-xl sm:text-2xl">✅ 成功目標：</p>
+                        <ul class="list-disc list-inside ml-4 text-gray-700 text-base sm:text-lg">
+                            ${successCriteria.map(c => `<li>${c}</li>`).join('')}
+                            <li>當您找到正確位置，請點擊「確認距離」。</li>
+                        </ul>
+                    </div>
+                    <div class="progress-bar-container w-full mb-6">
+                        <div class="progress-fill" style="width: ${progressWidth}%;"></div>
+                    </div>
+                    <div id="p1-game-area" class="relative bg-white border border-gray-200 rounded-xl overflow-hidden mb-6 shadow-inner">
+                        ${characters.map(char => `
+                            <div id="${char.id}-container" class="absolute bubble-person ${char.style === 'draggable' ? 'draggable' : ''}" style="${char.initialStyle}" data-radius="${char.bubbleRadius}">
+                                <div id="${char.id}-shield" class="bubble-shield" style="width: ${char.bubbleRadius * 2}px; height: ${char.bubbleRadius * 2}px;"></div>
+                                <div id="${char.id}-icon" class="text-6xl relative z-10">${char.emoji}</div>
+                                <p class="text-lg mt-1 text-gray-800 font-semibold">${char.label}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex flex-wrap justify-center space-x-0 sm:space-x-4 space-y-4 sm:space-y-0">
+                        <button id="p1-confirm-button" class="game-button bg-gray-300 text-gray-700 w-full sm:w-auto" disabled onclick="handleP1Confirm()">確認距離 (請調整位置)</button>
+                        <button class="game-button bg-[var(--color-button-primary)] hover:bg-[var(--color-button-primary)]/80 text-white w-full sm:w-auto" onclick="goToPlanet('Start')">返回星球選單</button>
+                    </div>
+                </div>
+            `;
+        };
+        
+        const updateP1ConfirmButton = (isDistanceSafe, positioningMet) => {
+            const confirmButton = document.getElementById('p1-confirm-button');
+            if (!confirmButton) return;
+            const scenario = gameState.planet1_scenario; 
+            const isFullyCorrect = isDistanceSafe && positioningMet;
+            isPositionCorrect = isFullyCorrect; 
+            confirmButton.disabled = !isFullyCorrect;
+            confirmButton.className = 'game-button w-full sm:w-auto'; 
+            if (isFullyCorrect) {
+                confirmButton.classList.add('bg-[var(--color-success-green)]', 'text-white');
+                confirmButton.textContent = '✅ 確認距離：完美！';
+            } else if (!isDistanceSafe) {
+                confirmButton.classList.add('bg-[var(--color-error-red)]', 'text-white');
+                confirmButton.textContent = '❌ 距離太近！';
+            } else if (scenario === 1 && isDistanceSafe && !positioningMet) {
+                confirmButton.classList.add('bg-yellow-400', 'text-gray-800');
+                confirmButton.textContent = '⚠️ 距離安全，但位置不對！';
+            } else {
+                confirmButton.classList.add('bg-gray-300', 'text-gray-700');
+                confirmButton.textContent = '確認距離 (請調整位置)';
+            }
+        };
+
+        const setupPlanet1DragAndDrop = () => {
+            const explorerContainer = document.getElementById('char-explorer-container');
+            const targetContainer = document.getElementById('char-teacher-container') || document.getElementById('char-student-container');
+            if (!explorerContainer || !targetContainer) return;
+            const targetShield = targetContainer.querySelector('.bubble-shield');
+            const explorerShield = explorerContainer.querySelector('.bubble-shield');
+            const gameArea = document.getElementById('p1-game-area');
+            let isDragging = false;
+            let startClientX, startClientY;
+            const scenario = gameState.planet1_scenario;
+            const targetRadius = parseInt(targetContainer.dataset.radius);
+            const explorerRadius = parseInt(explorerContainer.dataset.radius);
+            const SAFE_DISTANCE = targetRadius + explorerRadius; 
+            const getCenter = (el) => {
+                const parentRect = gameArea.getBoundingClientRect();
+                const rect = el.getBoundingClientRect(); 
+                return { x: (rect.left + rect.right) / 2 - parentRect.left, y: (rect.top + rect.bottom) / 2 - parentRect.top };
+            };
+            let currentTx = 0; let currentTy = 0;
+            let initialTx = 0; let initialTy = 0;
+            const initialTransform = explorerContainer.style.transform;
+            if (initialTransform && initialTransform.includes('matrix')) {
+                const matrixMatch = initialTransform.match(/matrix.*\((.+)\)/);
+                if (matrixMatch) {
+                    const values = matrixMatch[1].split(',').map(v => parseFloat(v.trim()));
+                    currentTx = values[4]; currentTy = values[5];
+                }
+            }
+            const checkCollision = () => {
+                const explorerCenter = getCenter(explorerContainer);
+                const targetCenter = getCenter(targetContainer);
+                const distance = Math.sqrt(Math.pow(targetCenter.x - explorerCenter.x, 2) + Math.pow(targetCenter.y - explorerCenter.y, 2));
+                const isDistanceSafe = distance > SAFE_DISTANCE;
+                let positioningMet = false;
+                if (isDistanceSafe) {
+                    targetShield.classList.remove('broken'); targetShield.classList.add('happy');
+                    explorerShield.classList.remove('broken'); explorerShield.classList.add('happy');
+                    if (scenario === 1) { if (explorerCenter.x < targetCenter.x) positioningMet = true; }
+                    else if (scenario === 2) positioningMet = true;
+                } else {
+                    targetShield.classList.remove('happy'); targetShield.classList.add('broken');
+                    explorerShield.classList.remove('happy'); explorerShield.classList.add('broken');
+                }
+                updateP1ConfirmButton(isDistanceSafe, positioningMet);
+            };
+            const dragStart = (e) => {
+                e.preventDefault(); isDragging = true; explorerContainer.classList.add('opacity-75');
+                startClientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+                startClientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+                initialTx = currentTx; initialTy = currentTy;
+            };
+            const dragEnd = () => { if (!isDragging) return; isDragging = false; explorerContainer.classList.remove('opacity-75'); checkCollision(); };
+            const drag = (e) => {
+                if (!isDragging) return;
+                const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+                currentTx = initialTx + (clientX - startClientX); currentTy = initialTy + (clientY - startClientY);
+                explorerContainer.style.transform = `translate(${currentTx}px, ${currentTy}px)`;
+                checkCollision(); 
+                if (e.type === "touchmove") e.preventDefault();
+            };
+            checkCollision();
+            explorerContainer.addEventListener('mousedown', dragStart); document.addEventListener('mouseup', dragEnd); document.addEventListener('mousemove', drag);
+            explorerContainer.addEventListener('touchstart', dragStart, { passive: false }); document.addEventListener('touchend', dragEnd); document.addEventListener('touchmove', drag, { passive: false });
+        };
+
+        const setupBreathingExercise = () => {
+            const circle = document.getElementById('breathing-circle');
+            if (!circle) return;
+
+            if (window.breathingInterval) {
+                clearInterval(window.breathingInterval);
+            }
+
+            let isBreathingIn = true;
+
+            const breathingCycle = () => {
+                // Modified cycle logic to match 3s Inhale / 3s Exhale (6s total loop)
+                if (isBreathingIn) {
+                    circle.textContent = '吸氣...'; 
+                } else {
+                    circle.textContent = '吐氣...'; 
+                }
+                isBreathingIn = !isBreathingIn; 
+            };
+
+            breathingCycle();
+            // Interval changed to 3000ms (3 seconds) to match user request
+            window.breathingInterval = setInterval(breathingCycle, 3000); 
+        };
+
+        const renderPlanet2 = () => {
+            const scenario = gameState.planet2_scenario;
+            const scenarios = [
+                { key: 1, scene: '圖書館', emoji: '📚', instruction: '你現在在圖書館，大家都在安靜看書。這時，你的朋友走了進來。', options: [{ label: '大聲喊：「嘿！」', correct: false, action: '🗣️' }, { label: '小聲比手勢，示意他過來', correct: true, action: '🤫' }, { label: '快速拍他肩膀', correct: false, action: '🏃' }] },
+                { key: 2, scene: '生日派對', emoji: '🥳', instruction: '你的同學正在吹蠟燭。大家都很高興。', options: [{ label: '安靜坐著', correct: false, action: '😶' }, { label: '一起拍手，唱生日歌', correct: true, action: '👏' }, { label: '低頭玩手機', correct: false, action: '📱' }] },
+                { key: 3, scene: '同學哭泣', emoji: '😢', instruction: '你看到同學在角落哭泣。你怎麼做？', options: [{ label: '假裝沒看到', correct: false, action: '🚶' }, { label: '對他大笑', correct: false, action: '😂' }, { label: '問：「你還好嗎？」，遞衛生紙', correct: true, action: '❤️' }] },
+            ];
+            const currentScenario = scenarios.find(s => s.key === scenario);
+            if (!currentScenario) return renderEndScreen();
+            const totalScenarios = scenarios.length;
+            const progressWidth = (scenario / totalScenarios) * 100;
+            const handleP2Click = (isCorrect) => {
+                if (isCorrect) {
+                    if (gameState.planet2_scenario < totalScenarios) {
+                        showFeedback("太棒了！您成功偵測到氣氛！", 'success');
+                        gameState.planet2_scenario++; saveProgress(); renderApp();
+                    } else completePlanet('planet2');
+                } else showFeedback("氣氛雷達警報！請再觀察一下。", 'error');
+            };
+            window.handleP2Click = handleP2Click;
+            return `
+                <div class="card p-6 sm:p-8 max-w-3xl mx-auto">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-[var(--color-main-accent)] mb-4">🚀 關卡二：氣氛偵測鏡</h2>
+                    <p class="mb-2 text-xl font-extrabold text-gray-800">當前場景：${currentScenario.scene} ${currentScenario.emoji}</p>
+                    <p class="mb-4 text-lg sm:text-xl text-gray-700">${currentScenario.instruction}</p>
+                    <div class="progress-bar-container w-full mb-6">
+                        <div class="progress-fill" style="width: ${progressWidth}%;"></div>
+                    </div>
+                    <div class="bg-[var(--color-light-bg)] p-4 sm:p-6 rounded-xl mb-6 shadow-lg">
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mb-4">請選擇建議行為：</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            ${currentScenario.options.map(option => `
+                                <button class="game-button bg-[var(--color-button-primary)] text-white flex items-center justify-between w-full" onclick="handleP2Click(${option.correct})">
+                                    <span class="text-3xl">${option.action}</span>
+                                    <span class="text-lg sm:text-xl text-left">${option.label}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="flex justify-center"><button class="game-button bg-[var(--color-main-accent)] text-white" onclick="goToPlanet('Start')">返回星球選單</button></div>
+                </div>
+            `;
+        };
+
+        const renderPlanet3 = () => {
+            const scenario = gameState.planet3_scenario;
+            const scenarios = [
+                { key: 1, instruction: '你的積木城堡被同學不小心撞倒了！', question: '你的「情緒遙控器」現在應該按下哪個鍵？', options: [{ label: '💥 爆炸鍵', correct: false }, { label: '⏸️ 暫停鍵', correct: true, action: '呼吸' }] },
+                { key: 2, instruction: '進入大腦控制室。你的心跳很快，身體很燙！', question: '要讓身體冷靜下來，啟動哪個程式？', options: [{ label: '💨 加速程式', correct: false }, { label: '🌬️ 深呼吸', correct: true, action: '完成' }] }
+            ];
+            const currentScenario = scenarios.find(s => s.key === scenario);
+            if (!currentScenario) return renderEndScreen();
+            const progressWidth = (scenario / 2) * 100;
+            const handleP3Click = (isCorrect, nextStep) => {
+                if (isCorrect) {
+                    if (nextStep === '呼吸') { gameState.planet3_scenario = 2; saveProgress(); renderApp(); }
+                    else if (nextStep === '完成') completePlanet('planet3');
+                } else showFeedback("錯誤！這會讓情緒失控！", 'error');
+            };
+            window.handleP3Click = handleP3Click;
+            let content = '';
+            if (scenario === 1) {
+                content = `
+                    <div class="bg-[var(--color-error-red)]/30 p-4 sm:p-6 rounded-xl mb-6 shadow-md"><p class="text-lg sm:text-xl text-gray-700">${currentScenario.instruction}</p></div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mb-4">${currentScenario.question}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button class="game-button bg-[var(--color-error-red)] text-white" onclick="handleP3Click(false)">${currentScenario.options[0].label}</button>
+                        <button class="game-button bg-[var(--color-main-accent)] text-white" onclick="handleP3Click(true, '呼吸')">${currentScenario.options[1].label}</button>
+                    </div>
+                `;
+            } else if (scenario === 2) {
+                content = `
+                    <div class="bg-[var(--color-success-green)]/30 p-4 sm:p-6 rounded-xl mb-6 shadow-md text-center">
+                        <p class="text-2xl sm:text-3xl font-extrabold mb-4 text-[var(--color-dark-text)]">🌬️ 啟動深呼吸 (3秒吸、3秒吐)</p>
+                        <p class="text-lg sm:text-xl mb-6 text-gray-700">跟著圈圈的節奏：吸氣三秒，吐氣三秒。</p>
+                        <div id="breathing-circle" class="w-32 h-32 sm:w-48 sm:h-48 bg-[var(--color-light-bg)] mx-auto rounded-full breathing-pulse flex items-center justify-center text-xl sm:text-2xl font-extrabold shadow-2xl border-4 border-[var(--color-main-accent)]">
+                            吸氣！
+                        </div>
+                    </div>
+                    <div class="flex justify-center mt-6"><button class="game-button bg-[var(--color-button-primary)] text-white w-full sm:w-auto" onclick="handleP3Click(true, '完成')">✅ 我冷靜了！</button></div>
+                `;
+            }
+            return `
+                <div class="card p-6 sm:p-8 max-w-3xl mx-auto">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-[var(--color-main-accent)] mb-4">🎮 關卡三：情緒暫停鍵</h2>
+                    <div class="progress-bar-container w-full mb-6"><div class="progress-fill" style="width: ${progressWidth}%;"></div></div>
+                    ${content}
+                    <div class="flex justify-center mt-8"><button class="game-button bg-[var(--color-main-accent)] text-white" onclick="goToPlanet('Start')">返回星球選單</button></div>
+                </div>
+            `;
+        };
+
+        const renderEndScreen = () => {
+            window.resetGame = () => { gameState = { ...defaultGameState, score: 0 }; saveProgress(); goToPlanet('Start'); };
+            return `
+                <div class="card p-8 sm:p-10 max-w-xl mx-auto text-center">
+                    <p class="text-6xl sm:text-9xl mb-6">🏆</p>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold text-[var(--color-main-accent)] mb-4">任務圓滿成功！</h2>
+                    <div class="bg-[var(--color-light-bg)]/50 p-6 rounded-xl mb-8 shadow-lg"><p class="text-xl font-bold">總分數：</p><p class="text-5xl sm:text-7xl font-extrabold">${gameState.score}</p></div>
+                    <div class="space-y-4">
+                        <button class="game-button bg-[var(--color-main-accent)] text-white w-full" onclick="goToPlanet('Start')">返回星球選單</button>
+                        <button class="game-button bg-gray-500 text-white w-full" onclick="resetGame()">重新開始</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.onload = function() { loadProgress(); renderApp(); };
+    </script>
+</body>
+</html>

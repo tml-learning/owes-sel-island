@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>做自己生命的好舵手 - 負責任的決策</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 漸顯動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        /* 隱藏元素輔助類別 */
+        .hidden-element { display: none !important; }
+        
+        /* 自定義捲軸 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Tailwind 動態安全名單 (確保 JS 切換顏色時正常顯示) */
+        /* bg-emerald-50 bg-emerald-100 bg-emerald-400 bg-emerald-500 bg-emerald-600 bg-emerald-800 text-emerald-600 text-emerald-700 text-emerald-800 border-emerald-100 border-emerald-200 border-emerald-400 border-emerald-500 focus:ring-emerald-400 hover:text-emerald-700 */
+        /* bg-indigo-50 bg-indigo-100 bg-indigo-400 bg-indigo-500 bg-indigo-600 bg-indigo-800 text-indigo-600 text-indigo-700 text-indigo-800 border-indigo-100 border-indigo-200 border-indigo-400 border-indigo-500 focus:ring-indigo-400 hover:text-indigo-700 */
+        /* border-rose-500 bg-rose-50 text-rose-700 hover:border-rose-200 border-blue-500 bg-blue-50 text-blue-700 hover:border-blue-200 */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
+
+    <header class="max-w-5xl mx-auto mb-6 text-center">
+        <h1 class="text-3xl md:text-5xl font-bold text-indigo-700 mb-3 flex items-center justify-center gap-3">
+            <span>🚢</span> 做自己生命的好舵手
+        </h1>
+        <p class="text-lg md:text-xl text-slate-600 font-medium mb-4">
+            五年級 SEL 社會情緒學習 —— 負責任的決策（決策 5 步驟）
+        </p>
+        <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 max-w-4xl mx-auto shadow-sm">
+            <div class="text-xs font-black tracking-wider text-indigo-600 uppercase mb-2">🧭 負責任的決策・核心決策 5 步驟</div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-left">
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                    <div class="font-extrabold text-indigo-700 text-sm">① 發現問題</div>
+                    <div class="text-xs text-slate-500 mt-0.5">現在發生什麼事？核心困難點是什麼？</div>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                    <div class="font-extrabold text-indigo-700 text-sm">② 分析問題</div>
+                    <div class="text-xs text-slate-500 mt-0.5">牽涉哪些人、情緒或價值觀衝突？</div>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                    <div class="font-extrabold text-indigo-700 text-sm">③ 腦力激盪</div>
+                    <div class="text-xs text-slate-500 mt-0.5">不批評好壞，想出所有可能的處理方式</div>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                    <div class="font-extrabold text-indigo-700 text-sm">④ 評估解決方案</div>
+                    <div class="text-xs text-slate-500 mt-0.5">預測優缺點後果，選出符合道德長遠利益方案</div>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="font-extrabold text-indigo-700 text-sm">⑤ 反省思考</div>
+                    <div class="text-xs text-slate-500 mt-0.5">決定後心安理得嗎？未來再發生怎麼做？</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="max-w-5xl mx-auto flex flex-col md:flex-row gap-2 mb-8">
+        <button onclick="switchTab(1)" id="tab-btn-1" class="flex-1 p-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-md bg-indigo-600 text-white">
+            <div class="block">🔎 活動一：道德放大鏡</div>
+            <div class="text-sm font-normal mt-1 text-indigo-200">RDM 核心・動機與規範</div>
+        </button>
+        <button onclick="switchTab(2)" id="tab-btn-2" class="flex-1 p-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-sm bg-white text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+            <div class="block">⚖️ 活動二：價值大 PK</div>
+            <div class="text-sm font-normal mt-1 text-slate-400">10 年時光機・優先考慮事項</div>
+        </button>
+        <button onclick="switchTab(3)" id="tab-btn-3" class="flex-1 p-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-sm bg-white text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+            <div class="block">💌 活動三：解憂信箱（決策 5 步驟）</div>
+            <div class="text-sm font-normal mt-1 text-slate-400">發現➔分析➔激盪➔評估➔反省</div>
+        </button>
+    </nav>
+
+    <main class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden min-h-[600px] border border-slate-100">
+        
+        <!-- 活動一內容 -->
+        <div id="tab-content-1" class="p-6 md:p-10 animate-fade-in">
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-xl mb-8">
+                <h2 class="text-2xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+                    🎬 情境佈達
+                </h2>
+                <p class="text-lg leading-relaxed text-slate-700">
+                    「下課時，小明在漚汪國小的操場旁撿到了一張 500 元。他剛好非常想買一款新出的遊戲，而旁邊沒有任何人看到他撿到錢。小明心想：『這一定是幸運女神的禮物！』」
+                </p>
+            </div>
+
+            <h3 class="text-xl font-bold text-slate-700 mb-4">請全班一起來投票，小明接下來「可能採取的行動」？</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <button onclick="selectOption(1)" id="opt-btn-1" class="p-5 rounded-xl border-2 text-left transition-all duration-200 border-slate-200 hover:border-indigo-300 hover:bg-slate-50">
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl mt-1">🎮</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-lg text-slate-800 mb-1">選項 1：直接拿去買遊戲</div>
+                            <div id="opt-analysis-1" class="hidden-element mt-3 p-3 bg-white/70 rounded-lg text-slate-700 text-sm border border-indigo-100 animate-fade-in shadow-sm">
+                                🔍 <strong>解析：</strong>動機是「追求自己的快樂」，但忽略了這筆錢並不屬於自己。
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="selectOption(2)" id="opt-btn-2" class="p-5 rounded-xl border-2 text-left transition-all duration-200 border-slate-200 hover:border-indigo-300 hover:bg-slate-50">
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl mt-1">👮</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-lg text-slate-800 mb-1">選項 2：交給學務處或警察局</div>
+                            <div id="opt-analysis-2" class="hidden-element mt-3 p-3 bg-white/70 rounded-lg text-slate-700 text-sm border border-indigo-100 animate-fade-in shadow-sm">
+                                🔍 <strong>解析：</strong>動機是「物歸原主」，符合社會規範與誠實的道德標準。
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="selectOption(3)" id="opt-btn-3" class="p-5 rounded-xl border-2 text-left transition-all duration-200 border-slate-200 hover:border-indigo-300 hover:bg-slate-50">
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl mt-1">🙈</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-lg text-slate-800 mb-1">選項 3：把錢留在原地不管</div>
+                            <div id="opt-analysis-3" class="hidden-element mt-3 p-3 bg-white/70 rounded-lg text-slate-700 text-sm border border-indigo-100 animate-fade-in shadow-sm">
+                                🔍 <strong>解析：</strong>動機是「避免惹麻煩」，雖然沒有做壞事，但也錯失了發揮正向影響力的機會。
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                <button onclick="selectOption(4)" id="opt-btn-4" class="p-5 rounded-xl border-2 text-left transition-all duration-200 border-slate-200 hover:border-indigo-300 hover:bg-slate-50">
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl mt-1">🍬</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-lg text-slate-800 mb-1">選項 4：用這筆錢請全班吃糖果</div>
+                            <div id="opt-analysis-4" class="hidden-element mt-3 p-3 bg-white/70 rounded-lg text-slate-700 text-sm border border-indigo-100 animate-fade-in shadow-sm">
+                                🔍 <strong>解析：</strong>動機看似「對大家有益」，但因為花的是別人的錢，所以無法通過道德考驗。
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <div id="act1-controls" class="text-center mb-8 h-16 relative">
+                <div id="btn-show-analysis" class="hidden-element absolute inset-0 flex flex-col items-center justify-center animate-fade-in">
+                    <button onclick="revealAnalysis()" class="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 flex items-center gap-2">
+                        <span>🔍</span> 放大鏡解析：看透選項背後的動機
+                    </button>
+                    <p class="text-slate-400 text-sm mt-2">（老師可先請同學分享選擇的原因，再點擊解析）</p>
+                </div>
+                <div id="btn-show-summary" class="hidden-element absolute inset-0 flex items-center justify-center animate-fade-in">
+                    <button onclick="revealSummary()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 flex items-center gap-2">
+                        <span>💡</span> 聽聽老師怎麼說
+                    </button>
+                </div>
+            </div>
+
+            <div id="act1-summary" class="hidden-element bg-indigo-600 text-white p-6 rounded-xl shadow-inner animate-fade-in flex flex-col md:flex-row gap-6 items-center">
+                <div class="text-5xl">💡</div>
+                <div>
+                    <h4 class="text-xl font-bold mb-2">老師的溫馨叮嚀</h4>
+                    <p class="text-lg leading-relaxed text-indigo-100">
+                        「一個有益處的選擇，不能只建立在『對自己有利』，還必須通過<strong>『道德（誠實）』</strong>與<strong>『社會規範（拾金不昧）』</strong>的考驗喔！」
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 活動二內容 -->
+        <div id="tab-content-2" class="hidden-element p-6 md:p-10 bg-slate-50 h-full min-h-[600px]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        🏆 人生價值淘汰賽：搭乘時光機
+                    </h2>
+                    <p class="text-lg text-slate-600">
+                        小組討論挑戰：當兩個選項衝突時，請想像自己坐上時光機來到 <strong class="text-indigo-600 border-b-2 border-indigo-400">10 年後</strong>，哪一個對你的人生更重要？
+                    </p>
+                </div>
+                <button onclick="togglePkHints()" id="btn-pk-hint" class="px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 bg-white text-slate-500 border-2 border-slate-200 hover:bg-slate-100 shadow-sm">
+                    <span>💡</span> 開啟時光機提示
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- 戰局 1 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div id="pk-hint-1" class="hidden-element bg-amber-50 text-amber-800 text-sm p-4 mb-4 rounded-lg border border-amber-200 animate-fade-in flex gap-3 shadow-inner">
+                        <span class="text-xl">⏳</span>
+                        <p class="leading-relaxed"><strong>時光機悄悄話：</strong> 10 年後，你是希望看著一張張舊考卷，還是希望身邊有一個能聽你訴苦、陪你笑的好朋友？</p>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-4 mb-4">
+                        <span class="bg-rose-100 text-rose-700 font-bold px-4 py-2 rounded-lg text-sm shrink-0 shadow-sm border border-rose-200">第一戰：成就 VS 關係</span>
+                        <div class="flex-1 flex flex-col sm:flex-row gap-2 w-full">
+                            <button onclick="setPkWinner('match1', 'A')" id="pk-match1-A" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-rose-200">💯 每次考試都考 100 分</button>
+                            <div class="flex items-center justify-center text-slate-300 font-black italic text-xl">VS</div>
+                            <button onclick="setPkWinner('match1', 'B')" id="pk-match1-B" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-rose-200">🤝 擁有互相幫忙的知心好友</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-start bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <span class="text-xl mt-1">✍️</span>
+                        <input type="text" placeholder="長遠來看，我選它的原因是..." class="w-full bg-white border border-slate-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-rose-400 transition text-slate-700" />
+                    </div>
+                </div>
+
+                <!-- 戰局 2 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div id="pk-hint-2" class="hidden-element bg-amber-50 text-amber-800 text-sm p-4 mb-4 rounded-lg border border-amber-200 animate-fade-in flex gap-3 shadow-inner">
+                        <span class="text-xl">⏳</span>
+                        <p class="leading-relaxed"><strong>時光機悄悄話：</strong> 現在熬夜打電動很開心，但如果 10 年後因為沒照顧好自己，身體壞掉一直看醫生，還能開心享受生活嗎？</p>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-4 mb-4">
+                        <span class="bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded-lg text-sm shrink-0 shadow-sm border border-blue-200">第二戰：享樂 VS 健康</span>
+                        <div class="flex-1 flex flex-col sm:flex-row gap-2 w-full">
+                            <button onclick="setPkWinner('match2', 'A')" id="pk-match2-A" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-blue-200">🎮 熬夜與朋友一同打電動</button>
+                            <div class="flex items-center justify-center text-slate-300 font-black italic text-xl">VS</div>
+                            <button onclick="setPkWinner('match2', 'B')" id="pk-match2-B" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-blue-200">💪 擁有強壯健康的身體</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-start bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <span class="text-xl mt-1">✍️</span>
+                        <input type="text" placeholder="長遠來看，我選它的原因是..." class="w-full bg-white border border-slate-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-slate-700" />
+                    </div>
+                </div>
+
+                <!-- 戰局 3 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div id="pk-hint-3" class="hidden-element bg-amber-50 text-amber-800 text-sm p-4 mb-4 rounded-lg border border-amber-200 animate-fade-in flex gap-3 shadow-inner">
+                        <span class="text-xl">⏳</span>
+                        <p class="leading-relaxed"><strong>時光機悄悄話：</strong> 玩具總有一天會玩膩，但如果因為騙人而失去大家的信任，10 年後大家都不敢跟你做朋友，再多錢也買不到真心喔！</p>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-4 mb-4">
+                        <span class="bg-emerald-100 text-emerald-700 font-bold px-4 py-2 rounded-lg text-sm shrink-0 shadow-sm border border-emerald-200">第三戰：物質 VS 品德</span>
+                        <div class="flex-1 flex flex-col sm:flex-row gap-2 w-full">
+                            <button onclick="setPkWinner('match3', 'A')" id="pk-match3-A" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-emerald-200">💰 擁有很多玩具與零用錢</button>
+                            <div class="flex items-center justify-center text-slate-300 font-black italic text-xl">VS</div>
+                            <button onclick="setPkWinner('match3', 'B')" id="pk-match3-B" class="flex-1 p-3 rounded-lg border-2 font-bold transition-all border-slate-200 hover:bg-slate-50 hover:border-emerald-200">😇 做事誠實且晚上睡得安穩</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-start bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <span class="text-xl mt-1">✍️</span>
+                        <input type="text" placeholder="長遠來看，我選它的原因是..." class="w-full bg-white border border-slate-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition text-slate-700" />
+                    </div>
+                </div>
+
+                <!-- 總決賽 -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 md:p-8 rounded-xl shadow-md border-2 border-indigo-200 mt-8 relative">
+                    <div class="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">最終試煉</div>
+                    <h3 class="text-center font-black text-indigo-900 text-2xl mb-3">👑 終極價值總決賽</h3>
+                    
+                    <div class="bg-white/70 p-4 rounded-xl text-sm text-indigo-800 mb-6 text-center border border-indigo-100 shadow-sm max-w-2xl mx-auto">
+                        🤔 <strong>等等，第二戰的勝者去哪了？</strong><br/>
+                        <span class="text-slate-600 mt-1 inline-block">老師偷偷告訴你：因為「健康」是一切的基礎，沒有健康什麼都不用談啦！現在，讓我們把基礎保留在心中，從第一戰與第三戰的勝者中，選出你心靈層面的冠軍！</span>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                        <div class="flex-1 flex flex-col md:flex-row gap-4 w-full justify-center">
+                            <button onclick="setPkWinner('final', 'A')" id="pk-final-A" disabled class="flex-1 p-5 rounded-xl border-2 font-bold text-lg transition-all bg-slate-100 border-slate-200 text-slate-400 border-dashed">
+                                (等待第一戰勝者晉級...)
+                            </button>
+                            
+                            <div class="flex items-center justify-center">
+                                <div class="bg-indigo-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-black text-xl shadow-lg border-4 border-white z-10">VS</div>
+                            </div>
+                            
+                            <button onclick="setPkWinner('final', 'B')" id="pk-final-B" disabled class="flex-1 p-5 rounded-xl border-2 font-bold text-lg transition-all bg-slate-100 border-slate-200 text-slate-400 border-dashed">
+                                (等待第三戰勝者晉級...)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-8 p-6 bg-white rounded-xl border-2 border-amber-200 shadow-inner">
+                        <div class="inline-block bg-amber-500 text-white font-bold px-6 py-2 rounded-full mb-4 shadow-sm text-lg">
+                            🌟 你人生的北極星（終極選擇）是：
+                        </div>
+                        <div id="pk-final-result" class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600 min-h-[3rem] flex items-center justify-center">
+                            請點選上方晉級項目...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 活動三內容 -->
+        <div id="tab-content-3" class="hidden-element flex flex-col h-full min-h-[600px] bg-slate-50">
+            <div class="flex justify-center p-6 pb-0 gap-4 bg-white rounded-t-2xl">
+                <button onclick="switchAct3Stage('practice')" id="act3-tab-practice" class="px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm">
+                    <span>🏃‍♂️</span> 第一關：暖身練習
+                </button>
+                <button onclick="switchAct3Stage('challenge')" id="act3-tab-challenge" class="px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-transparent bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600">
+                    <span>🔥</span> 第二關：實戰挑戰
+                </button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row h-full border-t border-slate-200">
+                <div class="lg:w-1/3 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-slate-200 bg-white">
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm border border-slate-200 relative transform rotate-1 hover:rotate-0 transition-transform">
+                        <div class="absolute top-2 right-4 text-3xl opacity-20">📌</div>
+                        <div id="act3-left-content"></div>
+                    </div>
+                    <div class="mt-8 text-center" id="act3-left-hint"></div>
+                </div>
+
+                <div class="lg:w-2/3 p-6 md:p-8 bg-white">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        🕵️ 解憂顧問團隊：決策五步驟
+                    </h2>
+                    <div id="act3-steps-container" class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                        <!-- JS Render -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const state = {
+            activeTab: 1,
+            act1: { votedOption: null, showAnalysis: false, showSummary: false },
+            act2: { showHints: false, match1Winner: null, match2Winner: null, match3Winner: null, finalWinner: null },
+            act3: { stage: 'practice', practiceInputs: ['', '', '', '', ''], challengeInputs: ['', '', '', '', ''], revealedHints: [false, false, false, false, false] }
+        };
+
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`tab-btn-${i}`);
+                const content = document.getElementById(`tab-content-${i}`);
+                if (i === tabId) {
+                    btn.className = "flex-1 p-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-md bg-indigo-600 text-white";
+                    btn.children[1].className = "text-sm font-normal mt-1 text-indigo-200";
+                    content.classList.remove('hidden-element');
+                } else {
+                    btn.className = "flex-1 p-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-sm bg-white text-slate-500 hover:bg-indigo-50 hover:text-indigo-600";
+                    btn.children[1].className = "text-sm font-normal mt-1 text-slate-400";
+                    content.classList.add('hidden-element');
+                }
+            }
+            if (tabId === 3 && document.getElementById('act3-left-content').innerHTML.trim() === '') renderAct3();
+        }
+
+        function selectOption(optId) {
+            state.act1.votedOption = optId;
+            state.act1.showAnalysis = false;
+            state.act1.showSummary = false;
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`opt-btn-${i}`);
+                document.getElementById(`opt-analysis-${i}`).classList.add('hidden-element');
+                if (i === optId) btn.className = "p-5 rounded-xl border-2 text-left transition-all duration-200 border-indigo-500 bg-indigo-50 shadow-md transform scale-[1.02]";
+                else btn.className = "p-5 rounded-xl border-2 text-left transition-all duration-200 border-slate-200 hover:border-indigo-300 hover:bg-slate-50";
+            }
+            document.getElementById('btn-show-analysis').classList.remove('hidden-element');
+            document.getElementById('btn-show-summary').classList.add('hidden-element');
+            document.getElementById('act1-summary').classList.add('hidden-element');
+        }
+
+        function revealAnalysis() {
+            if (!state.act1.votedOption) return;
+            state.act1.showAnalysis = true;
+            document.getElementById(`opt-analysis-${state.act1.votedOption}`).classList.remove('hidden-element');
+            document.getElementById('btn-show-analysis').classList.add('hidden-element');
+            document.getElementById('btn-show-summary').classList.remove('hidden-element');
+        }
+
+        function revealSummary() {
+            state.act1.showSummary = true;
+            document.getElementById('btn-show-summary').classList.add('hidden-element');
+            document.getElementById('act1-summary').classList.remove('hidden-element');
+        }
+
+        const pkData = {
+            match1: { A: '💯 每次考試都考 100 分', B: '🤝 擁有互相幫忙的知心好友' },
+            match2: { A: '🎮 熬夜與朋友一同打電動', B: '💪 擁有強壯健康的身體' },
+            match3: { A: '💰 擁有很多玩具與零用錢', B: '😇 做事誠實且晚上睡得安穩' }
+        };
+
+        function togglePkHints() {
+            state.act2.showHints = !state.act2.showHints;
+            const btn = document.getElementById('btn-pk-hint');
+            if (state.act2.showHints) {
+                btn.className = "px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 bg-amber-100 text-amber-700 border-2 border-amber-400";
+                btn.innerHTML = "<span>💡</span> 隱藏時光機提示";
+                [1,2,3].forEach(i => document.getElementById(`pk-hint-${i}`).classList.remove('hidden-element'));
+            } else {
+                btn.className = "px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 bg-white text-slate-500 border-2 border-slate-200 hover:bg-slate-100 shadow-sm";
+                btn.innerHTML = "<span>💡</span> 開啟時光機提示";
+                [1,2,3].forEach(i => document.getElementById(`pk-hint-${i}`).classList.add('hidden-element'));
+            }
+        }
+
+        function setPkWinner(matchId, choice) {
+            if (matchId !== 'final') {
+                const text = pkData[matchId][choice];
+                state.act2[`${matchId}Winner`] = text;
+                const colors = matchId === 'match1' ? 'rose' : (matchId === 'match2' ? 'blue' : 'emerald');
+                document.getElementById(`pk-${matchId}-A`).className = `flex-1 p-3 rounded-lg border-2 font-bold transition-all ${choice === 'A' ? `border-${colors}-500 bg-${colors}-50 text-${colors}-700 shadow-md transform scale-[1.02]` : `border-slate-200 hover:bg-slate-50 hover:border-${colors}-200`}`;
+                document.getElementById(`pk-${matchId}-B`).className = `flex-1 p-3 rounded-lg border-2 font-bold transition-all ${choice === 'B' ? `border-${colors}-500 bg-${colors}-50 text-${colors}-700 shadow-md transform scale-[1.02]` : `border-slate-200 hover:bg-slate-50 hover:border-${colors}-200`}`;
+                updateFinalMatchButtons();
+            } else {
+                const text = choice === 'A' ? state.act2.match1Winner : state.act2.match3Winner;
+                state.act2.finalWinner = text;
+                const activeClass = "flex-1 p-5 rounded-xl border-2 font-bold text-lg transition-all border-amber-400 bg-gradient-to-b from-amber-50 to-amber-100 text-amber-900 shadow-xl scale-105 transform ring-4 ring-amber-200";
+                const inactiveClass = "flex-1 p-5 rounded-xl border-2 font-bold text-lg transition-all border-slate-300 bg-white hover:bg-slate-50 hover:border-indigo-300 shadow-sm";
+                document.getElementById('pk-final-A').className = choice === 'A' ? activeClass : inactiveClass;
+                document.getElementById('pk-final-B').className = choice === 'B' ? activeClass : inactiveClass;
+                document.getElementById('pk-final-result').innerText = text;
+            }
+        }
+
+        function updateFinalMatchButtons() {
+            const fBtnA = document.getElementById('pk-final-A');
+            const fBtnB = document.getElementById('pk-final-B');
+            const activeBase = "flex-1 p-5 rounded-xl border-2 font-bold text-lg transition-all border-slate-300 bg-white hover:bg-slate-50 hover:border-indigo-300 shadow-sm cursor-pointer";
+            if (state.act2.match1Winner) { fBtnA.innerText = state.act2.match1Winner; fBtnA.disabled = false; if(state.act2.finalWinner !== state.act2.match1Winner) fBtnA.className = activeBase; }
+            if (state.act2.match3Winner) { fBtnB.innerText = state.act2.match3Winner; fBtnB.disabled = false; if(state.act2.finalWinner !== state.act2.match3Winner) fBtnB.className = activeBase; }
+            if (state.act2.finalWinner && state.act2.finalWinner !== state.act2.match1Winner && state.act2.finalWinner !== state.act2.match3Winner) {
+                state.act2.finalWinner = null;
+                document.getElementById('pk-final-result').innerText = '請重新點選上方晉級項目...';
+                if(!fBtnA.disabled) fBtnA.className = activeBase;
+                if(!fBtnB.disabled) fBtnB.className = activeBase;
+            }
+        }
+
+        const act3Data = {
+            practice: {
+                leftTitle: '「小安的週末兩難」：',
+                leftText: `小安原本答應媽媽，星期六下午要留在家裡照顧妹妹，並把客廳打掃乾淨。<br/><br/>但是，死黨阿捷突然打電話來：「嘿！我多了一張今天下午『超級英雄大電影』的免費電影票，快點出門跟我一起去看！」<br/><br/>小安超想看這部電影，可是如果現在出門，不但違背了對媽媽的承諾，媽媽回家也一定會大發雷霆...他該怎麼辦？`,
+                hintLabel: '💡 請點選學習五步驟，各別看解析', theme: 'emerald',
+                steps: [
+                    { step: 1, title: '發現問題', desc: '現在發生了什麼事？核心的困難點是什麼？', hint: '小安很想去看電影，但他已經答應媽媽要看家和打掃了。' },
+                    { step: 2, title: '分析問題', desc: '為什麼會這樣？牽涉到哪些人、情緒或價值觀衝突？', hint: '這牽涉到「對家人的承諾與責任」與「對朋友邀約的渴望（娛樂）」之間的衝突。' },
+                    { step: 3, title: '腦力激盪', desc: '不批評好壞，想出所有「可能」的處理方式。', hint: '(1) 偷溜出門看電影 (2) 拒絕阿捷，乖乖看家 (3) 打電話問媽媽能不能改天打掃，並帶妹妹一起去 (4) 請阿捷找別人，約下次再玩' },
+                    { step: 4, title: '評估解決方案', desc: '預測後果(優缺點)，挑選最符合道德與長遠利益的最佳行動。', hint: '方法(4)或(2)最好，遵守承諾最重要。偷溜出門(1)會破壞信任。方法(3)雖然想兩全其美，但未經同意就帶妹妹出門改變計畫，仍會讓媽媽擔心。' },
+                    { step: 5, title: '反省思考', desc: '決定後自己心安理得嗎？未來再發生可以怎麼做？', hint: '選(4)雖然當下覺得錯過免費電影很可惜，但晚上媽媽回家時自己會很安心，不用提心吊膽怕被罵。' }
+                ]
+            },
+            challenge: {
+                leftTitle: '來自「苦惱的小漚」的來信：',
+                leftText: `親愛的顧問你好：<br/><br/>我最好的朋友最近迷上了一款手機遊戲，他要我幫他在明天的數學小考作弊，這樣他才不會被沒收手機。<br/><br/>他說如果我不幫他，他就不跟我當朋友了。<br/><br/>我很重視這段友誼，但我不想作弊。我該怎麼辦？`,
+                hintLabel: '💡 請小組合作完成五步驟分析', theme: 'indigo',
+                steps: [
+                    { step: 1, title: '發現問題', desc: '現在發生了什麼事？核心的困難點是什麼？' },
+                    { step: 2, title: '分析問題', desc: '為什麼會這樣？牽涉到哪些人、情緒或價值觀衝突？' },
+                    { step: 3, title: '腦力激盪', desc: '不批評好壞，想出所有「可能」的處理方式。' },
+                    { step: 4, title: '評估解決方案', desc: '預測後果(優缺點)，挑選最符合道德與長遠利益的最佳行動。' },
+                    { step: 5, title: '反省思考', desc: '決定後自己心安理得嗎？未來再發生可以怎麼做？' }
+                ]
+            }
+        };
+
+        function switchAct3Stage(stage) {
+            state.act3.stage = stage;
+            const btnP = document.getElementById('act3-tab-practice');
+            const btnC = document.getElementById('act3-tab-challenge');
+            if (stage === 'practice') {
+                btnP.className = "px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm";
+                btnC.className = "px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-transparent bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600";
+            } else {
+                btnC.className = "px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-indigo-500 bg-indigo-50 text-indigo-800 shadow-sm";
+                btnP.className = "px-6 py-3 rounded-t-xl font-bold text-lg transition-all flex items-center gap-2 border-t-4 border-transparent bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600";
+            }
+            renderAct3();
+        }
+
+        function handleAct3Input(index, val) {
+            if (state.act3.stage === 'practice') state.act3.practiceInputs[index] = val;
+            else state.act3.challengeInputs[index] = val;
+        }
+
+        function toggleAct3Hint(index) {
+            state.act3.revealedHints[index] = !state.act3.revealedHints[index];
+            const btn = document.getElementById(`act3-btn-hint-${index}`);
+            const box = document.getElementById(`act3-box-hint-${index}`);
+            if (state.act3.revealedHints[index]) {
+                btn.innerHTML = '👁️ 隱藏解析'; box.classList.remove('hidden-element');
+            } else {
+                btn.innerHTML = '💡 點我看解析'; box.classList.add('hidden-element');
+            }
+        }
+
+        function renderAct3() {
+            const data = state.act3.stage === 'practice' ? act3Data.practice : act3Data.challenge;
+            const theme = data.theme;
+            
+            document.getElementById('act3-left-content').innerHTML = `
+                <h3 class="text-xl font-bold text-${theme}-800 mb-4 border-b-2 border-${theme}-100 pb-2">${data.leftTitle}</h3>
+                <p class="text-slate-700 leading-relaxed space-y-4 font-medium">${data.leftText}</p>
+            `;
+            document.getElementById('act3-left-hint').innerHTML = `
+                <div class="font-bold text-${theme}-600 bg-${theme}-50/80 border border-${theme}-100 py-2 px-4 rounded-full inline-flex items-center justify-center gap-2">
+                    ${data.hintLabel}
+                </div>
+            `;
+
+            const inputs = state.act3.stage === 'practice' ? state.act3.practiceInputs : state.act3.challengeInputs;
+            let stepsHtml = '';
+
+            data.steps.forEach((item, index) => {
+                const val = inputs[index].replace(/"/g, '&quot;');
+                let hintHtml = '';
+                if (state.act3.stage === 'practice') {
+                    const isRevealed = state.act3.revealedHints[index];
+                    hintHtml = `
+                        <div class="mt-2 flex justify-end">
+                            <button onclick="toggleAct3Hint(${index})" id="act3-btn-hint-${index}" class="text-sm font-bold flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-slate-50 text-${theme}-600 hover:text-${theme}-700">
+                                ${isRevealed ? '👁️ 隱藏解析' : '💡 點我看解析'}
+                            </button>
+                        </div>
+                        <div id="act3-box-hint-${index}" class="${isRevealed ? '' : 'hidden-element'} mt-2 border-l-2 p-3 text-sm rounded-r animate-fade-in shadow-inner bg-${theme}-50 border-${theme}-400 text-${theme}-800">
+                            <strong>💡 解析：</strong> ${item.hint}
+                        </div>
+                    `;
+                }
+
+                stepsHtml += `
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white text-white font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-0 md:left-1/2 -ml-5 md:ml-0 z-10 bg-${theme}-500">
+                            ${item.step}
+                        </div>
+                        <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] ml-auto md:ml-0 p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow relative">
+                            <h4 class="font-bold text-lg mb-1 text-${theme}-700">${item.title}</h4>
+                            <p class="text-sm text-slate-500 mb-3">${item.desc}</p>
+                            <textarea oninput="handleAct3Input(${index}, this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${theme}-400 resize-none h-24" placeholder="請小組討論並寫下看法...">${val}</textarea>
+                            ${hintHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('act3-steps-container').innerHTML = stepsHtml;
+        }
+        
+        // 確保初始載入時活動三也能正常運作
+        window.onload = () => { if(state.activeTab === 3) renderAct3(); };
+    </script>
+</body>
+</html>

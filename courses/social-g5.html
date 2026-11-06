@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五年級社會覺察練功坊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .progress-bar {
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s ease-out forwards;
+        }
+
+        .bubble {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            user-select: none;
+        }
+        .bubble:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .bubble.active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            border-color: #2563eb !important;
+            transform: scale(0.9);
+        }
+
+        .pocket-item {
+            animation: slideIntoPocket 0.5s ease-out forwards;
+        }
+        @keyframes slideIntoPocket {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .writing-input {
+            border-bottom: 2px solid #bfdbfe;
+            transition: border-color 0.3s;
+        }
+        .writing-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .l2-option-a { background-color: #eff6ff; border: 3px solid #bfdbfe; color: #1e40af; }
+        .l2-option-b { background-color: #f5f3ff; border: 3px solid #ddd6fe; color: #5b21b6; }
+        .l2-option-correct { background-color: #dcfce7 !important; border-color: #4ade80 !important; color: #166534 !important; }
+        .l2-option-wrong { background-color: #fee2e2 !important; border-color: #f87171 !important; color: #991b1b !important; }
+
+        .ai-loading {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #9333ea;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        section {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feedback-card {
+            border-left-width: 4px;
+            transition: all 0.2s;
+        }
+        .feedback-card:hover {
+            transform: translateX(5px);
+            background-color: #f1f5f9;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: bold;
+        }
+        .status-completed { background-color: #dcfce7; color: #166534; }
+        .status-pending { background-color: #f1f5f9; color: #64748b; }
+
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        .support-zone {
+            border-top: 4px solid #e2e8f0;
+            background: linear-gradient(to bottom, #f8fafc, #fff);
+        }
+    </style>
+</head>
+<body class="text-slate-800 bg-slate-50">
+
+    <header class="gradient-bg text-white p-8 shadow-xl text-center">
+        <h1 class="text-4xl font-black tracking-tight">🎨 社會覺察練功坊</h1>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-10">
+        
+        <div class="mb-10 bg-white p-6 rounded-3xl shadow-lg border border-slate-100 sticky top-4 z-40">
+            <div class="flex justify-between mb-3 px-1">
+                <span id="progress-text" class="font-bold text-blue-600">冒險準備中...</span>
+                <span id="progress-percent" class="text-slate-400 font-mono font-bold">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner">
+                <div id="progress-bar" class="progress-bar bg-blue-500 h-full rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- 第一關：說好話練功坊 -->
+        <section id="level-1" class="mb-12 bg-white rounded-3xl p-8 shadow-xl border-t-8 border-blue-500">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-4 rounded-2xl mr-5 text-3xl">💬</div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl font-black text-slate-800">第一關：說好話練功坊</h2>
+                            <span id="l1-status" class="status-badge status-pending">進行中</span>
+                        </div>
+                        <p class="text-slate-500 mt-1 font-medium">練習溫和且具建設性的回饋</p>
+                    </div>
+                </div>
+                <div class="text-blue-600 font-bold bg-blue-50 px-5 py-2 rounded-2xl text-sm border border-blue-100">
+                    挑戰：<span id="current-l1-num">1</span> / 6
+                </div>
+            </div>
+            
+            <div id="l1-interactive-zone">
+                <div id="l1-container" class="bg-slate-50 p-8 rounded-3xl mb-6 border border-slate-100">
+                    <p id="l1-scenario" class="mb-6 text-xl font-bold text-slate-700 leading-relaxed"></p>
+                    <div id="l1-options" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                    <div id="l1-feedback" class="mt-6 hidden p-4 rounded-2xl text-center font-bold text-lg animate-pop"></div>
+                    <button id="l1-next-btn" onclick="nextL1Question()" class="w-full mt-6 py-4 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-lg hover:bg-blue-700 hidden">
+                        下一幕：繼續修練 ➔
+                    </button>
+                </div>
+
+                <div id="l1-writing-challenge" class="hidden mt-8 space-y-8">
+                    <div class="bg-blue-50 p-6 rounded-[2rem] border-4 border-blue-200 border-dashed animate-pop">
+                        <h3 class="text-lg font-bold text-blue-800 mb-4">✍️ 文字練功房：實體合作</h3>
+                        <div class="bg-white p-5 rounded-xl mb-4 text-slate-600 text-sm italic">分組實驗時，組員弄濕了記錄表，你想用建設性的方式說：</div>
+                        <div class="flex flex-wrap items-center gap-2 text-lg text-slate-700">
+                            <span>「我知道你不是</span>
+                            <input type="text" id="l1-w-1-1" placeholder="故意的" class="writing-input text-blue-600 font-bold px-2 w-32 bg-transparent text-center">
+                            <span>，雖然濕了，但我們可以</span>
+                            <input type="text" id="l1-w-1-2" placeholder="一起想辦法" class="writing-input text-blue-600 font-bold px-2 w-48 bg-transparent text-center">
+                            <span>。」</span>
+                        </div>
+                    </div>
+                    <button id="l1-w-submit" onclick="finishL1()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-lg">完成第一關修練</button>
+                </div>
+                <div id="l1-finished-view" class="hidden bg-emerald-50 p-8 rounded-3xl text-center border-2 border-emerald-200">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="text-xl font-bold text-emerald-800">第一關已圓滿達成！</h3>
+                    <p class="text-emerald-600">你展現了優秀的溝通技巧。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第二關：社會資源搜查隊 -->
+        <section id="level-2" class="mb-12 bg-white rounded-3xl p-8 shadow-xl border-t-8 border-emerald-500">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <div class="bg-emerald-100 p-4 rounded-2xl mr-5 text-3xl">🤝</div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl font-black text-slate-800">第二關：社會資源搜查隊</h2>
+                            <span id="l2-status" class="status-badge status-pending">進行中</span>
+                        </div>
+                        <p class="text-slate-500 mt-1 font-medium">辨識行為並尋求支持系統</p>
+                    </div>
+                </div>
+                <div class="text-emerald-600 font-bold bg-emerald-50 px-5 py-2 rounded-2xl text-sm border border-emerald-100">
+                    挑戰：<span id="current-l2-num">1</span> / 6
+                </div>
+            </div>
+
+            <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-orange-50 p-4 rounded-2xl border border-orange-200">
+                    <div class="text-2xl mb-2">🏠 家庭資源</div>
+                    <p class="text-sm text-slate-600"><strong>定義：</strong>父母、兄弟姊妹、長輩親戚。</p>
+                    <p class="text-xs text-slate-500 mt-1">遇到情感挫折、生活煩惱時，家人是最親近的避風港，提供無條件的支持與建議。</p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                    <div class="text-2xl mb-2">🏫 學校支援</div>
+                    <p class="text-sm text-slate-600"><strong>定義：</strong>老師、輔導室、校警、護理師。</p>
+                    <p class="text-xs text-slate-500 mt-1">在校發生糾紛、霸凌或課業困難時，學校提供專業的調解、保護與學習協助。</p>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                    <div class="text-2xl mb-2">🏘️ 社區資源</div>
+                    <p class="text-sm text-slate-600"><strong>定義：</strong>警察局、圖書館、愛心商店、里長。</p>
+                    <p class="text-xs text-slate-500 mt-1">校外遇到危險或需要公共服務時，社區網絡能提供即時的安全庇護與生活連結。</p>
+                </div>
+            </div>
+            
+            <div id="l2-interactive-zone">
+                <div id="l2-question-box" class="bg-slate-50 p-8 rounded-3xl border border-slate-200">
+                    <div id="l2-type-tag" class="inline-block px-4 py-1 rounded-full text-xs font-bold mb-4"></div>
+                    <p id="l2-scenario-text" class="mb-8 font-bold text-xl text-slate-700 leading-relaxed"></p>
+                    <div id="l2-options" class="grid grid-cols-1 gap-4"></div>
+                    <div id="l2-feedback" class="mt-6 hidden p-4 rounded-2xl text-center font-bold text-lg animate-pop"></div>
+                    <button id="l2-next-btn" onclick="nextL2Question()" class="w-full mt-6 py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-lg hidden">
+                        下一個挑戰 ➔
+                    </button>
+                </div>
+                <div id="l2-finished-view" class="hidden bg-emerald-50 p-8 rounded-3xl text-center border-2 border-emerald-200">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="text-xl font-bold text-emerald-800">第二關已圓滿達成！</h3>
+                    <p class="text-emerald-600">你已具備尋求社會資源的能力。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第三關：探索文化基因 -->
+        <section id="level-3" class="mb-12 bg-white rounded-3xl p-8 shadow-xl border-t-8 border-purple-500">
+            <div class="flex items-center mb-10">
+                <div class="bg-purple-100 p-4 rounded-2xl mr-5 text-3xl">🌍</div>
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800">第三關：探索文化基因</h2>
+                    <p class="text-slate-500 mt-1 font-medium">點擊 3 個最有感的關鍵字，探索你的文化基因</p>
+                    
+                    <div class="mt-4 p-4 bg-purple-50 rounded-2xl border border-purple-200 space-y-2">
+                        <p class="font-bold text-purple-800">第三關學習任務說明：</p>
+                        <p class="text-sm text-slate-600">請從下方挑選 3 個與你生活最相關的「文化關鍵字」，把它們裝進靈感口袋。接著，寫下你對這些關鍵字的專屬記憶，製作一張獨一無二的「文化身分證」！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div id="keyword-cloud" class="flex flex-wrap gap-3 p-8 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-purple-200 min-h-[300px] items-center justify-center">
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 p-6 rounded-[2.5rem] border-2 border-purple-100 flex flex-col">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-black text-purple-800 flex items-center gap-2">👝 靈感口袋</h3>
+                        <span id="pocket-count" class="bg-purple-200 text-purple-700 text-xs px-2 py-1 rounded-full font-bold">0 / 3</span>
+                    </div>
+                    <div id="pocket-list" class="flex flex-col gap-3 flex-1">
+                        <p id="pocket-empty-hint" class="text-purple-300 text-sm text-center py-10 font-medium">尚未收集靈感...</p>
+                    </div>
+                    
+                    <button id="l3-start-btn" onclick="startCreation()" class="w-full mt-6 py-4 bg-purple-600 text-white rounded-2xl font-black text-lg shadow-lg opacity-50 cursor-not-allowed transition-all">
+                        開始製作身分證 ➔
+                    </button>
+                </div>
+            </div>
+
+            <div id="creation-zone" class="hidden mt-12 pt-12 border-t-2 border-slate-100 animate-pop">
+                <div class="bg-purple-50 p-8 rounded-[2.5rem] mb-8">
+                    <h3 class="font-bold text-purple-800 mb-4 text-xl">✏️ 寫下你的文化小故事</h3>
+                    <p class="text-slate-600 mb-6 text-sm font-medium">請依照你選擇的關鍵字，簡單分享一句話，例如：想到「家鄉菜」，我最喜歡阿嬤煮的滷肉飯。</p>
+                    
+                    <div id="l3-dynamic-inputs" class="space-y-4 mb-8">
+                        <!-- 動態生成輸入框 -->
+                    </div>
+                    
+                    <button id="generate-id-btn" onclick="generateIDCard()" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black text-lg shadow-lg hover:bg-purple-700 transition-all">
+                        ✨ 製作專屬文化身分證 ✨
+                    </button>
+                </div>
+
+                <div id="id-card-output" class="hidden animate-pop">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <!-- 文化身分證設計 -->
+                            <div class="bg-white p-6 rounded-[2rem] shadow-xl border-4 border-purple-300 relative overflow-hidden">
+                                <div class="absolute -right-10 -top-10 bg-purple-100 w-32 h-32 rounded-full opacity-50"></div>
+                                <div class="absolute -left-10 -bottom-10 bg-blue-100 w-32 h-32 rounded-full opacity-50"></div>
+                                
+                                <div class="relative z-10">
+                                    <div class="flex items-center gap-4 border-b-2 border-dashed border-slate-200 pb-4 mb-4">
+                                        <div class="text-6xl bg-purple-50 p-2 rounded-2xl border-2 border-purple-200">🧑‍🎓</div>
+                                        <div>
+                                            <h4 class="text-2xl font-black text-slate-800 tracking-wider">文化身分證</h4>
+                                            <p class="text-purple-600 font-bold text-sm">社會覺察練功大師</p>
+                                        </div>
+                                    </div>
+                                    <div id="id-card-content" class="space-y-4 text-slate-700 font-medium">
+                                        <!-- 動態填入內容 -->
+                                    </div>
+                                    <div class="mt-6 text-right">
+                                        <span class="inline-block px-4 py-1 bg-emerald-100 text-emerald-700 font-black rounded-full border-2 border-emerald-300 transform rotate-[-5deg] text-sm">
+                                            ✅ 探索認證通過
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-200 flex flex-col">
+                            <h4 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                <span>🤝 分享與共鳴</span>
+                                <span class="text-xs font-normal bg-blue-100 text-blue-600 px-2 py-1 rounded-md">與同學交流時，你可以這樣說</span>
+                            </h4>
+                            <div class="space-y-4 flex-1">
+                                <button onclick="sendFeedback('curious')" class="w-full text-left feedback-card p-4 bg-white rounded-xl border-blue-400 shadow-sm">
+                                    <div class="text-blue-600 font-black mb-1">「我很好奇...」🤝</div>
+                                    <p class="text-slate-600 text-sm italic">你的文化身分證好特別，可以多跟我說一點嗎？</p>
+                                </button>
+                                <button onclick="sendFeedback('empathy')" class="w-full text-left feedback-card p-4 bg-white rounded-xl border-emerald-400 shadow-sm">
+                                    <div class="text-emerald-600 font-black mb-1">「我也一樣...」💡</div>
+                                    <p class="text-slate-600 text-sm italic">看到你寫的內容，讓我想到了我對（家人/故鄉）的情感。</p>
+                                </button>
+                                <button onclick="sendFeedback('discovery')" class="w-full text-left feedback-card p-4 bg-white rounded-xl border-purple-400 shadow-sm">
+                                    <div class="text-purple-600 font-black mb-1">「新的發現...」✨</div>
+                                    <p class="text-slate-600 text-sm italic">這是我第一次知道原來（關鍵字）對你這麼重要！</p>
+                                </button>
+                            </div>
+                            <div class="mt-8 pt-6 border-t border-slate-200">
+                                <div class="bg-purple-100 p-4 rounded-2xl mb-4 border border-purple-200 text-center">
+                                    <h5 class="text-purple-800 font-bold mb-1">📜 文化宣言</h5>
+                                    <p class="text-purple-900 font-medium text-sm leading-relaxed">「我明白，我的標準不是唯一的尺。我學會用好奇取代定論，在差異中尋找共鳴。」</p>
+                                </div>
+                                <button onclick="finishCourse()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-black text-lg shadow-xl hover:scale-[1.02] transition-transform">
+                                    同意宣言並完成探險 🏆
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 給大人的話：SEL 教育指南 -->
+        <section class="mt-20 mb-20 support-zone p-8 rounded-[3rem]">
+            <details class="group">
+                <summary class="flex justify-between items-center font-bold cursor-pointer list-none">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-slate-800 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl">💡</div>
+                        <h2 class="text-2xl text-slate-700">給大人的話：SEL 教育指南</h2>
+                    </div>
+                    <span class="transition group-open:rotate-180">
+                        <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                </summary>
+                <div class="text-slate-600 mt-8 group-open:animate-pop leading-relaxed space-y-8">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">🌱 設計理念：社會覺察的核心</h3>
+                        <p>本網頁課程設計緊扣 **SEL（社會情緒學習）** 中的 **「社會覺察（Social Awareness）」** 核心素養。社會覺察是指「理解他人觀點、展現同理心，並能體會不同背景與文化規範的能力」。我們希望透過三個層次的互動體驗，引導學生由內而外地擴展視野：</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                            <h4 class="font-bold text-blue-600 mb-2">微觀覺察：人際溝通</h4>
+                            <p class="text-sm">第一關（說好話）對應的是**同理心與換位思考**。我們讓學生練習區分「指責」與「建議」，理解語言對他人情緒影響，學習在不委屈自己的前提下，用溫和堅定的方式表達需求。</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                            <h4 class="font-bold text-emerald-600 mb-2">中觀覺察：資源連結</h4>
+                            <p class="text-sm">第二關（資源搜查）對應的是**組織意識與支持系統**。我們引導學生辨識問題的性質，並能對應到正確的家庭、學校或社區資源。這不僅是解決問題，更是建立「求助是智慧而非示弱」的重要觀念。</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                            <h4 class="font-bold text-purple-600 mb-2">宏觀覺察：文化認同</h4>
+                            <p class="text-sm">第三關（文化基因）對應的是**尊重多樣性**。透過製作專屬的「文化身分證」，學生將反思生活經驗與文化軌跡，看見自己的獨特性，並學習欣賞他人的不同。我們強調的不是「同化」，而是「共鳴」，在差異中找到彼此連結的可能。</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-100 p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">📢 引導與實施建議</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>陪伴與反思：</strong> 在孩子操作時，試著問：「為什麼這個回應比較好？」、「如果是你，你會想找誰幫忙？」，將線上的選擇轉化為現實的思考。</li>
+                            <li><strong>延伸對話：</strong> 第三關完成後，是絕佳的親子/師生對話時機。可以邀請孩子分享他們在「文化身分證」上寫下的一句話，進一步聊聊家鄉菜、母語或家族的故事，增強孩子的文化歸屬感與表達自信。</li>
+                            <li><strong>正向增強：</strong> 當孩子展現出同理或求助的意願時，請給予具體的肯定，強化這些正向的社會行為。</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <div id="modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden p-6 z-50">
+            <div class="bg-white p-10 rounded-[3.5rem] max-w-lg w-full text-center shadow-2xl animate-pop border-4 border-blue-500">
+                <div class="text-8xl mb-6">🎓</div>
+                <h3 class="text-3xl font-black mb-4 text-slate-800">冒險完成</h3>
+                <p class="text-slate-600 text-lg mb-8 leading-relaxed font-medium">你已完成所有探索任務！</p>
+                <button onclick="location.reload()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-lg">重新冒險</button>
+            </div>
+        </div>
+
+        <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800/90 text-white px-6 py-3 rounded-full hidden z-[60] shadow-xl backdrop-blur-sm animate-pop font-bold"></div>
+
+    </main>
+
+    <script>
+        const keywords = [
+            "🍵 家鄉菜", "🏮 傳統節慶", "🗣️ 母語", "📖 家族故事", "👗 傳統服飾", 
+            "🎼 民族音樂", "🕌 宗教信仰", "🎨 傳統工藝", "🏘️ 故鄉風景", "🎮 次文化"
+        ];
+
+        const l1Pool = [
+            { s: "朋友提議賣苦瓜冰淇淋，你覺得不太妙。", c: "我聽到你想賣特色口味，但如果結合甜水果會不會更受歡迎？", i: "這聽起來超難吃，沒人會買啦！" },
+            { s: "組員想把海報畫成全黑色的。", c: "全黑很有型，但如果加點亮色字，大家會更容易看到重點嗎？", i: "全黑很醜耶，你是想讓大家看不見內容嗎？" },
+            { s: "同學在台上報告太大聲，耳朵很不舒服。", c: "你的報告內容很精彩，如果聲音能稍微調整一下，我們會聽得更舒服喔。", i: "你是喇叭嗎？吵死了，小聲一點好不好！" },
+            { s: "組長分配的工作太多，你快做不完了。", c: "謝謝你信任我的能力，調整一下分工嗎？", i: "你分這麼多給我幹嘛？" },
+            { s: "朋友運動會跌倒了，心情很沮喪。", c: "看到你跌倒我也很心疼，大家都有看到你的努力喔。", i: "就叫你小心點了吧。" },
+            { s: "同學的新髮型看起來有點奇怪。", c: "這個新髮型很有個性耶！你自己喜歡嗎？", i: "你的頭怎麼變這樣？" }
+        ];
+
+        const l2Pool = [
+            { type: "family", label: "🏠 家庭資源", s: "你最近課業壓力大，常對家人發脾氣，覺得愧疚。", c: "找家人聊聊壓力，練習一起規畫作息。", i: "關起門不理人。" },
+            { type: "school", label: "🏫 學校支援", s: "發現同學放學被別班圍住，看起來很害怕。", c: "回辦公室找老師或校警求助。", i: "在旁邊拍影片。" },
+            { type: "community", label: "🏘️ 社區資源", s: "回家路上發現流浪狗追趕小朋友。", c: "帶小朋友去旁邊愛心商店找大人幫忙。", i: "嘲笑小朋友。" },
+            { type: "school", label: "🏫 學校支援", s: "在學校不小心弄壞了公用飲水機的把手。", c: "主動去總務處向老師說明。", i: "偷偷溜走。" },
+            { type: "community", label: "🏘️ 社區資源", s: "看到公園裡的長椅被塗鴉，影響美觀。", c: "告訴里長或撥打市民專線。", i: "在上面寫下名字。" },
+            { type: "family", label: "🏠 家庭資源", s: "想參加暑期營隊但費用太高。", c: "向父母說明理由，討論預算。", i: "偷偷拿錢。" }
+        ];
+
+        let l1Idx = 0, l2Idx = 0;
+        let l1Selected = [], l2Selected = [];
+        let pocketSelections = [];
+        let l1Finished = false, l2Finished = false, l3Finished = false;
+
+        function initGame() {
+            l1Selected = [...l1Pool].sort(() => 0.5 - Math.random());
+            l2Selected = [...l2Pool].sort(() => 0.5 - Math.random());
+            loadL1Question();
+            loadL2Question();
+            generateKeywordCloud();
+            calculateTotalProgress();
+        }
+
+        function loadL1Question() {
+            if(l1Finished) return;
+            const q = l1Selected[l1Idx];
+            document.getElementById('current-l1-num').innerText = l1Idx + 1;
+            document.getElementById('l1-scenario').innerText = `【場景】${q.s}`;
+            const grid = document.getElementById('l1-options');
+            grid.innerHTML = '';
+            const opts = [{ t: q.c, ok: true }, { t: q.i, ok: false }].sort(() => 0.5 - Math.random());
+            opts.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = "p-5 bg-white border-2 border-slate-200 rounded-2xl text-left hover:border-blue-400 font-bold transition-all shadow-sm";
+                b.innerText = opt.t;
+                b.onclick = () => {
+                    const fb = document.getElementById('l1-feedback');
+                    fb.classList.remove('hidden');
+                    if(opt.ok) {
+                        b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                        fb.innerText = "✨ 太棒了！你的回饋充滿智慧。";
+                        fb.className = "mt-6 p-4 rounded-2xl text-center font-bold bg-emerald-100 text-emerald-700 animate-pop";
+                        document.getElementById('l1-next-btn').classList.remove('hidden');
+                    } else {
+                        b.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                        fb.innerText = "再想一個更有建設性的說法？";
+                        fb.className = "mt-6 p-4 rounded-2xl text-center font-bold bg-rose-100 text-rose-700 animate-pop";
+                    }
+                };
+                grid.appendChild(b);
+            });
+            document.getElementById('l1-feedback').classList.add('hidden');
+            document.getElementById('l1-next-btn').classList.add('hidden');
+        }
+
+        function nextL1Question() {
+            l1Idx++;
+            if(l1Idx < 6) {
+                loadL1Question();
+            } else {
+                document.getElementById('l1-container').classList.add('hidden');
+                document.getElementById('l1-writing-challenge').classList.remove('hidden');
+            }
+            calculateTotalProgress();
+        }
+
+        function finishL1() {
+            l1Finished = true;
+            document.getElementById('l1-writing-challenge').classList.add('hidden');
+            document.getElementById('l1-finished-view').classList.remove('hidden');
+            const st = document.getElementById('l1-status');
+            st.innerText = "已完成"; st.className = "status-badge status-completed";
+            calculateTotalProgress();
+        }
+
+        function loadL2Question() {
+            if(l2Finished) return;
+            const q = l2Selected[l2Idx];
+            document.getElementById('current-l2-num').innerText = l2Idx + 1;
+            const tag = document.getElementById('l2-type-tag');
+            tag.innerText = q.label;
+            tag.className = `inline-block px-4 py-1 rounded-full text-xs font-bold mb-4 ${q.type === 'family' ? 'bg-orange-100 text-orange-600' : q.type === 'school' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'}`;
+            document.getElementById('l2-scenario-text').innerText = q.s;
+            const grid = document.getElementById('l2-options');
+            grid.innerHTML = '';
+            const opts = [{ t: q.c, ok: true }, { t: q.i, ok: false }].sort(() => 0.5 - Math.random());
+            opts.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = `p-5 rounded-2xl text-left font-bold shadow-sm transition-all ${i===0?'l2-option-a':'l2-option-b'}`;
+                b.innerText = opt.t;
+                b.onclick = () => {
+                    const fb = document.getElementById('l2-feedback');
+                    fb.classList.remove('hidden');
+                    if(opt.ok) {
+                        b.className = "p-5 rounded-2xl text-left font-bold shadow-md l2-option-correct";
+                        fb.innerText = "💪 沒錯！懂得尋求支持。";
+                        fb.className = "mt-6 p-4 rounded-2xl text-center font-bold bg-emerald-100 text-emerald-700 animate-pop";
+                        document.getElementById('l2-next-btn').classList.remove('hidden');
+                    } else {
+                        b.className = "p-5 rounded-2xl text-left font-bold shadow-md l2-option-wrong";
+                        fb.innerText = "再想想更好的做法？";
+                        fb.className = "mt-6 p-4 rounded-2xl text-center font-bold bg-rose-100 text-rose-700 animate-pop";
+                    }
+                };
+                grid.appendChild(b);
+            });
+            document.getElementById('l2-feedback').classList.add('hidden');
+            document.getElementById('l2-next-btn').classList.add('hidden');
+        }
+
+        function nextL2Question() {
+            l2Idx++;
+            if(l2Idx < 6) {
+                loadL2Question();
+            } else {
+                l2Finished = true;
+                document.getElementById('l2-question-box').classList.add('hidden');
+                document.getElementById('l2-finished-view').classList.remove('hidden');
+                const st = document.getElementById('l2-status');
+                st.innerText = "已完成"; st.className = "status-badge status-completed";
+            }
+            calculateTotalProgress();
+        }
+
+        function generateKeywordCloud() {
+            const cloud = document.getElementById('keyword-cloud');
+            keywords.forEach(kw => {
+                const b = document.createElement('div');
+                b.className = "bubble px-5 py-3 bg-white border-2 border-purple-100 rounded-full text-slate-700 font-bold shadow-sm whitespace-nowrap";
+                b.innerText = kw;
+                b.onclick = () => toggleKeyword(b, kw);
+                cloud.appendChild(b);
+            });
+        }
+
+        function toggleKeyword(el, kw) {
+            if (el.classList.contains('active')) {
+                el.classList.remove('active');
+                pocketSelections = pocketSelections.filter(i => i !== kw);
+            } else {
+                if (pocketSelections.length >= 3) return;
+                el.classList.add('active');
+                pocketSelections.push(kw);
+            }
+            renderPocket();
+        }
+
+        function renderPocket() {
+            const list = document.getElementById('pocket-list');
+            const count = document.getElementById('pocket-count');
+            const startBtn = document.getElementById('l3-start-btn');
+            
+            list.innerHTML = '';
+            
+            if (pocketSelections.length === 0) {
+                list.innerHTML = '<p id="pocket-empty-hint" class="text-purple-300 text-sm text-center py-10 font-medium">尚未收集靈感...</p>';
+                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                pocketSelections.forEach(kw => {
+                    const item = document.createElement('div');
+                    item.className = "pocket-item p-3 bg-white rounded-2xl border-2 border-purple-200 text-purple-700 font-black text-center shadow-sm flex items-center justify-center gap-2";
+                    item.innerHTML = `<span>${kw}</span>`;
+                    list.appendChild(item);
+                });
+                if (pocketSelections.length === 3) startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                else startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            count.innerText = `${pocketSelections.length} / 3`;
+            calculateTotalProgress();
+        }
+
+        function startCreation() {
+            if (pocketSelections.length < 3) return;
+            document.getElementById('creation-zone').classList.remove('hidden');
+            
+            const container = document.getElementById('l3-dynamic-inputs');
+            container.innerHTML = '';
+            
+            pocketSelections.forEach((kw, index) => {
+                const div = document.createElement('div');
+                div.className = "flex flex-col md:flex-row gap-3 items-start md:items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100";
+                div.innerHTML = `
+                    <div class="font-bold text-purple-700 whitespace-nowrap px-3 py-1 bg-purple-50 rounded-lg shrink-0">
+                        ${kw}
+                    </div>
+                    <input type="text" id="l3-input-${index}" placeholder="想到這個，我的想法是..." class="flex-1 w-full bg-transparent border-b-2 border-purple-200 focus:outline-none focus:border-purple-600 text-slate-700 font-medium py-1 px-2 transition-colors">
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('creation-zone').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function showToast(message) {
+            const t = document.getElementById('toast');
+            t.innerText = message;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3000);
+        }
+
+        function generateIDCard() {
+            const inputs = [
+                document.getElementById('l3-input-0'),
+                document.getElementById('l3-input-1'),
+                document.getElementById('l3-input-2')
+            ];
+            
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) allFilled = false;
+            });
+            
+            if (!allFilled) {
+                showToast("⚠️ 請將三個文化關鍵字的故事都填寫完成喔！");
+                return;
+            }
+            
+            const contentContainer = document.getElementById('id-card-content');
+            contentContainer.innerHTML = '';
+            
+            pocketSelections.forEach((kw, index) => {
+                const text = inputs[index].value.trim();
+                const div = document.createElement('div');
+                div.className = "bg-slate-50 p-3 rounded-xl border border-slate-100";
+                div.innerHTML = `
+                    <span class="text-xs text-purple-500 font-bold block mb-1">關於 ${kw}</span>
+                    <span class="text-slate-800">${text}</span>
+                `;
+                contentContainer.appendChild(div);
+            });
+            
+            document.getElementById('id-card-output').classList.remove('hidden');
+            l3Finished = true;
+            calculateTotalProgress();
+            
+            setTimeout(() => {
+                document.getElementById('id-card-output').scrollIntoView({behavior: 'smooth'});
+            }, 100);
+        }
+
+        function sendFeedback(type) {
+            let msg = "";
+            if(type === 'curious') msg = "💬 已發送：「我很好奇...」";
+            if(type === 'empathy') msg = "💗 已發送：「我也一樣...」";
+            if(type === 'discovery') msg = "💡 已發送：「新的發現...」";
+            showToast(msg);
+        }
+
+        function calculateTotalProgress() {
+            let score = 0;
+            score += l1Finished ? 6 : l1Idx;
+            score += l2Finished ? 6 : l2Idx;
+            if (pocketSelections.length === 3) score += 1;
+            if (l3Finished) score += 2;
+            
+            const maxScore = 15;
+            const percent = Math.floor((score / maxScore) * 100);
+            updateProgress(percent);
+        }
+
+        function updateProgress(val) {
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+            bar.style.width = val + '%';
+            document.getElementById('progress-percent').innerText = val + '%';
+            if (val >= 100) {
+                text.innerText = "全數任務完成！";
+                bar.classList.replace('bg-blue-500', 'bg-emerald-500');
+            } else {
+                text.innerText = "探險進行中，你可以隨時切換關卡挑戰！";
+            }
+        }
+
+        function finishCourse() { document.getElementById('modal').classList.remove('hidden'); }
+        window.onload = initGame;
+    </script>
+</body>
+</html>

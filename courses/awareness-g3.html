@@ -1,0 +1,529 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國小三年級自我覺察學習網頁</title>
+    <!-- 引入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts - Noto Sans TC (確保中文字體顯示良好) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 設定中文字體 */
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        /* 讓按鈕在點擊時有小小的彈跳感 */
+        .intensity-button:active {
+            transform: scale(0.95);
+            transition: transform 0.1s;
+        }
+    </style>
+</head>
+<body class="bg-indigo-50 min-h-screen p-4 md:p-8">
+    <!-- 應用程式主容器 -->
+    <div id="app" class="max-w-6xl mx-auto space-y-8">
+        <header class="text-center bg-white p-8 rounded-3xl shadow-2xl border-b-8 border-indigo-500">
+            <h1 class="text-4xl font-black text-indigo-700">🌈 國小中年級自我覺察學習區（三年級）</h1>
+            <p class="mt-2 text-gray-600 font-medium">專注於**情緒量化、情境連結與基礎自我調控**的練習！</p>
+            <!-- 身份驗證狀態改為本地儲存提示，已移除「資料僅保存在此瀏覽器中」的字樣 -->
+        </header>
+
+        <!-- 主要內容區塊：分為三個學習模組 -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- 模組 1: 情緒溫度計/壓力等級 (量化情緒強度與詞彙擴展) -->
+            <div id="module-thermometer" class="bg-white p-6 rounded-3xl shadow-2xl border-t-8 border-indigo-500 transform hover:scale-[1.01] transition duration-300">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    🌡️ 模組一：情緒溫度計與詞彙表達
+                </h2>
+                <p class="text-gray-500 mb-4">請點選按鈕，衡量感受有多「強烈」，並觀察此強度的**情緒詞彙**。</p>
+                
+                <!-- 情緒強度按鈕區 (互動按鈕取代滑桿) -->
+                <div class="flex justify-around items-center space-x-2 mt-4 p-4 bg-indigo-100 rounded-2xl shadow-inner border-b-4 border-indigo-400">
+                    <!-- 5個互動按鈕，使用活潑的顏色 -->
+                    <button class="intensity-button w-1/5 py-3 rounded-2xl text-xl font-black transition-all duration-200 shadow-md transform hover:scale-110 bg-blue-500 text-white" data-intensity="1" onclick="updateThermometer(1)">1</button>
+                    <button class="intensity-button w-1/5 py-3 rounded-2xl text-xl font-black transition-all duration-200 shadow-md transform hover:scale-110 bg-green-500 text-white" data-intensity="2" onclick="updateThermometer(2)">2</button>
+                    <button class="intensity-button w-1/5 py-3 rounded-2xl text-xl font-black transition-all duration-200 shadow-md transform hover:scale-110 bg-yellow-500 text-gray-800" data-intensity="3" onclick="updateThermometer(3)">3</button>
+                    <button class="intensity-button w-1/5 py-3 rounded-2xl text-xl font-black transition-all duration-200 shadow-md transform hover:scale-110 bg-orange-600 text-white" data-intensity="4" onclick="updateThermometer(4)">4</button>
+                    <button class="intensity-button w-1/5 py-3 rounded-2xl text-xl font-black transition-all duration-200 shadow-md transform hover:scale-110 bg-red-700 text-white" data-intensity="5" onclick="updateThermometer(5)">5</button>
+                </div>
+
+                <!-- 標籤說明 -->
+                <div class="flex justify-between text-xs text-gray-600 mt-2 font-medium px-2">
+                    <span class="text-blue-500 font-bold">1 (平靜)</span>
+                    <span class="text-red-700 font-bold">5 (爆炸)</span>
+                </div>
+
+                <!-- 情緒強度與詞彙顯示區 -->
+                <div id="thermometer-display" class="mt-6 p-4 rounded-xl border-4 transition-all duration-300 ease-in-out bg-indigo-50">
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-indigo-700">目前強度：<span id="current-intensity">3</span> 級</p>
+                        <p id="intensity-label" class="text-2xl mt-1 font-extrabold text-indigo-700">中等</p>
+                    </div>
+                    
+                    <hr class="my-4 border-indigo-300">
+
+                    <!-- 情緒詞彙區 -->
+                    <p class="text-sm font-bold text-gray-700 mb-2">💡 **情緒詞彙 (點選詞彙開始創作故事):**</p>
+                    <div id="vocabulary-list" class="flex flex-wrap gap-2">
+                        <!-- 詞彙按鈕將由 JS 填充 -->
+                    </div>
+                </div>
+
+                <!-- 故事創作區 -->
+                <div class="mt-6 p-4 bg-yellow-200 rounded-xl shadow-lg border-2 border-yellow-400">
+                    <h3 class="text-lg font-bold text-yellow-800 mb-2">📖 情境故事創作練習</h3>
+                    <p class="text-sm text-gray-700 mb-3">運用選定的詞彙寫一個簡短故事，練習精準表達！</p>
+                    <textarea id="story-input" rows="3" class="w-full p-2 border-2 rounded-lg border-yellow-500 focus:ring-yellow-600 focus:border-yellow-600" placeholder="例如：我因為忘記帶作業，感到很緊張（3級）。"></textarea>
+                    <button onclick="clearStory()" class="mt-3 w-full py-2 bg-yellow-600 text-white font-bold rounded-lg hover:bg-yellow-700 transition shadow-md">
+                        ✏️ 清空練習 (僅練習，不儲存)
+                    </button>
+                </div>
+            </div>
+
+            <!-- 模組 2: 簡單每日紀錄 (連結情境與情緒) - 使用更亮的綠色 -->
+            <div id="module-daily-record" class="bg-white p-6 rounded-3xl shadow-2xl border-t-8 border-emerald-500 transform hover:scale-[1.01] transition duration-300">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    ✍️ 模組二：情境與感受紀錄
+                </h2>
+                <p class="text-gray-500 mb-4">今天發生了什麼事？我的感受是什麼？</p>
+
+                <div class="space-y-4">
+                    <!-- 事件/情境輸入 -->
+                    <div>
+                        <label for="event-input" class="block text-sm font-medium text-gray-700">情境/事件描述 (發生了什麼事?)</label>
+                        <input type="text" id="event-input" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 border focus:ring-emerald-500 focus:border-emerald-500" placeholder="例如：數學考了90分，但被老師糾正字體。">
+                    </div>
+                    
+                    <!-- 感受詞彙選擇 -->
+                    <div>
+                        <label for="emotion-select" class="block text-sm font-medium text-gray-700">我的感受詞彙 (選擇一個最接近的)</label>
+                        <select id="emotion-select" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 border focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="開心">開心</option>
+                            <option value="興奮">興奮</option>
+                            <option value="生氣">生氣</option>
+                            <option value="難過">難過</option>
+                            <option value="害怕">害怕</option>
+                            <option value="平靜">平靜</option>
+                            <option value="驚訝">驚訝</option>
+                        </select>
+                    </div>
+
+                    <!-- 情緒強度預覽 -->
+                    <div class="p-3 bg-emerald-100 rounded-lg border border-emerald-400">
+                        <p class="text-sm font-bold text-emerald-800">當前情緒強度：<span id="record-intensity">3</span> 級 (來自溫度計)</p>
+                    </div>
+
+                    <!-- 紀錄按鈕 -->
+                    <button onclick="saveDailyRecord()" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                        💾 紀錄今日感受與情境 (本地儲存)
+                    </button>
+                    <p id="record-message" class="text-center text-sm mt-2 font-medium text-gray-500"></p>
+                </div>
+            </div>
+
+            <!-- 模組 3: 情緒急救包（基礎版） (學習因應/自我調控) - 使用活潑的粉色 -->
+            <div id="module-coping-kit" class="bg-white p-6 rounded-3xl shadow-2xl border-t-8 border-pink-500 transform hover:scale-[1.01] transition duration-300">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    🩹 模組三：我的情緒急救包
+                </h2>
+                <p class="text-gray-500 mb-4">當我的情緒不好時，我可以做什麼？列出你的**因應策略**。</p>
+
+                <div class="space-y-4">
+                    <!-- 新增策略輸入 -->
+                    <div>
+                        <label for="new-strategy-input" class="block text-sm font-medium text-gray-700">新增我的好方法</label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="new-strategy-input" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 border focus:ring-pink-500 focus:border-pink-500" placeholder="例如：去洗臉、抱抱小狗">
+                            <button onclick="addStrategy()" class="px-4 py-2 bg-pink-500 text-white font-bold rounded-lg hover:bg-pink-600 transition duration-150 ease-in-out flex-shrink-0 shadow-md">
+                                + 新增
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 策略清單 -->
+                    <div class="h-64 overflow-y-auto p-3 bg-pink-100 rounded-lg border border-pink-400 shadow-inner">
+                        <p class="text-sm font-bold text-pink-800 mb-2">我的個人因應清單：</p>
+                        <ul id="strategy-list" class="space-y-2">
+                            <!-- 策略項目將由 JS 載入 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 模組 4: 歷史紀錄 (老師教學回顧) -->
+        <section class="bg-white p-6 rounded-3xl shadow-2xl mt-8 border-l-8 border-gray-400">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                📋 我的歷史反思紀錄
+            </h2>
+            <p class="text-gray-500 mb-4">查看過去的紀錄，協助學生覺察情緒與行為的關聯。</p>
+
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-200 text-left text-xs font-black text-gray-700 uppercase tracking-wider">日期</th>
+                            <th class="px-6 py-3 bg-gray-200 text-left text-xs font-black text-gray-700 uppercase tracking-wider">強度</th>
+                            <th class="px-6 py-3 bg-gray-200 text-left text-xs font-black text-gray-700 uppercase tracking-wider">感受</th>
+                            <th class="px-6 py-3 bg-gray-200 text-left text-xs font-black text-gray-700 uppercase tracking-wider">情境/事件</th>
+                            <th class="px-6 py-3 bg-gray-200 text-left text-xs font-black text-gray-700 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-records-body" class="bg-white divide-y divide-gray-100">
+                        <tr><td colspan="5" class="p-4 text-center text-gray-400">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- 資料管理區塊：清空所有資料按鈕 -->
+        <section class="mt-8 p-6 bg-red-100 rounded-3xl shadow-2xl border-l-8 border-red-500 text-center">
+            <h2 class="text-xl font-bold text-red-700 mb-4">🚨 資料管理與清除</h2>
+            <!-- 按鈕文字已移除「本地紀錄」 -->
+            <button onclick="clearAllData()" class="px-8 py-3 bg-red-600 text-white font-black rounded-lg hover:bg-red-700 transition duration-150 ease-in-out shadow-lg transform hover:scale-[1.02]">
+                🗑️ 清空所有紀錄 (每日紀錄與急救策略)
+            </button>
+            <p class="mt-2 text-sm text-red-500 font-medium">警告：此操作將**永久清除**儲存在您瀏覽器中的所有紀錄！</p>
+        </section>
+
+    </div>
+
+    <!-- 腳本區塊：使用 localStorage 進行資料處理 -->
+    <script>
+        // 全域變數
+        let currentIntensity = 3; 
+
+        // --- 本地儲存工具函數 ---
+
+        const DAILY_RECORDS_KEY = 'daily_reflections_data';
+        const COPING_STRATEGIES_KEY = 'coping_strategies_data';
+        
+        /**
+         * 從 localStorage 載入 JSON 資料。
+         * @param {string} key - localStorage 的鍵名。
+         * @returns {Array} - 解析後的資料陣列，如果沒有則回傳空陣列。
+         */
+        const loadData = (key) => {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                console.error("載入本地資料失敗:", e);
+                return [];
+            }
+        };
+
+        /**
+         * 將資料陣列儲存到 localStorage。
+         * @param {string} key - localStorage 的鍵名。
+         * @param {Array} data - 要儲存的資料陣列。
+         */
+        const saveData = (key, data) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                // 儲存後立即更新 UI
+                if (key === DAILY_RECORDS_KEY) {
+                    renderDailyRecords();
+                } else if (key === COPING_STRATEGIES_KEY) {
+                    renderStrategies();
+                }
+            } catch (e) {
+                console.error("儲存本地資料失敗:", e);
+            }
+        };
+
+        // --- 模組 1: 情緒溫度計與詞彙邏輯 ---
+        
+        const intensityMap = {
+            1: { 
+                label: "平靜 (一切安好)", color: "text-blue-700", bg: "bg-blue-100", border: "border-blue-500",
+                vocabulary: ["放鬆", "舒服", "滿足", "平穩", "輕鬆", "寧靜"]
+            },
+            2: { 
+                label: "有點 (微小波動)", color: "text-green-700", bg: "bg-green-100", border: "border-green-500",
+                vocabulary: ["開心", "好奇", "有一點點不開心", "有點無聊", "感興趣", "期待"]
+            },
+            3: { 
+                label: "中等 (明顯感受)", color: "text-yellow-700", bg: "bg-yellow-100", border: "border-yellow-500",
+                vocabulary: ["快樂", "難過", "生氣", "緊張", "驚訝", "有點沮喪", "擔心"]
+            },
+            4: { 
+                label: "強烈 (需要關注)", color: "text-orange-700", bg: "bg-orange-100", border: "border-orange-500",
+                vocabulary: ["興奮", "委屈", "焦慮", "憤怒", "傷心", "挫折", "害怕"]
+            },
+            5: { 
+                label: "爆炸 (無法控制)", color: "text-red-700", bg: "bg-red-100", border: "border-red-500",
+                vocabulary: ["狂喜", "暴怒", "恐懼", "絕望", "失控", "極度難過"]
+            },
+        };
+        
+        /**
+         * 根據選定的強度更新介面顯示，包括詞彙列表和高亮按鈕。
+         * @param {number} intensity - 1 到 5 的情緒強度。
+         */
+        window.updateThermometer = (intensity) => {
+            currentIntensity = intensity;
+
+            const display = document.getElementById('thermometer-display');
+            const intensityLabel = document.getElementById('intensity-label');
+            const currentIntensitySpan = document.getElementById('current-intensity');
+            const recordIntensitySpan = document.getElementById('record-intensity');
+            const vocabularyList = document.getElementById('vocabulary-list');
+
+            const data = intensityMap[currentIntensity];
+
+            // 1. 更新顯示
+            currentIntensitySpan.textContent = currentIntensity;
+            intensityLabel.textContent = data.label;
+            recordIntensitySpan.textContent = currentIntensity;
+
+            // 2. 更新樣式
+            Object.values(intensityMap).forEach(d => {
+                display.classList.remove(d.bg, d.border);
+                intensityLabel.classList.remove(d.color);
+            });
+            display.classList.add(data.bg, data.border);
+            intensityLabel.classList.add(data.color);
+
+            // 3. 更新情緒詞彙列表
+            vocabularyList.innerHTML = '';
+            data.vocabulary.forEach(word => {
+                const button = document.createElement('button');
+                button.textContent = word;
+                button.className = 'px-3 py-1 text-sm rounded-full bg-indigo-400 text-white font-medium hover:bg-indigo-500 transition duration-150 shadow-md';
+                button.onclick = () => selectVocabulary(word);
+                vocabularyList.appendChild(button);
+            });
+            
+            // 4. 高亮選中的按鈕
+            highlightIntensityButton(currentIntensity);
+        };
+
+        /**
+         * 高亮選中的強度按鈕。
+         */
+        window.highlightIntensityButton = (activeIntensity) => {
+            const buttons = document.querySelectorAll('.intensity-button');
+            buttons.forEach(button => {
+                const buttonIntensity = parseInt(button.getAttribute('data-intensity'), 1.0);
+                
+                button.classList.remove('ring-4', 'ring-offset-2', 'ring-white', 'shadow-2xl');
+                button.classList.add('shadow-md');
+                
+                if (buttonIntensity === activeIntensity) {
+                    button.classList.add('ring-4', 'ring-offset-2', 'ring-white', 'shadow-2xl'); 
+                    button.classList.remove('shadow-md');
+                }
+            });
+        }
+
+        // 協助故事創作的函數：將選定的詞彙帶入輸入框
+        window.selectVocabulary = (word) => {
+            const storyInput = document.getElementById('story-input');
+            storyInput.value = `我今天感到「${word}」（${currentIntensity}級），因為...`; 
+            storyInput.focus();
+        };
+
+        // 清空故事輸入框
+        window.clearStory = () => {
+            document.getElementById('story-input').value = '';
+        };
+
+
+        // --- 模組 2: 簡單每日紀錄邏輯 (使用 localStorage) ---
+
+        window.saveDailyRecord = () => {
+            const eventInput = document.getElementById('event-input').value.trim();
+            const emotionSelect = document.getElementById('emotion-select').value;
+            const intensity = currentIntensity; 
+            const recordMessage = document.getElementById('record-message');
+
+            if (!eventInput) {
+                recordMessage.textContent = '⚠️ 請描述發生的事件或情境！';
+                recordMessage.className = 'text-center text-sm mt-2 text-red-500';
+                return;
+            }
+
+            const records = loadData(DAILY_RECORDS_KEY);
+            
+            const newRecord = {
+                id: Date.now(), // 使用時間戳記作為唯一 ID
+                event: eventInput,
+                emotion: emotionSelect,
+                intensity: parseInt(intensity, 10),
+                timestamp: new Date().toISOString(), // 儲存時間
+                date: new Date().toLocaleDateString('zh-TW')
+            };
+
+            // 將新紀錄加到陣列最前面 (最新的在上面)
+            records.unshift(newRecord); 
+            saveData(DAILY_RECORDS_KEY, records); // 儲存並觸發 UI 渲染
+
+            recordMessage.textContent = '✅ 紀錄成功！請鼓勵學生觀察這兩者的關聯。';
+            recordMessage.className = 'text-center text-sm mt-2 text-emerald-600';
+
+            // 清空輸入
+            document.getElementById('event-input').value = '';
+        };
+
+        // 刪除每日紀錄
+        window.deleteDailyRecord = (idToDelete) => {
+            let records = loadData(DAILY_RECORDS_KEY);
+            records = records.filter(record => record.id !== idToDelete);
+            saveData(DAILY_RECORDS_KEY, records); // 儲存並觸發 UI 渲染
+        };
+
+
+        // --- 模組 3: 情緒急救包邏輯 (使用 localStorage) ---
+
+        window.addStrategy = () => {
+            const strategyInput = document.getElementById('new-strategy-input');
+            const strategyName = strategyInput.value.trim();
+
+            if (!strategyName) return;
+
+            // 1. 儲存策略到急救包清單
+            const strategies = loadData(COPING_STRATEGIES_KEY);
+
+            const newStrategy = {
+                id: Date.now(), 
+                name: strategyName,
+            };
+
+            strategies.push(newStrategy);
+            saveData(COPING_STRATEGIES_KEY, strategies); 
+
+            // 2. 新增一筆「自我調控 (策略)」紀錄到歷史反思表格 (DAILY_RECORDS_KEY)
+            const dailyRecords = loadData(DAILY_RECORDS_KEY);
+            
+            const actionRecord = {
+                // 使用不同的時間戳記以確保 ID 唯一
+                id: Date.now() + 1, 
+                event: `新增情緒急救策略: ${strategyName}`, // 策略名稱作為事件描述
+                emotion: '自我調控 (策略)', // 標記為策略行動
+                intensity: 1, // 積極或平靜的行動，使用 1 級強度
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString('zh-TW')
+            };
+
+            dailyRecords.unshift(actionRecord);
+            saveData(DAILY_RECORDS_KEY, dailyRecords); // 儲存並觸發 renderDailyRecords()
+
+            strategyInput.value = ''; // 清空輸入框
+        };
+
+        window.deleteStrategy = (idToDelete) => {
+            let strategies = loadData(COPING_STRATEGIES_KEY);
+            strategies = strategies.filter(strategy => strategy.id !== idToDelete);
+            saveData(COPING_STRATEGIES_KEY, strategies); // 儲存並觸發 UI 渲染
+        };
+
+
+        // --- 資料渲染函數 (取代 onSnapshot) ---
+
+        // 渲染每日紀錄表格
+        function renderDailyRecords() {
+            const records = loadData(DAILY_RECORDS_KEY);
+            const recordsBody = document.getElementById('daily-records-body');
+            recordsBody.innerHTML = '';
+            
+            if (records.length === 0) {
+                recordsBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400">尚無本地紀錄。</td></tr>';
+                return;
+            }
+
+            records.forEach(data => {
+                // 針對「自我調控」紀錄給予不同的強調色 (使用 intensity 1 的藍色)
+                let intensityColorClass = {
+                    1: 'bg-blue-300 text-blue-800',
+                    2: 'bg-green-300 text-green-800',
+                    3: 'bg-yellow-300 text-yellow-800',
+                    4: 'bg-orange-300 text-orange-800',
+                    5: 'bg-red-300 text-red-800',
+                }[data.intensity] || 'bg-gray-300 text-gray-800';
+
+                // 如果是策略行動，確保使用藍色並顯示強度為「行動」
+                let intensityText = `${data.intensity} 級`;
+                if (data.emotion === '自我調控 (策略)') {
+                    intensityColorClass = 'bg-indigo-300 text-indigo-800';
+                    intensityText = '行動';
+                }
+
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-full ${intensityColorClass}">
+                                ${intensityText}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${data.emotion}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${data.event}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                             <button onclick="deleteDailyRecord(${data.id})" class="text-red-500 hover:text-red-700 transition-colors duration-150" title="刪除紀錄">
+                                移除
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                recordsBody.innerHTML += row;
+            });
+        }
+
+        // 渲染因應策略清單
+        function renderStrategies() {
+            const strategies = loadData(COPING_STRATEGIES_KEY);
+            const strategyList = document.getElementById('strategy-list');
+            strategyList.innerHTML = '';
+
+            if (strategies.length === 0) {
+                strategyList.innerHTML = '<li class="text-sm text-pink-600 font-medium">目前沒有個人策略，快新增一個！</li>';
+                return;
+            }
+
+            strategies.forEach(data => {
+                const listItem = document.createElement('li');
+                listItem.className = 'flex justify-between items-center p-2 bg-white rounded-lg shadow-sm hover:bg-pink-200 transition duration-100 border border-pink-200';
+                listItem.innerHTML = `
+                    <span class="text-gray-700 text-base font-medium">✨ ${data.name}</span>
+                    <button onclick="deleteStrategy(${data.id})" class="text-pink-400 hover:text-pink-600 transition-colors duration-150 p-1 rounded-full hover:bg-gray-100" title="移除策略">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.728-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                strategyList.appendChild(listItem);
+            });
+        }
+        
+        // --- 資料管理函數 ---
+
+        /**
+         * 清除所有本地儲存的資料 (每日紀錄與因應策略)
+         */
+        window.clearAllData = () => {
+            // 由於不能使用 alert() 或 confirm()，我們直接清除並重新載入
+            localStorage.removeItem(DAILY_RECORDS_KEY);
+            localStorage.removeItem(COPING_STRATEGIES_KEY);
+            
+            console.log("所有本地資料已清除。正在重新載入頁面...");
+            // 重新載入頁面以確保所有 UI 狀態完全重置
+            window.location.reload(); 
+        };
+
+
+        // --- 應用程式啟動 ---
+        
+        window.onload = () => {
+             // 1. 確保溫度計初始化
+             updateThermometer(3); 
+             // 2. 首次載入並渲染本地儲存的資料
+             renderDailyRecords();
+             renderStrategies();
+        };
+
+    </script>
+</body>
+</html>

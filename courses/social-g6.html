@@ -1,0 +1,678 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會覺察-我能讀懂你</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #FF7EB9;
+            --color-secondary: #7ED9FF;
+            --color-success: #A5D6A7;
+            --color-warning: #FFD54F;
+            --bg-light: #F0F9FF;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-light);
+            background-image: radial-gradient(#CFE9FF 2px, transparent 2px);
+            background-size: 30px 30px;
+            color: #444;
+        }
+        .game-panel {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 6px solid #FFF;
+            border-radius: 2rem;
+            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .btn-game {
+            background-color: var(--color-primary);
+            color: white;
+            font-weight: 900;
+            border-bottom: 5px solid #D85D94;
+            transition: all 0.1s;
+            border-radius: 1.5rem;
+        }
+        .btn-game:hover {
+            transform: translateY(2px);
+            border-bottom-width: 3px;
+            background-color: #FF94C7;
+        }
+        .btn-game:active {
+            transform: translateY(5px);
+            border-bottom-width: 0px;
+        }
+        .btn-completed {
+            background-color: #94A3B8;
+            color: white;
+            font-weight: 900;
+            border-bottom: 5px solid #64748B;
+            border-radius: 1.5rem;
+        }
+        .btn-completed:hover {
+            background-color: #64748B;
+        }
+        .btn-skip {
+            background-color: #A5D6A7;
+            color: white;
+            font-weight: 900;
+            border-bottom: 4px solid #7CB342;
+            border-radius: 1rem;
+        }
+        .btn-select {
+            background-color: #E2E8F0;
+            color: #64748b;
+            border-radius: 1rem;
+            border-bottom: 4px solid #CBD5E1;
+        }
+        .selected-option {
+            background-color: var(--color-secondary) !important;
+            color: white !important;
+            border-bottom: 4px solid #5AB9E6 !important;
+            transform: scale(1.05);
+        }
+        .status-bar {
+            background: white;
+            border-radius: 1rem;
+            height: 20px;
+            overflow: hidden;
+            border: 2px solid #EEE;
+        }
+        .status-fill {
+            background: var(--color-success);
+            height: 100%;
+            transition: width 0.5s ease-out;
+        }
+        .log-success { color: #2E7D32; font-weight: bold; }
+        .log-failure { color: #C62828; font-weight: bold; }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+        
+        .completed-stamp {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #475569;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 1rem;
+            font-weight: 900;
+            font-size: 0.875rem;
+            transform: rotate(10deg);
+            z-index: 10;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .card-completed {
+            background-color: #F8FAFC !important;
+            border-color: #E2E8F0 !important;
+            opacity: 0.9;
+        }
+
+        /* 角色專屬配色 */
+        .card-alice {
+            background-color: #FFF5F7;
+            border-color: #FFD1DC;
+        }
+        .card-jack {
+            background-color: #F0F9FF;
+            border-color: #BAE6FD;
+        }
+
+        /* Support Zone Modal */
+        .support-modal {
+            background-color: #FFF;
+            border-radius: 2rem;
+            border: 4px solid #E2E8F0;
+        }
+        .guide-section {
+            border-left: 4px solid #CBD5E1;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 pb-24">
+
+    <!-- 訊息彈窗 -->
+    <div id="message-box-overlay" class="fixed inset-0 bg-blue-900 bg-opacity-20 backdrop-blur-sm z-50 hidden"></div>
+    <div id="message-box" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-11/12 max-w-lg game-panel p-8 text-center">
+        <div id="message-emoji" class="text-6xl mb-4 floating">🌟</div>
+        <h3 id="message-title" class="text-3xl font-black mb-4 text-pink-500">冒險筆記</h3>
+        <div id="message-content" class="text-gray-600 mb-8 text-lg"></div>
+        <button class="btn-game px-10 py-3 text-xl w-full" onclick="App.hideMessage()">繼續挑戰！</button>
+    </div>
+
+    <!-- 教師/家長專區 彈窗 -->
+    <div id="support-zone-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-50 backdrop-blur-sm z-50 hidden overflow-y-auto py-10" onclick="App.toggleSupportZone(false)">
+        <div class="min-h-full flex items-center justify-center p-4">
+            <div class="support-modal w-full max-w-3xl p-8 sm:p-10 relative shadow-2xl" onclick="event.stopPropagation()">
+                <button onclick="App.toggleSupportZone(false)" class="absolute top-4 right-6 text-gray-400 hover:text-gray-600 text-3xl font-bold">&times;</button>
+                
+                <h2 class="text-3xl font-black mb-2 text-indigo-600 flex items-center">
+                    <span class="text-4xl mr-3">🍎</span> 給大人的話：社會覺察教育指南
+                </h2>
+                <p class="text-gray-500 font-bold mb-8">Support Zone for Teachers & Parents</p>
+                
+                <div class="space-y-8 text-gray-700 leading-relaxed">
+                    <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+                        <h3 class="text-xl font-black text-indigo-800 mb-2">什麼是「社會覺察 (Social Awareness)」？</h3>
+                        <p>這是 SEL（社會情緒學習）的核心能力之一，指能夠<strong>理解他人的觀點、展現同理心</strong>，並能解讀來自不同背景與文化之人的行為與情感。</p>
+                    </div>
+
+                    <div class="guide-section border-pink-300">
+                        <h4 class="text-lg font-bold text-pink-600 mb-2">🔍 關卡一：識破情緒偽裝 (非語言溝通)</h4>
+                        <p class="mb-2"><strong>教育意義：</strong> 孩子常習慣只聽「字面意思」，而忽略了表情與肢體語言。此關卡旨在訓練孩子觀察<strong>「言行不一」</strong>的狀況（如：嘴上說隨便，手卻握拳）。</p>
+                        <p class="text-sm bg-gray-100 p-3 rounded-lg text-gray-600">💡 <strong>引導建議：</strong> 詢問孩子：「在現實生活中，你是否見過像艾莉絲這樣明明委屈卻說沒事的人？我們該如何溫和地回應他們？」</p>
+                    </div>
+
+                    <div class="guide-section border-blue-300">
+                        <h4 class="text-lg font-bold text-blue-600 mb-2">🧊 關卡二：瓦解冷戰僵局 (同理心回應)</h4>
+                        <p class="mb-2"><strong>教育意義：</strong> 面對衝突時，孩子容易陷入「指責」或「逃避」。此關卡展示了<strong>「回應方式如何改變結果」</strong>。對於焦慮者（小明），需要的是分擔責任而非空泛加油；對於愧疚者（小華），需要的是具體補救機會而非安慰沒關係。</p>
+                        <p class="text-sm bg-gray-100 p-3 rounded-lg text-gray-600">💡 <strong>引導建議：</strong> 討論：「為什麼直接叫小明不要嘆氣，反而會讓他更生氣？如果你是小華，聽到什麼話會讓你覺得被原諒了？」</p>
+                    </div>
+
+                    <div class="guide-section border-green-300">
+                        <h4 class="text-lg font-bold text-green-600 mb-2">📜 關卡三：夥伴守則 (內化承諾)</h4>
+                        <p class="mb-2"><strong>教育意義：</strong> 將認知轉化為態度。透過「書寫」與「勾選」的儀式感，讓孩子對自己的行為設下意圖 (Intention Setting)。</p>
+                        <p class="text-sm bg-gray-100 p-3 rounded-lg text-gray-600">💡 <strong>引導建議：</strong> 鼓勵孩子將這個承諾寫在便利貼上，貼在書桌前，作為日常生活中的提醒。</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full transition shadow-lg" onclick="App.toggleSupportZone(false)">我知道了，回到遊戲</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主應用程式容器 -->
+    <div id="app" class="max-w-4xl mx-auto flex flex-col min-h-[90vh]">
+        <header class="game-panel mb-8 flex flex-wrap justify-between items-center p-6 gap-4">
+            <div class="flex items-center">
+                <div class="bg-yellow-300 p-3 rounded-2xl shadow-inner mr-4">
+                    <span class="text-4xl">🎒</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-pink-500">社會覺察-我能讀懂你</h1>
+                    <p id="rank-display" class="text-sm text-blue-400 font-bold">目前稱號：校園新隊友</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <div class="flex items-center text-2xl font-black text-green-500">
+                    <span class="mr-2 text-sm text-gray-400">成長 EXP:</span>
+                    <span id="score-display">0</span>
+                </div>
+                <div class="status-bar w-32 mt-1">
+                    <div id="score-bar" class="status-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="game-panel p-8 flex-grow">
+            <!-- 動態生成內容 -->
+        </main>
+
+        <!-- 底部按鈕區 -->
+        <footer class="mt-8 text-center">
+            <button onclick="App.toggleSupportZone(true)" class="text-indigo-400 font-bold hover:text-indigo-600 flex items-center justify-center mx-auto transition bg-white px-6 py-2 rounded-full shadow-sm hover:shadow-md border border-indigo-100">
+                <span class="text-xl mr-2">👨‍🏫</span> 教師/家長專區 (Support Zone)
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const mainContent = document.getElementById('main-content');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreBar = document.getElementById('score-bar');
+        const rankDisplay = document.getElementById('rank-display');
+        
+        let currentScore = 0;
+        let currentSelections = {}; 
+        let completedQuests = {
+            artifact: false,
+            raid: false,
+            contract: false
+        };
+
+        const RANKS = [
+            { min: 0, title: "校園新隊友" },
+            { min: 50, title: "情感偵探員" },
+            { min: 100, title: "暖心支援兵" },
+            { min: 150, title: "傳說級組長" },
+            { min: 200, title: "全能情商導師" }
+        ];
+
+        const SCENARIOS = {
+            'artifact': {
+                id: 1,
+                title: '進階挑戰：誰才是真心的？',
+                description: '任務描述：在「畢業旅行討論會」上，你發現組長「艾莉絲」雖然口中說著：「隨便你們啊，我都可以。」但她卻緊緊握著拳頭，眼神一直盯著窗外。同時，你的好友「小傑」一直很大聲地開玩笑蓋過別人的聲音，但當大家安靜下來時，他會瞬間低下頭露出不安的表情。這不是一場單純的生氣，他們正隱藏著真正的訊息。',
+                roles: [
+                    { 
+                        id: 'alice',
+                        name: '艾莉絲', 
+                        alias: '責任感強的組長', 
+                        icon: '👧🏻',
+                        color: 'card-alice',
+                        actualEmotion: '委屈', 
+                        actualMotiv: '覺得努力沒被重視' 
+                    },
+                    { 
+                        id: 'jack',
+                        name: '小傑', 
+                        alias: '愛熱鬧的好朋友', 
+                        icon: '👦🏻',
+                        color: 'card-jack',
+                        actualEmotion: '焦慮', 
+                        actualMotiv: '害怕被團體排擠' 
+                    },
+                ],
+                emotionOptions: ['委屈', '不在乎', '受挫', '焦慮', '厭煩', '尷尬'],
+                motiveOptions: ['覺得努力沒被重視', '想控制所有人', '害怕被團體排擠', '真的很想睡覺', '不滿意分組結果'],
+            },
+            'raid': {
+                id: 2,
+                title: '拯救：陷入冰點的小組作業',
+                stage1: {
+                    icon: '❄️',
+                    prompt: '魔物「沈默壓力怪」出現了！組長小明雖然沒罵人，但一直嘆氣翻書說：「唉，我看這次又要重做了...」。這時小華低著頭，雙手絞在一起，聲音微弱地說：「對不起，都是我那天請假才進度落後...」全組氣氛降到冰點。你要如何打破僵局？',
+                    options: [
+                        { text: '「小明你別在那邊嘆氣，還有小華，妳既然知道錯了就快點補救啊！」', points: 0, feedback: '💨 [失敗]：你的話讓小明更火大，也讓小華哭了，隊伍氣氛徹底炸裂。' },
+                        { text: '「小明是不是擔心時間不夠？小華也別太自責，我們先確認缺什麼，大家分頭補上好嗎？」', points: 30, feedback: '✨ [大成功]：你同時安撫了小明的焦慮與小華的愧疚。 EXP +30。' },
+                        { text: '（保持沈默，自己默默把作業補完）', points: 10, feedback: '☁️ [普通]：這不是團隊合作，下次同樣的問題還會發生。 EXP +10。' },
+                    ]
+                },
+                stage2: {
+                    icon: '🎯',
+                    prompt: '🕵️ 任務：組長小明因為「完美主義」正感到高度焦慮。為了減輕他的負擔，哪一句話最能精準鼓勵他？',
+                    options: [
+                        { text: '「小明，我們分工明確一點，就不會讓壓力都在你身上，大家一起扛！」', points: 30, feedback: '🌈 [精準鼓勵]：對焦慮的小明來說，「減輕責任負擔」與「團隊分擔」是最好的解藥。 EXP +30。' },
+                        { text: '「小明你做這麼快，之後的也拜託你了，加油喔！」', points: 0, feedback: '💥 [反效果]：這會讓小明壓力更大，直接導致他崩潰喔。' },
+                        { text: '「不要想太多啦，隨便做一做及格就好，不要那麼累。」', points: 10, feedback: '☁️ [無效]：對完美主義的小明來說，及格並不能安撫他的焦慮感。' },
+                    ]
+                },
+                stage3: {
+                    icon: '🩹',
+                    prompt: '🕵️ 任務：小華因為覺得自己拖累進度而充滿「愧疚感」。為了讓她重新振作，你會對她說什麼？',
+                    options: [
+                        { text: '「小華妳下次記得請假前要先講，這次我們就算了。」', points: 10, feedback: '⚠️ [注意]：這句話雖然原諒了她，但仍帶有指責意味，小華還是會很難受。' },
+                        { text: '「小華，這不是妳一個人的錯。妳對這部分的資料很熟，請妳幫我們做這幾張簡報好嗎？」', points: 30, feedback: '💖 [心靈修復]：給予愧疚的人「具體的補救任務」並「肯定其能力」，是讓她重新找回自信的關鍵！ EXP +30。' },
+                        { text: '「沒關係啦，我們也沒做多好，大家一起爛。」', points: 0, feedback: '💨 [失敗]：這不是鼓勵，這是在毀滅團隊士氣喔。' },
+                    ]
+                }
+            }
+        };
+
+        const App = {
+            currentScreen: 'dashboard', 
+            raidStage: 1,
+            artifactStep: 1,
+
+            initialize() {
+                const savedScore = localStorage.getItem('selSchoolHeroEXP');
+                const savedProgress = localStorage.getItem('selSchoolHeroProgress');
+                if (savedScore !== null) currentScore = parseInt(savedScore, 10);
+                if (savedProgress !== null) completedQuests = JSON.parse(savedProgress);
+                
+                this.updateUI();
+                this.render();
+            },
+
+            updateScore(points) {
+                currentScore += points;
+                if (currentScore < 0) currentScore = 0;
+                this.updateUI();
+                localStorage.setItem('selSchoolHeroEXP', currentScore);
+            },
+
+            updateUI() {
+                scoreDisplay.textContent = currentScore;
+                const progress = Math.min((currentScore / 200) * 100, 100);
+                scoreBar.style.width = progress + '%';
+                
+                let rankTitle = RANKS[0].title;
+                for (let r of RANKS) {
+                    if (currentScore >= r.min) rankTitle = r.title;
+                }
+                rankDisplay.textContent = "目前稱號：" + rankTitle;
+            },
+
+            markQuestDone(id) {
+                completedQuests[id] = true;
+                localStorage.setItem('selSchoolHeroProgress', JSON.stringify(completedQuests));
+                
+                if (Object.values(completedQuests).every(v => v === true)) {
+                    setTimeout(() => {
+                        this.showMessage('👑 傳說達成', '恭喜你！你已經具備了看穿情緒偽裝的能力！你現在是真正的情商大師了。', '🏆');
+                    }, 1000);
+                }
+            },
+
+            showMessage(title, content, emoji = '🌟') {
+                document.getElementById('message-emoji').textContent = emoji;
+                document.getElementById('message-title').innerHTML = title;
+                document.getElementById('message-content').innerHTML = content;
+                document.getElementById('message-box').classList.remove('hidden');
+                document.getElementById('message-box-overlay').classList.remove('hidden');
+            },
+
+            hideMessage() {
+                document.getElementById('message-box').classList.add('hidden');
+                document.getElementById('message-box-overlay').classList.add('hidden');
+            },
+
+            toggleSupportZone(show) {
+                const overlay = document.getElementById('support-zone-overlay');
+                if (show) {
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // 防止背景滾動
+                } else {
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            },
+
+            render() {
+                mainContent.innerHTML = '';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                switch (this.currentScreen) {
+                    case 'dashboard': this.renderDashboard(); break;
+                    case 'artifact': this.renderArtifactQuest(); break;
+                    case 'raid': this.renderBossRaid(); break;
+                    case 'contract': this.renderHeroContract(); break;
+                }
+            },
+
+            renderDashboard() {
+                mainContent.innerHTML = `
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-black mb-4 text-purple-600">🧠 讀心術大考驗</h2>
+                        <p class="text-xl text-gray-500 font-bold">目前進度：${Object.values(completedQuests).filter(x=>x).length} / 3 完成</p>
+                        <p class="text-sm text-red-400 font-bold mt-2">提示：細膩的觀察力，是解決衝突的關鍵！</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        ${this.createQuestCard('artifact', '🔍 1. 識破「情緒偽裝」', '分析艾莉絲與小傑反常的行為，找出背後真相。', 'bg-pink-50 border-pink-200', completedQuests.artifact)}
+                        ${this.createQuestCard('raid', '🔥 2. 瓦解「冷戰僵局」', '分別針對焦慮的小明與愧疚的小華給予精準的鼓勵。', 'bg-blue-50 border-blue-200', completedQuests.raid)}
+                        ${this.createQuestCard('contract', '📜 3. 我的「進階」夥伴守則', '寫下更深層的心理約定，成為值得信任的領袖。', 'bg-green-50 border-green-200', completedQuests.contract)}
+                    </div>
+                `;
+            },
+
+            createQuestCard(id, title, description, colorClass, isDone) {
+                const cardClass = isDone ? 'card-completed' : colorClass;
+                const buttonClass = isDone ? 'btn-completed' : 'btn-game';
+                const buttonText = isDone ? '再次練習' : '開始挑戰！';
+                const stamp = isDone ? '<div class="completed-stamp">✨ 已挑戰過</div>' : '';
+
+                return `
+                    <div class="relative p-6 rounded-3xl cursor-pointer hover:shadow-2xl transition duration-300 border-4 ${cardClass} text-center flex flex-col h-full" onclick="App.goTo('${id}')">
+                        ${stamp}
+                        <div class="text-6xl mb-4 floating">${title.split(' ')[0]}</div>
+                        <h3 class="text-2xl font-black mb-3 ${isDone ? 'text-slate-500' : 'text-gray-700'}">${title.substring(title.indexOf(' ') + 1)}</h3>
+                        <p class="text-gray-500 mb-6 flex-grow font-medium">${description}</p>
+                        <button class="${buttonClass} w-full py-3 rounded-2xl text-lg">${buttonText}</button>
+                    </div>
+                `;
+            },
+
+            goTo(screen) {
+                this.currentScreen = screen;
+                this.raidStage = 1;
+                this.artifactStep = 1;
+                this.render();
+            },
+
+            skipToNext(currentId) {
+                const questKeys = Object.keys(completedQuests);
+                const currentIndex = questKeys.indexOf(currentId);
+                const nextIndex = (currentIndex + 1) % questKeys.length;
+                this.goTo(questKeys[nextIndex]);
+            },
+
+            createTopNav(currentId) {
+                let html = `<div class="flex justify-between items-center mb-6">
+                                <button class="font-black text-blue-400 flex items-center hover:text-blue-600 transition" onclick="App.goTo('dashboard')">
+                                    <span class="text-2xl mr-2">🏰</span> 回到讀心術大考驗
+                                </button>`;
+                if (completedQuests[currentId]) {
+                    html += `<button class="btn-skip px-4 py-2 text-sm shadow-md flex items-center" onclick="App.skipToNext('${currentId}')">
+                                已完成，前往下一關 ➡️
+                             </button>`;
+                }
+                html += `</div>`;
+                return html;
+            },
+
+            renderArtifactQuest() {
+                const scenario = SCENARIOS.artifact;
+                const roleA = scenario.roles[0];
+                const roleB = scenario.roles[1];
+                
+                let content = `<h2 class="text-3xl font-black mb-6 text-pink-500">🔍 ${scenario.title}</h2>`;
+                content += `<div class="bg-blue-50 p-6 rounded-3xl mb-8 border-4 border-blue-100 shadow-inner">
+                                <p class="text-gray-600 leading-relaxed font-bold">${scenario.description}</p>
+                            </div>`;
+
+                if (this.artifactStep === 1) {
+                    content += `
+                        <p class="text-xl font-black mb-4 text-center text-orange-400">🕵️ 任務一：觀察艾莉絲握緊的拳頭與小傑大聲的玩笑，他們到底怎麼了？</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            ${this.createRoleCard(roleA, 'emotion', scenario.emotionOptions, 'A-emo')}
+                            ${this.createRoleCard(roleB, 'emotion', scenario.emotionOptions, 'B-emo')}
+                        </div>
+                        <button class="btn-game mt-8 px-12 py-4 rounded-3xl text-xl w-full" onclick="App.checkArtifactEmotions()">執行「行為深度分析」！</button>
+                    `;
+                } else {
+                    content += `
+                        <p class="text-xl font-black mb-4 text-center text-purple-400">🗝️ 任務二：他們這些反常行為背後的「深層動機」是什麼？</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            ${this.createRoleCard(roleA, 'motive', scenario.motiveOptions, 'A-mot')}
+                            ${this.createRoleCard(roleB, 'motive', scenario.motiveOptions, 'B-mot')}
+                        </div>
+                        <button class="btn-game mt-8 px-12 py-4 rounded-3xl text-xl w-full" onclick="App.checkArtifactMotives()">破解真實動機！</button>
+                    `;
+                }
+                mainContent.innerHTML = this.createTopNav('artifact') + content;
+            },
+
+            createRoleCard(role, type, options, containerId) {
+                const optionsHtml = options.map(opt => `
+                    <button class="btn-select px-4 py-2 m-1 font-bold text-sm transition-all" 
+                            onclick="App.selectOption(this, '${containerId}')" data-value="${opt}">${opt}</button>
+                `).join('');
+                
+                return `
+                    <div class="p-6 rounded-3xl border-4 shadow-lg text-center ${role.color}">
+                        <div class="text-6xl mb-2 floating">${role.icon}</div>
+                        <h4 class="text-2xl font-black text-gray-800">${role.name}</h4>
+                        <p class="text-sm font-bold text-gray-400 mb-4 italic">${role.alias}</p>
+                        <div id="${containerId}" class="flex flex-wrap justify-center">${optionsHtml}</div>
+                    </div>
+                `;
+            },
+
+            selectOption(el, containerId) {
+                document.querySelectorAll(`#${containerId} button`).forEach(b => b.classList.remove('selected-option'));
+                el.classList.add('selected-option');
+                currentSelections[containerId] = el.dataset.value;
+            },
+
+            checkArtifactEmotions() {
+                const s = SCENARIOS.artifact;
+                const a = currentSelections['A-emo'], b = currentSelections['B-emo'];
+                if(!a || !b) return this.showMessage('💖 提醒', '請先選出兩人的潛藏情緒！', '❓');
+                
+                let feedback = '';
+                
+                // 檢查艾莉絲
+                if(a === s.roles[0].actualEmotion) { 
+                    feedback += '<p class="log-success">✨ 艾莉絲：觀察正確！雖然她說「隨便」，但「握緊的拳頭」洩漏了她的「委屈」。</p>'; 
+                    this.updateScore(30); 
+                } else { 
+                    feedback += `<p class="log-failure">☁️ 艾莉絲：答錯了！正確答案是「${s.roles[0].actualEmotion}」。當一個人的口頭禪是隨便但「眼神避開且握拳」時，通常代表心裡受傷了。</p>`; 
+                }
+                
+                // 檢查小傑
+                if(b === s.roles[1].actualEmotion) { 
+                    feedback += '<p class="log-success">✨ 小傑：精準！大聲開玩笑是為了掩飾尷尬，這其實是「焦慮」的防衛機制。</p>'; 
+                    this.updateScore(30); 
+                } else {
+                    feedback += `<p class="log-failure">☁️ 小傑：答錯了！正確答案是「${s.roles[1].actualEmotion}」。大聲開玩笑是為了「填補沈默」，因為他害怕氣氛變冷。</p>`;
+                }
+                
+                this.showMessage('🐾 深度分析結果', feedback, '🔍');
+                this.artifactStep = 2;
+                this.render();
+            },
+
+            checkArtifactMotives() {
+                const s = SCENARIOS.artifact;
+                const a = currentSelections['A-mot'], b = currentSelections['B-mot'];
+                
+                if(!a || !b) return this.showMessage('💖 提醒', '請先選出兩人的真實動機！', '❓');
+
+                if(a === s.roles[0].actualMotiv && b === s.roles[1].actualMotiv) {
+                    this.showMessage('🏆 心理分析大師', '你成功的破解了兩人的防衛機制！了解這些後，你就能更好的支持他們。', '🎊');
+                    this.updateScore(40);
+                    this.markQuestDone('artifact');
+                    this.goTo('dashboard');
+                } else {
+                    let mFeedback = '';
+                    if(a !== s.roles[0].actualMotiv) {
+                        mFeedback += `<p class="log-failure">艾莉絲的動機應是「${s.roles[0].actualMotiv}」。<br><small class="text-gray-400">（提示：作為組長，她可能覺得大家沒看到她的付出。）</small></p>`;
+                    }
+                    if(b !== s.roles[1].actualMotiv) {
+                        mFeedback += `<p class="log-failure">小傑的動機應是「${s.roles[1].actualMotiv}」。<br><small class="text-gray-400">（提示：他害怕冷場是因為在乎自己在團體中的位置。）</small></p>`;
+                    }
+                    this.showMessage('😮 觀察動機提示', mFeedback, '💡');
+                }
+            },
+
+            renderBossRaid() {
+                const s = SCENARIOS.raid;
+                let content = `<h2 class="text-3xl font-black mb-6 text-blue-500">🧊 ${s.title}</h2>`;
+                let stage;
+                if(this.raidStage === 1) stage = s.stage1;
+                else if(this.raidStage === 2) stage = s.stage2;
+                else stage = s.stage3;
+                
+                content += `
+                    <div class="mb-8 text-center">
+                        <div class="text-8xl mb-4 floating">${stage.icon}</div>
+                        <p class="text-2xl font-black text-red-400 mb-6 px-4 leading-relaxed">${stage.prompt}</p>
+                        <div class="space-y-4">
+                            ${stage.options.map((opt, i) => `
+                                <button class="w-full text-left p-6 rounded-3xl border-4 border-blue-50 bg-white hover:bg-blue-50 transition font-bold text-lg text-blue-600 shadow-sm" 
+                                        onclick="App.handleRaidClick(${opt.points}, '${opt.feedback}')">
+                                    ${i+1}. ${opt.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                mainContent.innerHTML = this.createTopNav('raid') + content;
+            },
+
+            handleRaidClick(p, f) {
+                this.updateScore(p);
+                this.showMessage('🔥 情商速報', f, p >= 30 ? '🏆' : '😮');
+                
+                if(this.raidStage === 1) { 
+                    this.raidStage = 2; 
+                    this.render(); 
+                } else if(this.raidStage === 2) {
+                    this.raidStage = 3;
+                    this.render();
+                } else { 
+                    if(currentScore >= 50) this.markQuestDone('raid');
+                    this.goTo('dashboard'); 
+                }
+            },
+
+            renderHeroContract() {
+                let content = `
+                    <h2 class="text-3xl font-black mb-6 text-green-500 text-center">📜 領袖級的好夥伴約定</h2>
+                    <div class="bg-green-50 p-6 rounded-3xl mb-8 border-4 border-green-100">
+                        <p class="text-gray-600 font-bold">要成為高情商勇者，我們需要更細膩的約定（請勾選全部守則）：</p>
+                    </div>
+                    <div id="pledge-list" class="space-y-4 mb-10">
+                        ${this.createPledge(1, '觀察同學表情與言語不一致時，我會試著詢問：「你現在感覺還好嗎？」', 30)}
+                        ${this.createPledge(2, '當有人用大聲玩笑來掩飾尷尬時，我會主動釋放善意，不讓氣氛僵掉。', 30)}
+                        ${this.createPledge(3, '當小組作業遇到困難，我會先肯定夥伴的努力，再一起討論具體的補救辦法。', 40)}
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border-4 border-pink-200 shadow-xl">
+                        <h4 class="text-xl font-black mb-4 text-pink-400">✍️ 覺察他人情緒的領袖宣言：</h4>
+                        <p class="text-sm text-gray-400 mb-2">※ 內容必須包含對他人情緒的觀察與覺察，否則無法刻印。</p>
+                        <textarea id="pledge-text" class="w-full p-4 rounded-2xl bg-gray-50 border-2 border-gray-100 focus:border-pink-300 outline-none font-bold" 
+                                  placeholder="例如：我會用心觀察夥伴細微的表情變化，看穿那些被隱藏的求救訊號，給予最暖心的支持。"></textarea>
+                        <button class="btn-game w-full py-4 mt-4 text-xl" onclick="App.finalPledge()">刻印在勇者之心！</button>
+                    </div>
+                `;
+                mainContent.innerHTML = this.createTopNav('contract') + content;
+            },
+
+            createPledge(id, text, p) {
+                return `
+                    <label class="flex items-center p-5 bg-white rounded-3xl border-4 border-gray-50 cursor-pointer hover:border-green-200 transition">
+                        <input type="checkbox" class="pledge-checkbox w-8 h-8 rounded-full border-4 border-green-200 text-green-500 focus:ring-green-400" onchange="App.handleCheck(this, ${p})">
+                        <span class="ml-4 text-lg font-bold text-gray-600">${text}</span>
+                        <span class="ml-auto font-black text-green-400">+${p}</span>
+                    </label>
+                `;
+            },
+
+            handleCheck(el, p) {
+                if (el.checked) {
+                    this.updateScore(p);
+                } else {
+                    this.updateScore(-p);
+                }
+            },
+
+            finalPledge() {
+                const t = document.getElementById('pledge-text').value.trim();
+                const checkboxes = document.querySelectorAll('.pledge-checkbox');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                // 1. 檢查勾選框是否全部選中
+                if (!allChecked) {
+                    return this.showMessage('⚠️ 勇者守則未完成', '要成為領袖，必須承諾履行所有細膩的約定喔！請將上方的「夥伴守則」全部勾選。', '📌');
+                }
+
+                // 2. 檢查題目符合度的關鍵字
+                const keywords = ['情緒', '覺察', '觀察', '表情', '隱藏', '心聲', '體諒', '感受', '心情'];
+                const hasKeyword = keywords.some(k => t.includes(k));
+                const isLongEnough = t.length >= 10;
+
+                if(!t) {
+                    return this.showMessage('💖 提醒', '請寫下你的領袖承諾喔！', '✍️');
+                }
+
+                if(!hasKeyword || !isLongEnough) {
+                    return this.showMessage('⚠️ 宣言內容未符合', '你的宣告似乎還沒展現出對他人情緒的「覺察力」喔！請試著描述你如何觀察夥伴，並寫下更深刻的約定（至少10個字）。', '🧐');
+                }
+
+                // 全部通過
+                this.showMessage('🎊 覺察契約完成', `你的宣言：<br><br><b class="text-pink-500 text-2xl">「${t}」</b><br><br>這份細膩的情緒觀察力，會讓你成為校園中最棒的領袖！`, '🌈');
+                this.updateScore(50);
+                this.markQuestDone('contract');
+                this.goTo('dashboard');
+            }
+        };
+
+        window.App = App;
+        App.initialize();
+    </script>
+</body>
+</html>

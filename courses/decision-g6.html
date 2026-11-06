@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思辨與決策</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts 提升中文字體與可愛英數字體質感 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght=300..700&family=Noto+Sans+TC:wght=300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- 引入 FontAwesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+            background-color: #FAF6F0; /* 溫馨手繪奶油白 */
+        }
+        /* 可愛彈動按鈕與卡片 */
+        .bouncy-hover {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bouncy-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .bouncy-hover:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        /* 溫馨手繪 DETAILS 動態 */
+        details[open] summary ~ * {
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: translateY(-8px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        /* 可愛星星漂浮動畫 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(3deg); }
+        }
+        .floater {
+            animation: float 4s ease-in-out infinite;
+        }
+        /* 暖光呼吸 */
+        @keyframes starGlow {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .star-glow {
+            animation: starGlow 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-700">
+
+    <!-- 頂部溫馨夜空橫幅 -->
+    <header class="bg-gradient-to-b from-[#1E293B] to-[#334155] text-white relative overflow-hidden pb-12 pt-6 rounded-b-[40px] shadow-lg">
+        <!-- 背景漂浮的小星星 -->
+        <div class="absolute inset-0 pointer-events-none opacity-40">
+            <span class="absolute top-8 left-12 text-sm star-glow" style="animation-delay: 0s;">✨</span>
+            <span class="absolute top-16 right-20 text-lg star-glow" style="animation-delay: 0.5s;">🌟</span>
+            <span class="absolute bottom-6 left-1/4 text-xs star-glow" style="animation-delay: 1.2s;">✨</span>
+            <span class="absolute top-4 right-1/3 text-sm star-glow" style="animation-delay: 0.8s;">🌟</span>
+            <span class="absolute bottom-8 right-12 text-base star-glow" style="animation-delay: 1.5s;">✨</span>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- 導航列 -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                <div class="flex items-center gap-3">
+                    <!-- 可愛月亮小徽章 -->
+                    <div class="bg-amber-100 p-2.5 rounded-2xl text-amber-500 shadow-md shadow-amber-500/10 floater">
+                        <i class="fa-solid fa-moon text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-wider bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent">思辨與決策</h1>
+                        <p class="text-[11px] text-slate-300 font-semibold tracking-widest mt-0.5">💭 聽聽每顆心靈的溫暖聲音</p>
+                    </div>
+                </div>
+
+                <!-- 頁籤導覽列 -->
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <nav class="flex bg-slate-800/60 backdrop-blur-sm p-1.5 rounded-2xl gap-1 flex-grow md:flex-none border border-slate-700/50">
+                        <button id="btn-corners" onclick="switchTab('corners')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-amber-400 text-slate-900 shadow-sm font-black">
+                            <i class="fa-solid fa-compass"></i> 你同意嗎？
+                        </button>
+                        <button id="btn-debate" onclick="switchTab('debate')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-comments"></i> 來一場辯論吧！
+                        </button>
+                        <button id="btn-summary" onclick="switchTab('summary')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-seedling"></i> 我的成長
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- 溫馨手繪插畫看板 -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white/5 p-6 rounded-3xl border border-white/10 shadow-inner">
+                <div class="md:col-span-8 space-y-3">
+                    <span class="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-widest inline-block">
+                        <i class="fa-solid fa-feather-pointed mr-1"></i> 智慧溫馨思辨探究
+                    </span>
+                    <h2 class="text-xl md:text-3xl font-bold leading-tight">「有時候，一個相反的看法，<br>就像是在另一片夜空閃爍的暖光。」</h2>
+                    <p class="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                        每個人都有自己的小小星球。在這裡，沒有絕對對錯的考卷，只有透過對話、深呼吸、同理與分享，一同拼湊出溫慢的世界地圖。
+                    </p>
+                </div>
+                <!-- 經典手繪感 SVG 插畫 -->
+                <div class="md:col-span-4 flex justify-center">
+                    <svg class="w-36 h-36 floater" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 巨大金色彎月 -->
+                        <path d="M140 30C100 30 60 60 55 110C50 160 90 180 130 180C110 170 90 145 95 110C100 75 125 50 140 30Z" fill="#FCD34D" filter="drop-shadow(0 0 10px rgba(252,211,77,0.5))"/>
+                        <!-- 坐在月亮上的小男孩 silhouette -->
+                        <g transform="translate(68, 90) scale(0.4)">
+                            <!-- 小男孩身軀 -->
+                            <path d="M30 40C30 30 40 25 50 25C60 25 70 30 70 40C70 45 65 50 60 55L65 80H35L40 55C35 50 30 45 30 40Z" fill="#E2E8F0"/>
+                            <!-- 紅色條紋圍巾 -->
+                            <path d="M42 48C45 52 55 52 58 48L64 65L55 54L45 54L36 65L42 48Z" fill="#F43F5E"/>
+                            <!-- 垂下的腳 -->
+                            <rect x="42" y="80" width="6" height="25" rx="3" fill="#E2E8F0"/>
+                            <rect x="52" y="80" width="6" height="25" rx="3" fill="#E2E8F0"/>
+                            <!-- 提燈 -->
+                            <circle cx="75" cy="70" r="12" fill="#FEF08A" opacity="0.8"/>
+                            <line x1="60" y1="52" x2="75" y2="58" stroke="#E2E8F0" stroke-width="3"/>
+                            <line x1="75" y1="58" x2="75" y2="70" stroke="#E2E8F0" stroke-width="1.5"/>
+                        </g>
+                        <!-- 漂浮在夜空的蒲公英 -->
+                        <circle cx="160" cy="110" r="4" fill="#E2E8F0" class="star-glow"/>
+                        <line x1="160" y1="110" x2="170" y2="125" stroke="#E2E8F0" stroke-width="1"/>
+                        <circle cx="175" cy="80" r="3" fill="#E2E8F0" class="star-glow" style="animation-delay: 0.7s;"/>
+                        <line x1="175" y1="80" x2="182" y2="92" stroke="#E2E8F0" stroke-width="1"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區 -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+
+        <!-- ==================== 區塊一：你同意嗎？ ==================== -->
+        <section id="tab-content-corners" class="space-y-8">
+            
+            <!-- 議題選擇與當前情境展示 -->
+            <div class="bg-white border-4 border-[#EFEBE4] rounded-[32px] p-6 shadow-md">
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                            <span class="bg-amber-100 text-amber-500 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-compass"></i></span>
+                            當前思辨探究議題
+                        </h2>
+                        <!-- 題目下拉選單 -->
+                        <div class="w-full sm:w-80">
+                            <select id="corner-topic-select" onchange="loadCornerTopic(this.value)" class="w-full bg-[#FAF6F0] border-2 border-amber-100 rounded-2xl px-3 py-2.5 text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-400 text-slate-700 shadow-sm cursor-pointer">
+                                <!-- JS 動態插入 -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 當前選定題目背景說明 -->
+                    <div class="bg-gradient-to-r from-amber-50/60 to-orange-50/60 border-2 border-amber-100 rounded-2xl p-6 mt-2">
+                        <h3 id="current-corner-title" class="text-base font-black text-amber-950 mb-2">加載中...</h3>
+                        <p id="current-corner-desc" class="text-xs text-amber-900 leading-relaxed font-bold">請選擇一個探究主題，與同學進行思辨與立場表態。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 四個角落可愛卡片 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 角落 A: 完全同意 -->
+                <div class="bg-amber-50/40 border-4 border-amber-400 rounded-[32px] p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-all relative overflow-hidden bouncy-hover">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-400/10 rounded-full flex items-center justify-center pointer-events-none">
+                        <span class="text-3xl font-black text-amber-400/20">☀️</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center shadow-md">A</span>
+                            <h4 class="font-black text-slate-800 text-base">完全同意（溫暖堅定地支持）</h4>
+                        </div>
+                        
+                        <!-- 你的理由 -->
+                        <details class="mb-3 bg-white rounded-2xl border-2 border-amber-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-amber-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-moon text-amber-400"></i> 你的理由是......(參考答案)</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-amber-50" id="corner-a-reason">
+                                讀取中...
+                            </div>
+                        </details>
+                        
+                        <!-- 交流任務 -->
+                        <details class="bg-white rounded-2xl border-2 border-amber-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-amber-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rocket text-sky-400"></i> 小組成員交流任務</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-amber-50" id="corner-a-task">
+                                讀取中...
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 角落 B: 部分同意 -->
+                <div class="bg-emerald-50/40 border-4 border-emerald-400 rounded-[32px] p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-all relative overflow-hidden bouncy-hover">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-400/10 rounded-full flex items-center justify-center pointer-events-none">
+                        <span class="text-3xl font-black text-emerald-400/20">🌱</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-emerald-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center shadow-md">B</span>
+                            <h4 class="font-black text-slate-800 text-base">部分同意（留有前提地支持）</h4>
+                        </div>
+                        
+                        <details class="mb-3 bg-white rounded-2xl border-2 border-emerald-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-emerald-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-moon text-emerald-400"></i> 你的理由是......(參考答案)</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-emerald-50" id="corner-b-reason">
+                                讀取中...
+                            </div>
+                        </details>
+                        
+                        <details class="bg-white rounded-2xl border-2 border-emerald-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-emerald-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rocket text-sky-400"></i> 小組成員交流任務</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-emerald-50" id="corner-b-task">
+                                讀取中...
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 角落 C: 不太同意 -->
+                <div class="bg-purple-50/40 border-4 border-purple-400 rounded-[32px] p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-all relative overflow-hidden bouncy-hover">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-purple-400/10 rounded-full flex items-center justify-center pointer-events-none">
+                        <span class="text-3xl font-black text-purple-400/20">☁️</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-purple-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center shadow-md">C</span>
+                            <h4 class="font-black text-slate-800 text-base">不太同意（帶著擔憂地反對）</h4>
+                        </div>
+                        
+                        <details class="mb-3 bg-white rounded-2xl border-2 border-purple-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-purple-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-moon text-purple-400"></i> 你的理由是......(參考答案)</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-purple-50" id="corner-c-reason">
+                                讀取中...
+                            </div>
+                        </details>
+                        
+                        <details class="bg-white rounded-2xl border-2 border-purple-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-purple-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rocket text-sky-400"></i> 小組成員交流任務</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-purple-50" id="corner-c-task">
+                                讀取中...
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 角落 D: 完全不同意 -->
+                <div class="bg-rose-50/40 border-4 border-rose-400 rounded-[32px] p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-all relative overflow-hidden bouncy-hover">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-rose-400/10 rounded-full flex items-center justify-center pointer-events-none">
+                        <span class="text-3xl font-black text-rose-400/20">🌹</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-rose-400 text-white font-black w-8 h-8 rounded-full flex items-center justify-center shadow-md">D</span>
+                            <h4 class="font-black text-slate-800 text-base">完全不同意（堅決勇敢地反對）</h4>
+                        </div>
+                        
+                        <details class="mb-3 bg-white rounded-2xl border-2 border-rose-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-rose-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-moon text-rose-400"></i> 你的理由是......(參考答案)</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-rose-50" id="corner-d-reason">
+                                讀取中...
+                            </div>
+                        </details>
+                        
+                        <details class="bg-white rounded-2xl border-2 border-rose-200 overflow-hidden shadow-inner">
+                            <summary class="px-4 py-3.5 font-black text-slate-700 hover:text-rose-600 cursor-pointer flex justify-between items-center text-xs select-none">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rocket text-sky-400"></i> 小組成員交流任務</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                            </summary>
+                            <div class="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-bold border-t-2 border-rose-50" id="corner-d-task">
+                                讀取中...
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 區塊二：來一場辯論吧！ ==================== -->
+        <section id="tab-content-debate" class="hidden space-y-8">
+            
+            <!-- 老師控制台：自訂辯論題目 -->
+            <div class="bg-white border-4 border-indigo-100 rounded-[32px] p-6 shadow-md relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-indigo-50 opacity-20 text-8xl pointer-events-none floater" style="animation-delay: 2s;">
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+                
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="bg-indigo-100 text-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-sliders"></i></span>
+                    <h3 class="font-black text-slate-800 text-base">自訂辯論舞台控制台</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end relative z-10">
+                    <div class="md:col-span-3">
+                        <div class="relative">
+                            <input type="text" id="custom-debate-title" placeholder="輸入你想和學生辯論的主題..." class="w-full bg-[#FAF6F0]/60 border-2 border-indigo-100 rounded-2xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 font-bold">
+                            <i class="fa-solid fa-bullhorn absolute left-3.5 top-4 text-indigo-400 text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="md:col-span-1 flex gap-2">
+                        <button onclick="setDebateTopic()" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-4 rounded-2xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md bouncy-hover">
+                            <i class="fa-solid fa-check"></i> 設定
+                        </button>
+                        <button onclick="clearDebateTopic()" class="flex-none bg-rose-400 hover:bg-rose-500 text-white font-black py-3 px-4 rounded-2xl text-xs transition-all flex items-center justify-center shadow-md bouncy-hover" title="清除重設">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 辯論計時器主卡片 -->
+            <div class="bg-white border-4 border-[#EFEBE4] rounded-[32px] p-6 shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-slate-100 mb-6">
+                    <h2 class="text-base font-black text-slate-800 flex items-center gap-2">
+                        <span class="bg-indigo-100 text-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-hourglass-half"></i></span>
+                        即興辯論計時器
+                    </h2>
+                </div>
+
+                <!-- 辯論當前題目 -->
+                <div class="bg-indigo-50/40 border-2 border-indigo-100 rounded-2xl p-5 mb-6 text-center">
+                    <h3 id="current-debate-title" class="text-base font-black text-slate-800">載入中...</h3>
+                </div>
+
+                <!-- 辯論五階段 -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                    <button onclick="selectDebateStage(1)" id="btn-stage-1" class="debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover">
+                        <span class="block text-[10px] font-black text-indigo-500">步驟 1</span>
+                        <span class="text-xs font-black text-slate-700">準備階段</span>
+                    </button>
+                    <button onclick="selectDebateStage(2)" id="btn-stage-2" class="debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover">
+                        <span class="block text-[10px] font-black text-indigo-500">步驟 2</span>
+                        <span class="text-xs font-black text-slate-700">正方申論</span>
+                    </button>
+                    <button onclick="selectDebateStage(3)" id="btn-stage-3" class="debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover">
+                        <span class="block text-[10px] font-black text-indigo-500">步驟 3</span>
+                        <span class="text-xs font-black text-slate-700">反方申論</span>
+                    </button>
+                    <button onclick="selectDebateStage(4)" id="btn-stage-4" class="debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover col-span-2 md:col-span-1">
+                        <span class="block text-[10px] font-black text-indigo-500">步驟 4</span>
+                        <span class="text-xs font-black text-slate-700">自由對辯</span>
+                    </button>
+                    <button onclick="selectDebateStage(5)" id="btn-stage-5" class="debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover col-span-2 md:col-span-1">
+                        <span class="block text-[10px] font-black text-indigo-500">步驟 5</span>
+                        <span class="text-xs font-black text-slate-700">結辯反思</span>
+                    </button>
+                </div>
+
+                <!-- 倒數計時與操作 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                    
+                    <!-- 時鐘卡片 -->
+                    <div class="bg-slate-800 text-white rounded-3xl p-6 text-center shadow-lg lg:col-span-1 flex flex-col justify-between border-4 border-indigo-200">
+                        <div>
+                            <span id="display-stage-name" class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-3 py-1 rounded-full border border-indigo-500/30">請選擇階段</span>
+                            <div id="debate-timer" class="text-5xl font-black font-mono tracking-wider my-4 text-emerald-400">
+                                02:00
+                            </div>
+                        </div>
+
+                        <!-- 自訂時長操作區 -->
+                        <div class="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-700/50 mb-4 text-left">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-clock mr-1"></i> 自訂本段時間</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="input-custom-min" min="0" max="99" value="2" class="w-12 bg-slate-950 border-2 border-slate-700 rounded-xl text-center text-xs py-1.5 text-emerald-400 font-black focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <span class="text-[10px] text-slate-400 font-black">分</span>
+                                <input type="number" id="input-custom-sec" min="0" max="59" value="0" class="w-12 bg-slate-950 border-2 border-slate-700 rounded-xl text-center text-xs py-1.5 text-emerald-400 font-black focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <span class="text-[10px] text-slate-400 font-black">秒</span>
+                                <button onclick="applyCustomTime()" class="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white text-[10px] font-black py-2 px-2 rounded-xl transition-all flex items-center justify-center gap-1 bouncy-hover">
+                                    <i class="fa-solid fa-check"></i> 套用
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center gap-3">
+                            <button id="btn-timer-start" onclick="toggleTimer()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-black px-4 py-2.5 rounded-xl text-xs transition-all flex items-center gap-1.5 bouncy-hover shadow-md shadow-emerald-400/20">
+                                <i class="fa-solid fa-play"></i> 開始
+                            </button>
+                            <button onclick="resetTimer()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-black px-4 py-2.5 rounded-xl text-xs transition-all flex items-center gap-1.5 border border-slate-600 bouncy-hover">
+                                <i class="fa-solid fa-rotate-left"></i> 重設
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 指導語大卡 -->
+                    <div class="bg-white border-4 border-indigo-50 rounded-3xl p-6 shadow-inner lg:col-span-2 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-black text-slate-800 flex items-center gap-2 mb-3">
+                                <span class="bg-indigo-100 text-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                                <span id="coach-title">思維引導與情緒技巧</span>
+                            </h4>
+                            <div id="coach-content" class="text-xs text-slate-600 leading-relaxed font-bold space-y-2">
+                                請先點選上方的任意一個步驟。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 區塊三：我的成長 ==================== -->
+        <section id="tab-content-summary" class="hidden space-y-8">
+            <!-- 總結引言 -->
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-[32px] p-6 text-white shadow-md relative overflow-hidden">
+                <!-- 裝飾小氣球 -->
+                <div class="absolute right-8 top-4 text-emerald-200/20 text-7xl pointer-events-none floater">
+                    <i class="fa-solid fa-parachute-box"></i>
+                </div>
+                <div class="max-w-3xl relative z-10">
+                    <h2 class="text-xl font-black">🏆 今天的我，又前進了一步！</h2>
+                    <p class="mt-2 text-emerald-50 text-xs leading-relaxed font-bold">
+                        謝謝你今天用心的聆聽與溫柔的表達。請對照下方的大腦自省星星，誠實為自己的表達打勾，並寫下你小小心靈中最寶貴的獲得。
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 自我檢核表 -->
+                <div class="bg-white border-4 border-[#EFEBE4] rounded-[32px] p-6 shadow-md">
+                    <h3 class="text-base font-black text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="bg-emerald-100 text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-star-of-david"></i></span>
+                        我的決策大腦自省星星
+                    </h3>
+                    <div class="space-y-3">
+                        <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-50 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer text-xs transition-all font-bold">
+                            <input type="checkbox" id="check-1" class="w-4 h-4 mt-0.5 rounded text-emerald-500 focus:ring-emerald-400 border-slate-300">
+                            <span class="text-slate-700">當聽到不同意見時，我能深呼吸並數到三，克制立刻反對或大喊的衝動。</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-50 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer text-xs transition-all font-bold">
+                            <input type="checkbox" id="check-2" class="w-4 h-4 mt-0.5 rounded text-emerald-500 focus:ring-emerald-400 border-slate-300">
+                            <span class="text-slate-700">我能安靜且有耐心地聽完對方的立場，並試著找出他那邊也有道理的地方。</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-50 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer text-xs transition-all font-bold">
+                            <input type="checkbox" id="check-3" class="w-4 h-4 mt-0.5 rounded text-emerald-500 focus:ring-emerald-400 border-slate-300">
+                            <span class="text-slate-700">在做出最後的表態前，我會先想想看：這樣決定會不會傷害別人的身體或心情？</span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-50 hover:border-emerald-200 hover:bg-emerald-50/20 cursor-pointer text-xs transition-all font-bold">
+                            <input type="checkbox" id="check-4" class="w-4 h-4 mt-0.5 rounded text-emerald-500 focus:ring-emerald-400 border-slate-300">
+                            <span class="text-slate-700">如果最後的抉擇帶來了意料之外的不完美後果，我願意勇敢承擔，下一次做得更好。</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 自己的獲得 -->
+                <div class="bg-white border-4 border-[#EFEBE4] rounded-[32px] p-6 shadow-md flex flex-col justify-between space-y-4">
+                    <div class="space-y-4">
+                        <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                            <span class="bg-emerald-100 text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center text-sm"><i class="fa-solid fa-comment-dots"></i></span>
+                            手繪我的獲得筆記
+                        </h3>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">我的名字或小星球代號：</label>
+                            <input type="text" id="summary-student-name" placeholder="例如：小旅行者" class="w-full bg-[#FAF6F0] border-2 border-emerald-100 rounded-2xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 font-bold">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">今天的收穫與獲得：</label>
+                            <textarea id="summary-gains" rows="4" placeholder="今天透過思辨，我發現即使大家站的地方不同，當我們願意在心裡留一個溫柔的位子給對方..." class="w-full bg-[#FAF6F0] border-2 border-emerald-100 rounded-2xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none font-bold leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 操作按鈕 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <button onclick="saveGrowthRecord()" class="bg-[#FAF6F0] hover:bg-emerald-50 text-slate-700 border-2 border-emerald-100 font-black py-3 px-4 rounded-2xl text-xs transition-all flex items-center justify-center gap-2 bouncy-hover">
+                            <i class="fa-solid fa-floppy-disk"></i> 儲存並檢視日記
+                        </button>
+                        <button onclick="clearGrowthRecord()" class="bg-rose-50 hover:bg-rose-100 text-rose-500 border-2 border-rose-200 font-black py-3 px-4 rounded-2xl text-xs transition-all flex items-center justify-center gap-2 bouncy-hover">
+                            <i class="fa-solid fa-eraser"></i> 清除筆記
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 本端顯示日記容器 -->
+            <div id="diary-display-container" class="hidden bg-white border-4 border-emerald-200 rounded-[32px] p-6 shadow-md transition-all duration-300">
+                <div class="flex items-center gap-2 border-b-2 border-emerald-100 pb-3 mb-4">
+                    <i class="fa-solid fa-book-open text-emerald-500 text-lg"></i>
+                    <h3 class="text-emerald-800 font-black text-base">我的溫馨成長日記</h3>
+                </div>
+                <div id="diary-content" class="text-slate-700 font-bold text-xs leading-relaxed whitespace-pre-line p-4 bg-emerald-50/20 border-2 border-emerald-100 rounded-2xl shadow-inner">
+                    <!-- 日記內容動態注入 -->
+                </div>
+                <div class="mt-3 text-right">
+                    <span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-circle-info"></i> 提示：本區內容僅於畫面上暫存，重新整理後將自動消失。</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 區塊四：給大人的話（教師/家長專區 Support Zone） ==================== -->
+        <section class="mt-12">
+            <details class="bg-white border-4 border-[#EFEBE4] rounded-[32px] p-6 shadow-md overflow-hidden group transition-all duration-300">
+                <summary class="font-black text-slate-800 hover:text-amber-600 cursor-pointer flex justify-between items-center text-sm select-none">
+                    <span class="flex items-center gap-2.5">
+                        <div class="bg-amber-100 text-amber-500 w-8 h-8 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        給大人的手札：溫馨 SEL 思辨與陪伴指南 (Support Zone)
+                    </span>
+                    <span class="text-[10px] font-black text-slate-400 group-open:hidden">點擊打開教育設計與引導心法</span>
+                    <i class="fa-solid fa-chevron-down text-slate-400 text-sm transition-transform duration-300 group-open:rotate-180"></i>
+                </summary>
+                
+                <div class="mt-6 pt-6 border-t-2 border-slate-100 space-y-8 text-xs text-slate-600 leading-relaxed font-bold">
+                    
+                    <!-- 1. 你同意嗎？ -->
+                    <div class="space-y-2">
+                        <h4 class="font-black text-slate-800 text-xs flex items-center gap-2 text-amber-800">
+                            <span class="bg-amber-100 text-amber-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">1</span>
+                            「你同意嗎？」核心教育目標與實施指南
+                        </h4>
+                        <p class="pl-7">
+                            此模組的核心目標是培養孩子的<strong>觀點取替（Perspective-taking）</strong>與<strong>社會意識</strong>。在面對生活或歷史情境時，引導孩子看見並理解不同立場背後的合理考量：
+                        </p>
+                        <ul class="pl-12 list-disc space-y-1.5">
+                            <li><strong>觀點拆解</strong>：在進行本單元時，鼓勵孩子主動展開「你的理由是……(參考答案)」與「小組成員交流任務」。這些由 AI 專門針對高年級孩子設計的鷹架，能幫助孩子跳脫「非黑即白」的對立思維，看見決策背後的複雜考量點。</li>
+                            <li><strong>引導妙招</strong>：在課堂上，可讓學生在教室實體中依「A、B、C、D」走動到不同物理角落進行小組交流；在家庭中，家長可透過「自訂探究問題」輸入家庭生活情境，利用動態生成的四個折疊立場，與孩子展開一場不含說教、溫和且具彈性的親子思辨對話。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. 來一場辯論吧！ -->
+                    <div class="space-y-2">
+                        <h4 class="font-black text-slate-800 text-xs flex items-center gap-2 text-indigo-800">
+                            <span class="bg-indigo-100 text-indigo-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">2</span>
+                            「來一場辯論吧！」核心教育目標與實施指南
+                        </h4>
+                        <p class="pl-7">
+                            此模組重在鍛鍊孩子的<strong>自我管理（情緒調節）</strong>與<strong>人際交往技巧</strong>。辯論不只是口頭交鋒，更是一場深度的聆聽練習：
+                        </p>
+                        <ul class="pl-12 list-disc space-y-1.5">
+                            <li><strong>情緒調節與聆聽</strong>：在進行「正反申論」或「自由對辯」時，傾聽不中聽的對立言論容易使孩子情緒激動。此時，計時器與指導語即是安穩課堂的煞車皮，能引導孩子在心裡默數三秒再開口，控制強烈的情緒衝動。</li>
+                            <li><strong>引導妙招</strong>：本頁籤設有高度自由的「自訂時間」與「步驟任意切換」功能。大人可在計時開始前，帶領全班點選步驟並閱讀其<strong>思維引導與情緒技巧</strong>。指導語會優先呈現，讓學生在正式倒數前，預先掌握在各個交鋒時刻應具備的包容口吻與自律素養。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. 我的成長 -->
+                    <div class="space-y-2">
+                        <h4 class="font-black text-slate-800 text-xs flex items-center gap-2 text-teal-800">
+                            <span class="bg-teal-100 text-teal-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">3</span>
+                            「我的成長」核心教育目標與實施指南
+                        </h4>
+                        <p class="pl-7">
+                            此模組聚焦於<strong>自我覺察</strong>與<strong>負責任的決策能力</strong>。讓孩子在完成前面的動態體驗與激烈交鋒後，回到自我內心進行深度的自我沈澱：
+                        </p>
+                        <ul class="pl-12 list-disc space-y-1.5">
+                            <li><strong>自我反思與行為檢核</strong>：這不是一張評判對錯的考卷，而是一張「行為指引方針」。引導孩子對照自我檢核表中的行為（如：冷靜呼吸、傾聽相反立場、評估決策後果、勇於承擔等），客觀審視今天的自我情緒表現，並記下真實的成長筆記。</li>
+                            <li><strong>引導妙招</strong>：當學生誠實打下「自己的獲得」後，引導他們點擊「AI 導師溫暖講評」。AI 將轉化為極具同理與支持溫度的級任導師，對孩子的實踐給予個人化肯定。大人可以與孩子一同閱讀講評，強化孩子在社會情緒能力上的自我效能。</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </details>
+        </section>
+
+    </main>
+
+    <!-- 底部資訊列 -->
+    <footer class="bg-white/40 border-t border-[#EFEBE4] py-6 mt-12 text-center text-[10px] text-slate-400 font-bold">
+        <p>© 思辨與決策溫馨教室</p>
+    </footer>
+
+    <!-- 全局提示訊息元件 -->
+    <div id="custom-toast" class="fixed bottom-6 right-6 z-50 bg-slate-900/90 text-white px-5 py-3.5 rounded-[20px] shadow-2xl transition-all duration-300 transform translate-y-12 opacity-0 pointer-events-none flex items-center gap-3 border border-slate-800">
+        <span id="toast-icon" class="text-amber-400"><i class="fa-solid fa-moon"></i></span>
+        <span id="toast-text" class="text-xs font-bold tracking-wider">儲存成功！</span>
+    </div>
+
+    <!-- 全域 JavaScript 控制核心 -->
+    <script>
+        // 預設「你同意嗎？」探究議題
+        const defaultCornersData = [
+            {
+                id: "corner-4",
+                title: "在《草船借箭》中，魯肅身為東吳代表，明知諸葛亮有生命危險卻答應幫他保守借船秘密，這是否符合對國家的忠誠？",
+                desc: "道德探究：周瑜想藉由十萬支箭害死諸葛亮，魯肅身為周瑜部屬，卻動了同理心幫諸葛亮隱瞞借船事宜，這在國家盟友關係、誠實與人際道德上產生了矛盾。",
+                A: {
+                    reason: "完全同意！因為東吳與蜀漢是聯軍關係，諸葛亮若死，兩國聯盟必破，東吳也難擋曹操。魯肅保守秘密是更高層次的救國忠誠。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論魯肅要如何暗中防範諸葛亮取得箭後反過來危害東吳？他的防範機制該怎麼做？"
+                },
+                B: {
+                    reason: "同意，但他應在暗中協助之餘，也向主帥周瑜施加壓力，勸導周瑜停止內鬥，而非單純私下幫忙隱瞞。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論假如周瑜當場識破魯肅在暗中幫忙，魯肅應該如何機智回應才能保全自己？"
+                },
+                C: {
+                    reason: "不同意，魯肅身為東吳大將，勝在遵守信義，但也應置身事外。私下借船給他國軍師，已嚴重違背東吳軍人對上級的忠實誠信義務。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論若周瑜發現借船一事並要以軍法處罰魯肅，魯肅應該如何為自己的行為負責？"
+                },
+                D: {
+                    reason: "完全不同意！對東吳絕對忠誠是魯肅唯一的原則。他應該立刻向周瑜密報，將計就計將諸葛亮在東吳扣留，除掉這個未來的大患。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論如果魯肅密告導致諸葛亮遇害，劉備與關羽發兵報復，東吳有能力同時應付曹操與劉備嗎？"
+                }
+            },
+            {
+                id: "corner-5",
+                title: "班級進行分組合作學習時，是否應該強制將不同能力的同學混和編組，即便可能產生人際摩擦與進度落差？",
+                desc: "人際關係與綜合領域探究：強制混和分組能讓同學學習換位思考與同理心，但也容易造成「能力好的同學多做，學習慢的同學被冷落」的人際磨合不適感。",
+                A: {
+                    reason: "完全同意！學校是小社會，學習與各種不同人相處、互相拉拔，比個人的成績和報告進度更重要。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論在混合組中，如何建立一個公平的『工作認領清單』，讓每位同學都有事做，不被冷落？"
+                },
+                B: {
+                    reason: "同意混合，但老師必須提供明確、細緻的評分與引導機制，比如加入『分工自我檢核表』和『同儕互評』。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 設計一個能兼顧個人努力與小組共同分數的計分機制，並說明理由。"
+                },
+                C: {
+                    reason: "不太同意混合，應該讓學生依興趣自由組隊，再由老師調度少數落單同學。強行混合容易激化矛盾。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 自由組隊容易產生小圈圈，老師該用什麼柔性方法，協助平常少互動的同學組建隊伍？"
+                },
+                D: {
+                    reason: "完全不同意！應該依照學習速度、同質能力來進行分組。這樣擅長的人可以衝得更快，慢的人可以慢慢打基礎，互不干涉才是最好的進步法。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論若長期進行同質組分配，如何避免在班上形成『強組與弱組』的階級歧視與冷漠？"
+                }
+            },
+            {
+                id: "corner-6",
+                title: "國小高年級是否應該全面開放攜帶智慧型手機與手錶到校使用？",
+                desc: "科技與校園管理的兩難：智慧型手機與手錶能方便家長聯繫並輔助學習，但也容易造成上課分心、人際比較或網路霸凌，這涉及了便利性與校園秩序的平衡。",
+                A: {
+                    reason: "完全同意！這能隨時與家長保持聯繫確保安全，且遇到不懂的問題可以立刻查資料，是數位時代必備的工具。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論在上課時如何自我管理，確保手機不會變成干擾學習的玩具？"
+                },
+                B: {
+                    reason: "同意開放，但必須有嚴格的『使用時間與區域』規定，例如只能在放學後或特定課程中使用，平時由老師統一保管。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論如果有人違反規定偷偷使用，班級應該訂定什麼樣的溫和提醒與規範機制？"
+                },
+                C: {
+                    reason: "不太同意全面開放。為了避免大家互相比較設備或沉迷遊戲，學校應該只開放『沒有娛樂功能的基本通訊手錶』。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論如果只有基本通訊功能，是否足夠滿足家長的安全聯繫需求？"
+                },
+                D: {
+                    reason: "完全反對！學校是專心學習和面對面交朋友的地方，手機會拉遠同學間的距離，甚至引發偷拍或網路霸凌的危險。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論如果不帶手機，遇到緊急狀況時，學生可以透過哪些校園既有管道尋求幫助？"
+                }
+            },
+            {
+                id: "corner-7",
+                title: "政府應不應該立法強制全面禁用一次性塑膠吸管與塑膠袋，以解決海洋與土地永續危機？",
+                desc: "環保與生活便利的拉鋸：塑膠垃圾對海洋生物與地球造成嚴重危害，但全面禁用會對許多依賴塑膠包裝的小吃攤商與民眾日常生活帶來極大不便。",
+                A: {
+                    reason: "完全同意！地球只有一個，為了拯救海龜和海洋生態，我們必須忍受一點點不方便，立刻停止製造塑膠垃圾。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論在生活中，有哪些可以完美取代塑膠袋和吸管的環保好點子？"
+                },
+                B: {
+                    reason: "同意禁用，但政府應該先給店家和民眾一到兩年的適應期，並且提供便宜好用的環保替代品，不能說禁就禁。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論在這段過渡期內，我們可以做些什麼來鼓勵身邊的人慢慢減少使用？"
+                },
+                C: {
+                    reason: "不太同意強制禁用。相比直接處罰，政府應該用『獎勵機制』，例如自備環保杯或袋子可以折價，用鼓勵代替強迫。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論除了折價，還有什麼創意的獎勵方法能讓大家主動愛上環保？"
+                },
+                D: {
+                    reason: "完全不同意！對於很多賣湯水的小吃攤或需要衛生的醫療場所，塑膠製品無可取代，全面禁用太不切實際了。",
+                    task: "<strong>🎯 溫馨交流任務：</strong><br>1. 討論如果不能全面禁用，我們如何透過更好的『回收與分解技術』來解決垃圾問題？"
+                }
+            }
+        ];
+
+        // 辯論五階段設定
+        const DEBATE_STAGES = {
+            1: {
+                name: "準備階段",
+                time: 120,
+                tips: "<strong>💡 本階段重點：同理心商討與攻守擬定</strong><ul class='list-disc pl-5 space-y-1 mt-2'><li><strong>思考導引：</strong>雙方小組就坐，在紙上列出至少3個支持己方立場的理由，並預測對方可能會提出什麼。</li><li><strong>情緒技巧：</strong>主動邀請小組中不常說話的同學發表看法，深呼吸，確保小組氣氛和諧。</li><li><strong>核心任務：</strong>選定等等上場進行第一輪申論的發言人。</li></ul>"
+            },
+            2: {
+                name: "正方申論",
+                time: 120,
+                tips: "<strong>💡 本階段重點：論據鋪陳與清晰口語表達</strong><ul class='list-disc pl-5 space-y-1 mt-2'><li><strong>思考導引：</strong>正方發言，以『我們主張...因為第一點...第二點...』結構陳述，引用具體例子。</li><li><strong>情緒技巧：</strong>反方同學必須保持禮貌，認真記錄，將對方的話整理在筆記本上。</li><li><strong>核心任務：</strong>在時間內把立場和邏輯完整表達。</li></ul>"
+            },
+            3: {
+                name: "反方申論",
+                time: 120,
+                tips: "<strong>💡 本階段重點：敏銳聆聽與針對性反駁</strong><ul class='list-disc pl-5 space-y-1 mt-2'><li><strong>思考導引：</strong>反方發言，首先指出正方剛才申論中的可商榷之處，接著說明反方的核心論點與關鍵例證。</li><li><strong>情緒技巧：</strong>正方同學認真聆聽，學習在心裡跟自己說：『雖然我不同意，但我願意聽聽他的考量。』</li><li><strong>核心任務：</strong>展現對正方論點的理解，並亮出己方的堅實論點。</li></ul>"
+            },
+            4: {
+                name: "自由對辯",
+                time: 180,
+                tips: "<strong>💡 本階段重點：輪流交鋒與自我情緒管理</strong><ul class='list-disc pl-5 space-y-1 mt-2'><li><strong>思考導引：</strong>雙方交替提問與回答。一方發問，另一方回答並反問，針對對方的論點展開激烈思辨。</li><li><strong>情緒技巧：</strong>當聽到不中聽的話，請在心中數到三，克制插嘴和咆哮，用冷靜平穩的語調發言。</li><li><strong>核心任務：</strong>不要跑題、不流於意氣用事，專注於解決問題的不同方法。</li></ul>"
+            },
+            5: {
+                name: "結辯反思",
+                time: 120,
+                tips: "<strong>💡 本階段重點：系統總結與換位思維展現</strong><ul class='list-disc pl-5 space-y-1 mt-2'><li><strong>思考導引：</strong>雙方進行最後的發言，不提新論點，而是指出整場辯論下來雙方的共識，並為己方做出最終訴求。</li><li><strong>情緒技巧：</strong>真誠感謝與肯定對方的精彩表現：『在剛才的辯論中，我非常欣賞對方的某個想法，這讓我們學習到...』。</li><li><strong>核心任務：</strong>從辯論對立抽離，思考有沒有能結合雙方長處的『第三條路』。</li></ul>"
+            }
+        };
+
+        // 系統狀態
+        let cornersList = [];
+        let currentDebateTopic = ""; 
+        let activeCornerIndex = 0;
+
+        let timerInterval = null;
+        let currentStageNum = 1;
+        let timeLeft = 120;
+        let isTimerRunning = false;
+
+        window.onload = function() {
+            // 讀取 API 金鑰
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('custom-api-key').value = savedKey;
+            }
+
+            // 初始化「你同意嗎？」資料
+            const storedCorners = localStorage.getItem('custom_corners_database_v2');
+            if (storedCorners) {
+                try { cornersList = JSON.parse(storedCorners); } catch(e) { cornersList = [...defaultCornersData]; }
+            } else { cornersList = [...defaultCornersData]; }
+
+            populateCornersDropdown();
+            loadCornerTopic(cornersList[0].id);
+
+            // 初始化「來一場辯論吧！」資料
+            const storedDebate = localStorage.getItem('current_debate_topic_v2');
+            if (storedDebate) {
+                currentDebateTopic = storedDebate;
+            } else { 
+                currentDebateTopic = "尚未設定辯題，請於上方控制台輸入！"; 
+            }
+            
+            updateDebateDisplay();
+
+            // 預選辯論第一階段
+            selectDebateStage(1);
+
+            // 空格鍵控制計時器
+            window.addEventListener('keydown', function(e) {
+                if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA" && e.target.tagName !== "SELECT") {
+                    e.preventDefault();
+                    toggleTimer();
+                }
+            });
+        };
+
+        // ==================== AI 模組：Gemini API (帶指數退避) ====================
+        async function callGeminiAPI(systemPrompt, userQuery, jsonMode = false) {
+            const customKey = document.getElementById('custom-api-key').value.trim();
+            const apiKey = customKey || ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            if (jsonMode) {
+                payload.generationConfig = { responseMimeType: "application/json" };
+            }
+
+            let retries = 3;
+            let delay = 1000;
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const candidate = result.candidates?.[0];
+                        if (candidate && candidate.content?.parts?.[0]?.text) {
+                            return candidate.content.parts[0].text;
+                        }
+                    }
+                } catch (err) {
+                    console.debug(`Gemini API 回試失敗 - ${i + 1}`);
+                }
+                if (i < retries - 1) {
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+            throw new Error("伺服器忙碌中，請檢查您的網路或稍後重試。");
+        }
+
+        // ==================== UI 與 Modal 管理 ====================
+        function toggleAiSettingsModal(show) {
+            const modal = document.getElementById('ai-settings-modal');
+            const card = document.getElementById('ai-settings-card');
+            if (show) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                card.classList.remove('scale-100');
+                card.classList.add('scale-95');
+            }
+        }
+
+        // 儲存金鑰
+        function saveApiKey() {
+            const key = document.getElementById('custom-api-key').value.trim();
+            localStorage.setItem('gemini_api_key', key);
+            showToast("🔑 AI 金鑰已成功保存！", "text-amber-400");
+            toggleAiSettingsModal(false);
+        }
+
+        // ==================== 頁籤切換 ====================
+        function switchTab(tabId) {
+            const tabs = ['corners', 'debate', 'summary'];
+            
+            tabs.forEach(id => {
+                const element = document.getElementById(`tab-content-${id}`);
+                if (element) element.classList.add('hidden');
+            });
+
+            const activeTabContent = document.getElementById(`tab-content-${tabId}`);
+            if (activeTabContent) activeTabContent.classList.remove('hidden');
+
+            tabs.forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if (btn) btn.className = "flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center justify-center gap-1.5";
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                if (tabId === 'corners') {
+                    activeBtn.className = "flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-amber-400 text-slate-900 shadow-sm font-black";
+                } else if (tabId === 'debate') {
+                    activeBtn.className = "flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-indigo-500 text-white shadow-sm font-black";
+                    updateTimerDisplay();
+                } else if (tabId === 'summary') {
+                    activeBtn.className = "flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-emerald-400 text-slate-900 shadow-sm font-black";
+                }
+            }
+        }
+
+        // ==================== 「你同意嗎？」邏輯 ====================
+        function populateCornersDropdown() {
+            const selectEl = document.getElementById('corner-topic-select');
+            if (!selectEl) return;
+            selectEl.innerHTML = '';
+
+            cornersList.forEach(topic => {
+                const opt = document.createElement('option');
+                opt.value = topic.id;
+                opt.textContent = `🧭 ${topic.title}`;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function loadCornerTopic(topicId) {
+            const topic = cornersList.find(t => t.id === topicId);
+            if (!topic) return;
+
+            activeCornerIndex = cornersList.indexOf(topic);
+
+            const titleEl = document.getElementById('current-corner-title');
+            const descEl = document.getElementById('current-corner-desc');
+            if (titleEl) titleEl.textContent = topic.title;
+            if (descEl) descEl.textContent = topic.desc;
+
+            const keys = ['A', 'B', 'C', 'D'];
+            keys.forEach(k => {
+                const keyLower = k.toLowerCase();
+                const reasonEl = document.getElementById(`corner-${keyLower}-reason`);
+                const taskEl = document.getElementById(`corner-${keyLower}-task`);
+                if (reasonEl) reasonEl.innerHTML = topic[k].reason;
+                if (taskEl) taskEl.innerHTML = topic[k].task;
+            });
+
+            const allDetails = document.querySelectorAll('#tab-content-corners details');
+            allDetails.forEach(details => details.removeAttribute('open'));
+        }
+
+        // ==================== 新增自訂思辨題 ====================
+        async function addCustomCornerTopic(useAI = false) {
+            const titleInput = document.getElementById('custom-corner-title');
+            if (!titleInput) return;
+            const title = titleInput.value.trim();
+
+            if (!title) {
+                showToast("⚠️ 請先寫下你想探討的思辨問題！", "text-rose-400");
+                return;
+            }
+
+            const topicId = "custom-" + Date.now();
+            const cleanTitle = title.replace(/[?？嗎是否應不應該]+/g, '');
+            let generatedTopic = null;
+
+            if (useAI) {
+                const loadingStatus = document.getElementById('ai-loading-status');
+                const btnAi = document.getElementById('btn-add-ai');
+                loadingStatus.classList.remove('hidden');
+                btnAi.disabled = true;
+                btnAi.classList.add('opacity-50');
+
+                try {
+                    const systemPrompt = "你是一位精通國小中高年級 (五六年級) 社會情緒學習 (SEL) 與道德思辨教育的溫馨心靈與哲學思辨教育專家。語調溫暖、包容且充滿想像力。";
+                    const userQuery = `請針對以下思辨主題：『${title}』，為國小五、六年級學生設計四個不同立場（A：完全同意、B：部分同意、C：不太同意、D：完全不同意）的思維視角。內容應符合社會情緒學習（SEL）原則，著重在換位思考、同理心、人際尊重與負責任決策，且不可帶有主觀偏見與刻板印象。
+請直接以繁體中文且符合台灣語氣習慣輸出，並遵循以下的 JSON 結構：
+{
+  "desc": "適合國小生閱讀的簡潔背景與抉難說明 (限 80-120 字，語調帶著溫暖詩意風格與深層思考度)",
+  "A": {
+    "reason": "完全同意本決策或立場的核心正面考量點 (限 60-80 字，生動易懂)",
+    "task": "<strong>🎯 溫馨交流任務：</strong><br>1. [討論一，探討此立場的核心利益]<br>2. [討論二，如何溫柔地解決反對者的擔憂]"
+  },
+  "B": {
+    "reason": "部分同意本決策或立場，但希望增設前提與折衷配套的考量點 (限 60-80 字)",
+    "task": "<strong>🎯 溫馨交流任務：</strong><br>1. [討論一，討論妥協的具體平衡點]<br>2. [討論二，如何兼顧安全與多元感受]"
+  },
+  "C": {
+    "reason": "傾向不太同意，建議採用其他替代性或溫和柔性方法的考量點 (限 60-80 字)",
+    "task": "<strong>🎯 溫馨交流任務：</strong><br>1. [討論一，激盪低衝突的第三條路方案]<br>2. [討論二，如何溫和地說服支持方]"
+  },
+  "D": {
+    "reason": "完全不同意，指出本決策可能造成的潛在傷害、對人權或個人情感尊嚴的侵害 (限 60-80 字)",
+    "task": "<strong>🎯 溫馨交流任務：</strong><br>1. [討論一，如何平和且堅定地提出具體佐證表達抗議]<br>2. [討論二，若結果無法更改，如何安頓自我與小組的情緒]"
+  }
+}`;
+
+                    const aiResponse = await callGeminiAPI(systemPrompt, userQuery, true);
+                    const parsedJson = JSON.parse(aiResponse);
+
+                    generatedTopic = {
+                        id: topicId,
+                        title: title,
+                        desc: parsedJson.desc,
+                        A: parsedJson.A,
+                        B: parsedJson.B,
+                        C: parsedJson.C,
+                        D: parsedJson.D
+                    };
+
+                } catch (error) {
+                    console.error("AI 生成錯誤：", error);
+                    showToast("⚠️ AI 思考有些累了，自動切換為本地快速範本！", "text-amber-400");
+                    useAI = false;
+                } finally {
+                    loadingStatus.classList.add('hidden');
+                    btnAi.disabled = false;
+                    btnAi.classList.remove('opacity-50');
+                }
+            }
+
+            if (!useAI) {
+                generatedTopic = {
+                    id: topicId,
+                    title: title,
+                    desc: `這是一個關於『${cleanTitle}』的溫馨思辨。這項決定將像風一樣吹向每顆小星球，請大家互相聆聽對方的觀點。`,
+                    A: {
+                        reason: `完全同意！因為落實這項決定能確保整體的<strong>公平性、安全感、集體發展與明確的秩序</strong>。若缺乏明確規範，將可能產生不必要的資源耗損或效率降低。`,
+                        task: `<strong>🎯 溫馨交流任務：</strong><br>1. 討論這項政策帶來的<strong>最大實質益處</strong>。<br>2. 如何具體規避或降低反對派所擔憂的副作用？`
+                    },
+                    B: {
+                        reason: `部分同意！原則上支持方向，但<strong>必須增設附帶條件或配套保護機制</strong>。不應一刀切，應提供受影響的少數群體足夠的緩衝與彈性補償措施。`,
+                        task: `<strong>🎯 溫馨交流任務：</strong><br>1. 討論你們同意的『具體配套條件』是什麼？<br>2. 這些條件如何兼顧進度，並能解決反對者的不安全感？`
+                    },
+                    C: {
+                        reason: `不太同意！傾向採取<strong>替代方案或更有彈性的做法</strong>，避免採用硬性規定。目前的提案容易對部分人的自由與基本權益產生限縮。`,
+                        task: `<strong>🎯 溫馨交流任務：</strong><br>1. 激盪出能滿足支持派訴求、但不用大動干戈的<strong>『第三種替代方案』</strong>。<br>2. 如何溫和地說服支持派改採這套柔性方案？`
+                    },
+                    D: {
+                        reason: `完全不同意！這是一項<strong>具有高度風險或對人權、自主權、情感有嚴重損害</strong>的決策。我們應堅定守護多元化、包容性與個人最核心的權益。`,
+                        task: `<strong>🎯 溫馨交流任務：</strong><br>1. 整理出最能引起大家同理心共鳴的<strong>『關鍵損害與反對證據』</strong>。<br>2. 討論如果支持派強行推動，你們要如何平和但堅定地表達訴求？`
+                    }
+                };
+            }
+
+            cornersList.unshift(generatedTopic);
+            localStorage.setItem('custom_corners_database_v2', JSON.stringify(cornersList));
+
+            populateCornersDropdown();
+            loadCornerTopic(topicId);
+
+            const selectEl = document.getElementById('corner-topic-select');
+            if (selectEl) selectEl.value = topicId;
+
+            titleInput.value = '';
+            if (useAI) {
+                showToast("✨ 成功調用 AI！專屬四角落思辨與溫馨討論任務已生成！", "text-amber-400");
+            } else {
+                showToast("💾 新增議題成功，已為您套用溫和範本！", "text-amber-400");
+            }
+        }
+
+        // ==================== 「來一場辯論吧！」邏輯 ====================
+        function updateDebateDisplay() {
+            const titleEl = document.getElementById('current-debate-title');
+            if (titleEl) titleEl.textContent = currentDebateTopic || "尚未設定辯題，請於上方控制台輸入！";
+            
+            const inputEl = document.getElementById('custom-debate-title');
+            if (inputEl && currentDebateTopic !== "尚未設定辯題，請於上方控制台輸入！") {
+                inputEl.value = currentDebateTopic;
+            }
+        }
+
+        function setDebateTopic() {
+            const titleInput = document.getElementById('custom-debate-title');
+            if (!titleInput) return;
+            const title = titleInput.value.trim();
+
+            if (!title) {
+                showToast("⚠️ 請先寫下你們打算切磋的辯論題目！", "text-rose-400");
+                return;
+            }
+
+            currentDebateTopic = title;
+            localStorage.setItem('current_debate_topic_v2', currentDebateTopic);
+            updateDebateDisplay();
+            showToast("💾 辯論舞台的主題已更新成功！", "text-indigo-400");
+        }
+
+        function clearDebateTopic() {
+            const titleInput = document.getElementById('custom-debate-title');
+            if (titleInput) titleInput.value = '';
+            
+            currentDebateTopic = "尚未設定辯題，請於上方控制台輸入！";
+            localStorage.removeItem('current_debate_topic_v2');
+            updateDebateDisplay();
+            showToast("🗑️ 辯題已清除，可以重新設定囉！", "text-indigo-400");
+        }
+
+        function selectDebateStage(stageNum) {
+            currentStageNum = stageNum;
+            const stageConfig = DEBATE_STAGES[stageNum];
+            if (!stageConfig) return;
+
+            if (isTimerRunning) toggleTimer();
+
+            timeLeft = stageConfig.time;
+            updateTimerDisplay();
+
+            const minInput = document.getElementById('input-custom-min');
+            const secInput = document.getElementById('input-custom-sec');
+            if (minInput && secInput) {
+                minInput.value = Math.floor(timeLeft / 60);
+                secInput.value = timeLeft % 60;
+            }
+
+            const displayStageEl = document.getElementById('display-stage-name');
+            const coachTitleEl = document.getElementById('coach-title');
+            const coachContentEl = document.getElementById('coach-content');
+
+            if (displayStageEl) displayStageEl.textContent = `當前：${stageConfig.name}`;
+            if (coachTitleEl) coachTitleEl.textContent = `【${stageConfig.name}】溫馨引導與情緒管理`;
+            if (coachContentEl) coachContentEl.innerHTML = stageConfig.tips;
+
+            const allBtns = document.querySelectorAll('.debate-stage-btn');
+            allBtns.forEach(btn => {
+                btn.className = "debate-stage-btn border-2 border-[#EFEBE4] bg-white hover:bg-indigo-50 p-3 rounded-2xl text-center transition-all bouncy-hover";
+            });
+
+            const activeStageBtn = document.getElementById(`btn-stage-${stageNum}`);
+            if (activeStageBtn) {
+                activeStageBtn.className = "debate-stage-btn border-4 border-indigo-500 bg-indigo-50/50 p-3 rounded-2xl text-center transition-all shadow-sm ring-4 ring-indigo-500/20";
+            }
+        }
+
+        function applyCustomTime() {
+            const minInput = document.getElementById('input-custom-min');
+            const secInput = document.getElementById('input-custom-sec');
+            if (!minInput || !secInput) return;
+
+            let min = parseInt(minInput.value);
+            let sec = parseInt(secInput.value);
+
+            if (isNaN(min) || min < 0) min = 0;
+            if (isNaN(sec) || sec < 0) sec = 0;
+            if (sec > 59) {
+                sec = 59;
+                secInput.value = 59;
+            }
+            minInput.value = min;
+
+            if (isTimerRunning) toggleTimer();
+
+            timeLeft = (min * 60) + sec;
+            updateTimerDisplay();
+
+            showToast(`⏰ 倒數沙漏已翻轉為 ${String(min).padStart(2, '0')} 分 ${String(sec).padStart(2, '0')} 秒！`, "text-indigo-400");
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerEl = document.getElementById('debate-timer');
+            if (timerEl) {
+                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        }
+
+        function toggleTimer() {
+            const startBtn = document.getElementById('btn-timer-start');
+            const timerEl = document.getElementById('debate-timer');
+            
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                if (startBtn) startBtn.innerHTML = `<i class="fa-solid fa-play"></i> 開始`;
+                if (timerEl) timerEl.className = "text-5xl font-black font-mono tracking-wider my-4 text-emerald-400";
+            } else {
+                isTimerRunning = true;
+                if (startBtn) startBtn.innerHTML = `<i class="fa-solid fa-pause"></i> 暫停`;
+                if (timerEl) timerEl.className = "text-5xl font-black font-mono tracking-wider my-4 text-rose-400 animate-pulse";
+                
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                        
+                        const minInput = document.getElementById('input-custom-min');
+                        const secInput = document.getElementById('input-custom-sec');
+                        if (minInput && secInput && document.activeElement !== minInput && document.activeElement !== secInput) {
+                            minInput.value = Math.floor(timeLeft / 60);
+                            secInput.value = timeLeft % 60;
+                        }
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        if (startBtn) startBtn.innerHTML = `<i class="fa-solid fa-play"></i> 開始`;
+                        if (timerEl) timerEl.className = "text-5xl font-black font-mono tracking-wider my-4 text-emerald-400";
+                        playTimeUpBeep();
+                        showToast("🔔 討論時間圓滿結束囉！", "text-amber-400");
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+            }
+            const startBtn = document.getElementById('btn-timer-start');
+            if (startBtn) startBtn.innerHTML = `<i class="fa-solid fa-play"></i> 開始`;
+            
+            const timerEl = document.getElementById('debate-timer');
+            if (timerEl) timerEl.className = "text-5xl font-black font-mono tracking-wider my-4 text-emerald-400";
+
+            const minInput = document.getElementById('input-custom-min');
+            const secInput = document.getElementById('input-custom-sec');
+            if (minInput && secInput) {
+                let min = parseInt(minInput.value) || 0;
+                let sec = parseInt(secInput.value) || 0;
+                timeLeft = (min * 60) + sec;
+            } else {
+                timeLeft = DEBATE_STAGES[currentStageNum].time;
+            }
+            updateTimerDisplay();
+        }
+
+        function playTimeUpBeep() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5 柔和的音效
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start();
+                osc.stop(ctx.currentTime + 1.5);
+            } catch(e) {}
+        }
+
+        // ==================== 我的成長紀錄邏輯 ====================
+        function saveGrowthRecord() {
+            const name = document.getElementById('summary-student-name').value.trim();
+            const gains = document.getElementById('summary-gains').value.trim();
+
+            if (!name) {
+                showToast("⚠️ 你的名字是小星球的密碼，請先填寫喔！", "text-rose-400");
+                return;
+            }
+            if (!gains) {
+                showToast("⚠️ 先寫下一點點筆記，我們再來封存日記吧！", "text-rose-400");
+                return;
+            }
+
+            const checks = [
+                document.getElementById('check-1').checked ? "【已實踐】" : "【未實踐】",
+                document.getElementById('check-2').checked ? "【已實踐】" : "【未實踐】",
+                document.getElementById('check-3').checked ? "【已實踐】" : "【未實踐】",
+                document.getElementById('check-4').checked ? "【已實踐】" : "【未實踐】"
+            ];
+
+            const recordText = `【思辨與決策 - 溫馨成長日記】\n` +
+                               `👤 旅行者名字：${name}\n` +
+                               `📅 日記日期：${new Date().toLocaleDateString('zh-TW')}\n\n` +
+                               `📋 決策大腦星星指標：\n` +
+                               `1. 面對意見不同先冷靜：${checks[0]}\n` +
+                               `2. 耐心聽完相反立場：${checks[1]}\n` +
+                               `3. 評估安全與他人感受：${checks[2]}\n` +
+                               `4. 勇於負責與調適進步：${checks[3]}\n\n` +
+                               `💡 今天的獲得筆記：\n"${gains}"`;
+
+            // 顯示在畫面上，不存入 localStorage
+            const container = document.getElementById('diary-display-container');
+            const content = document.getElementById('diary-content');
+            
+            content.textContent = recordText;
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth' });
+
+            showToast("📖 日記已生成！（離開網頁後將不保留）", "text-emerald-400");
+        }
+
+        function clearGrowthRecord() {
+            // 清除輸入框
+            document.getElementById('summary-student-name').value = '';
+            document.getElementById('summary-gains').value = '';
+            
+            // 清除勾選狀態
+            document.getElementById('check-1').checked = false;
+            document.getElementById('check-2').checked = false;
+            document.getElementById('check-3').checked = false;
+            document.getElementById('check-4').checked = false;
+            
+            // 隱藏日記顯示區
+            const container = document.getElementById('diary-display-container');
+            container.classList.add('hidden');
+            document.getElementById('diary-content').textContent = '';
+
+            showToast("🗑️ 筆記內容已清除！", "text-rose-400");
+        }
+
+        function showToast(text, colorClass = "text-emerald-400") {
+            const toast = document.getElementById('custom-toast');
+            const toastText = document.getElementById('toast-text');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastText.textContent = text;
+            
+            if (colorClass.includes('rose')) {
+                toastIcon.innerHTML = `<i class="fa-solid fa-cloud-rain"></i>`;
+                toastIcon.className = "text-rose-400";
+            } else if (colorClass.includes('amber')) {
+                toastIcon.innerHTML = `<i class="fa-solid fa-moon text-amber-400"></i>`;
+                toastIcon.className = "text-amber-400";
+            } else if (colorClass.includes('indigo')) {
+                toastIcon.innerHTML = `<i class="fa-solid fa-microphone text-indigo-400"></i>`;
+                toastIcon.className = "text-indigo-400";
+            } else {
+                toastIcon.innerHTML = `<i class="fa-solid fa-star text-emerald-400"></i>`;
+                toastIcon.className = "text-emerald-400";
+            }
+
+            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

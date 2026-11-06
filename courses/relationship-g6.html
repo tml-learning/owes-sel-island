@@ -1,0 +1,1136 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEL 衝突協商與人際大師 - 國小六年級 108 課綱人際互動學習網</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for Achievements -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sel: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .stamp-effect {
+            transform: rotate(-12deg) scale(1.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .gradient-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-contract, #printable-contract * { visibility: visible; }
+            #printable-contract { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-slate-800 min-h-full flex flex-col selection:bg-sky-200">
+
+    <!-- Header Zone -->
+    <header class="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-white pointer-events-none">
+            <i class="fa-solid fa-people-arrows"></i>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-sky-100 uppercase mb-2">
+                        <i class="fa-solid fa-graduation-cap"></i> 108課綱 國小六年級 SEL 專屬模組
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">SEL 衝突協商與人際大師</h1>
+                    <p class="text-sky-100 text-sm sm:text-base mt-1">建設性溝通 ‧ 修復式對話 ‧ 離線實境挑戰 ‧ 師長備課專區</p>
+                </div>
+                <!-- Mini Stats Widget -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 flex items-center gap-4 text-center sm:text-left shadow-inner">
+                    <div class="px-2">
+                        <p class="text-xs text-sky-200">挑戰模式</p>
+                        <p class="text-xl font-bold text-white">單機探索</p>
+                    </div>
+                    <div class="w-px h-8 bg-white/20"></div>
+                    <div class="px-2">
+                        <p class="text-xs text-sky-200">個人成就集章</p>
+                        <p class="text-xl font-bold text-amber-300" id="global-progress-text">0/9</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="flex justify-between sm:justify-start space-x-1 sm:space-x-4 overflow-x-auto py-2 scrollbar-none">
+                <button onclick="switchTab('tab-1')" id="btn-tab-1" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-sky-50 text-sky-700 shadow-sm border border-sky-100">
+                    <i class="fa-solid fa-calendar-check text-sky-500"></i>
+                    <span>關卡 1：實境挑戰賽</span>
+                </button>
+                <button onclick="switchTab('tab-2')" id="btn-tab-2" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                    <i class="fa-solid fa-heart-pulse text-rose-500"></i>
+                    <span>關卡 2：修復對話診所</span>
+                </button>
+                <button onclick="switchTab('tab-3')" id="btn-tab-3" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                    <i class="fa-solid fa-comments text-amber-500"></i>
+                    <span>關卡 3：協商辯論擂台</span>
+                </button>
+                <button onclick="switchTab('tab-4')" id="btn-tab-4" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                    <i class="fa-solid fa-chalkboard-user text-purple-600"></i>
+                    <span>🍎 師長專區</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- LEVEL 1: Friday Talk (9-Grid Challenge) -->
+        <section id="tab-1" class="tab-page space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-sky-500 to-teal-500 rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+                <div class="max-w-3xl relative z-10">
+                    <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">實境任務 ‧ 真實人際互動</span>
+                    <h2 class="text-2xl sm:text-3xl font-black mt-2">Friday Talk！實境挑戰集章卡</h2>
+                    <p class="mt-2 text-sky-50 text-sm sm:text-base leading-relaxed">
+                        真正的友誼建立在真實的眼神與傾聽中！請在週五進行「實境交流任務」，完成九宮格任一任務即可進行心得打卡。當你完成「任一連線（三個關卡）」，將解鎖專屬「人際大師黃金勳章」！
+                    </p>
+                </div>
+            </div>
+
+            <!-- Progress & Achievement Tracker -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="w-full md:w-2/3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-slate-700"><i class="fa-solid fa-user text-sky-500 mr-2"></i>個人集章與連線進度</span>
+                        <span class="text-sm font-black text-sky-600" id="progress-percent-display">0/9 (尚未連線)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                        <div id="class-progress-bar" class="bg-gradient-to-r from-sky-400 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div id="badge-status-box" class="flex items-center gap-3 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl w-full md:w-auto">
+                    <div class="w-12 h-12 rounded-full bg-amber-400 text-white flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-amber-800">成就解鎖進度</p>
+                        <p class="text-sm font-extrabold text-amber-900" id="badge-title-text">達成任一連線即解鎖！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9-Grid Challenge Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="grid-container">
+                <!-- Dynamically populated or static cards -->
+            </div>
+        </section>
+
+        <!-- LEVEL 2: Restorative Justice Dialogue Clinic -->
+        <section id="tab-2" class="tab-page hidden space-y-6">
+            <div class="bg-gradient-to-r from-rose-500 to-pink-500 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">修復式正義 (Restorative Justice)</span>
+                <h2 class="text-2xl sm:text-3xl font-black mt-2">核心修復：修復式對話診所</h2>
+                <p class="mt-2 text-rose-50 text-sm sm:text-base leading-relaxed">
+                    衝突發生時，重要的不是「誰該被懲罰」，而是「傷害如何被補救」。跟著四步對話卡，釐清事實、覺察感受、發揮同理心，最後生成一份具體可行的人際修復契約書！
+                </p>
+            </div>
+
+            <!-- Stepper Navigation -->
+            <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between max-w-2xl mx-auto relative">
+                    <!-- Step Line -->
+                    <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-slate-200 -z-0"></div>
+                    <div id="stepper-progress" class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-rose-500 transition-all duration-300 -z-0" style="width: 0%;"></div>
+
+                    <!-- Steps Buttons -->
+                    <div class="step-node relative z-10 flex flex-col items-center">
+                        <div id="step-dot-1" class="w-10 h-10 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center shadow-md">1</div>
+                        <span class="text-xs font-bold text-slate-700 mt-2">1. 客觀事實</span>
+                    </div>
+                    <div class="step-node relative z-10 flex flex-col items-center">
+                        <div id="step-dot-2" class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 font-bold flex items-center justify-center">2</div>
+                        <span class="text-xs font-bold text-slate-500 mt-2">2. 情緒覺察</span>
+                    </div>
+                    <div class="step-node relative z-10 flex flex-col items-center">
+                        <div id="step-dot-3" class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 font-bold flex items-center justify-center">3</div>
+                        <span class="text-xs font-bold text-slate-500 mt-2">3. 同理傷害</span>
+                    </div>
+                    <div class="step-node relative z-10 flex flex-col items-center">
+                        <div id="step-dot-4" class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 font-bold flex items-center justify-center">4</div>
+                        <span class="text-xs font-bold text-slate-500 mt-2">4. 補救行動</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Form Cards -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                
+                <!-- Step 1 Content -->
+                <div id="clinic-panel-1" class="space-y-4">
+                    <div class="flex items-center gap-3 text-rose-600 font-extrabold text-xl">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <h3>Step 1: 發生了什麼事？（客觀事實）</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">請像攝影機一樣，不帶主觀批判或指責的語言，還原事情經過。</p>
+                    <div class="bg-rose-50 border border-rose-100 rounded-xl p-3 text-xs text-rose-800 flex items-start gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-500 text-sm mt-0.5"></i>
+                        <span>提示：試著用「時間、地點、發生的具體行為」來寫，避免說「他很討厭、他故意害我」。</span>
+                    </div>
+                    <textarea id="clinic-input-1" rows="4" class="w-full rounded-2xl border-slate-300 p-4 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-slate-800 text-sm shadow-inner" placeholder="範例：今天中午討論分組專題時，小明說我的點子不好，並直接把我的稿子拿走，我和他起了爭執..."></textarea>
+                    
+                    <!-- Quick Example Insert -->
+                    <div class="flex justify-between items-center pt-2">
+                        <button type="button" onclick="useExample(1)" class="text-xs font-bold text-rose-600 hover:underline">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>套用常見班級情境範例
+                        </button>
+                        <button onclick="nextStep(2)" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+                            下一步：覺察情緒 <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2 Content -->
+                <div id="clinic-panel-2" class="space-y-4 hidden">
+                    <div class="flex items-center gap-3 text-rose-600 font-extrabold text-xl">
+                        <i class="fa-solid fa-face-flushed"></i>
+                        <h3>Step 2: 當時你在想什麼？（情緒與動機覺察）</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">衝突發生那一刻，你內心的真實感受是什麼？你當時希望得到什麼？</p>
+                    
+                    <!-- Mood Selector Badges -->
+                    <div class="flex flex-wrap gap-2 py-1">
+                        <button type="button" onclick="addEmotionTag('憤怒生氣')" class="bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 transition-colors">😡 憤怒生氣</button>
+                        <button type="button" onclick="addEmotionTag('委屈難過')" class="bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 transition-colors">🥺 委屈難過</button>
+                        <button type="button" onclick="addEmotionTag('被忽視')" class="bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 transition-colors">🫥 感覺被忽視</button>
+                        <button type="button" onclick="addEmotionTag('焦慮擔心')" class="bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 transition-colors">😰 焦慮擔心</button>
+                        <button type="button" onclick="addEmotionTag('面子掛不住')" class="bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 transition-colors">😳 面子掛不住</button>
+                    </div>
+
+                    <textarea id="clinic-input-2" rows="4" class="w-full rounded-2xl border-slate-300 p-4 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-slate-800 text-sm shadow-inner" placeholder="描述當時的心情與想法..."></textarea>
+                    
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="nextStep(1)" class="text-slate-500 hover:text-slate-800 font-bold text-sm">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> 上一步
+                        </button>
+                        <button onclick="nextStep(3)" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+                            下一步：同理傷害 <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3 Content -->
+                <div id="clinic-panel-3" class="space-y-4 hidden">
+                    <div class="flex items-center gap-3 text-rose-600 font-extrabold text-xl">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                        <h3>Step 3: 誰受到了傷害？（換位同理心）</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">除了你自己，這場衝突對對方、身邊同學或是整個班級造成了什麼影響？</p>
+                    <textarea id="clinic-input-3" rows="4" class="w-full rounded-2xl border-slate-300 p-4 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-slate-800 text-sm shadow-inner" placeholder="範例：小明可能覺得我不尊重他的時間，而同組同學因為我們吵架感到尷尬，專題進度也因此停擺..."></textarea>
+                    
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="nextStep(2)" class="text-slate-500 hover:text-slate-800 font-bold text-sm">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> 上一步
+                        </button>
+                        <button onclick="nextStep(4)" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+                            下一步：提出修復方案 <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4 Content -->
+                <div id="clinic-panel-4" class="space-y-4 hidden">
+                    <div class="flex items-center gap-3 text-rose-600 font-extrabold text-xl">
+                        <i class="fa-solid fa-handshake"></i>
+                        <h3>Step 4: 我們如何修復？（具體補救行動）</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">提出 1-2 個具體、可行且有誠意的修復方案，讓關係得以重建。</p>
+                    <textarea id="clinic-input-4" rows="4" class="w-full rounded-2xl border-slate-300 p-4 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-slate-800 text-sm shadow-inner" placeholder="範例：1. 我會主動跟小明說聲抱歉，我不該當眾大聲講話。 2. 明天討論時，我願意先認真聽完他的設計點子並給予優點回饋。"></textarea>
+                    
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="nextStep(3)" class="text-slate-500 hover:text-slate-800 font-bold text-sm">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> 上一步
+                        </button>
+                        <button onclick="generateContract()" class="bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-extrabold px-8 py-3 rounded-xl shadow-md transition-all flex items-center gap-2 text-base">
+                            <i class="fa-solid fa-scroll"></i> 生成修復契約書
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Contract Result Modal / Printable Card -->
+            <div id="contract-card" class="hidden bg-amber-50/80 border-2 border-amber-300 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl">
+                <div class="absolute right-4 top-4 text-amber-200 text-8xl pointer-events-none opacity-40">
+                    <i class="fa-solid fa-stamp"></i>
+                </div>
+                
+                <div id="printable-contract" class="space-y-6 relative z-10">
+                    <div class="text-center border-b border-amber-200 pb-4">
+                        <span class="text-amber-800 text-xs font-bold tracking-widest uppercase">Restorative Justice Agreement</span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-amber-950 mt-1">📜 國小六年級人際修復契約書</h3>
+                        <p class="text-xs text-amber-800 mt-1">立約日期：<span id="contract-date-display" class="font-bold"></span></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-white/80 p-4 rounded-xl border border-amber-200">
+                            <span class="font-bold text-rose-700 block mb-1"><i class="fa-solid fa-magnifying-glass"></i> 【1. 客觀事實】</span>
+                            <p id="contract-text-1" class="text-slate-700 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-white/80 p-4 rounded-xl border border-amber-200">
+                            <span class="font-bold text-amber-700 block mb-1"><i class="fa-solid fa-face-smile"></i> 【2. 覺察情緒】</span>
+                            <p id="contract-text-2" class="text-slate-700 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-white/80 p-4 rounded-xl border border-amber-200">
+                            <span class="font-bold text-indigo-700 block mb-1"><i class="fa-solid fa-heart"></i> 【3. 同理影響】</span>
+                            <p id="contract-text-3" class="text-slate-700 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-white/80 p-4 rounded-xl border border-amber-200">
+                            <span class="font-bold text-emerald-700 block mb-1"><i class="fa-solid fa-handshake"></i> 【4. 修復行動】</span>
+                            <p id="contract-text-4" class="text-slate-700 leading-relaxed font-semibold text-slate-900"></p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-amber-200 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-600">
+                        <div class="flex items-center gap-6">
+                            <div>立約學生簽名：<span class="underline decoration-dotted underline-offset-4 font-bold text-slate-800 text-base">________________</span></div>
+                            <div>同儕/見證人簽名：<span class="underline decoration-dotted underline-offset-4 font-bold text-slate-800 text-base">________________</span></div>
+                        </div>
+                        <div class="inline-flex items-center gap-1 text-amber-700 font-bold bg-amber-100 px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-circle-check"></i> 導師評估通過
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-wrap gap-3 justify-end">
+                    <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-sm inline-flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> 列印 / 另存PDF
+                    </button>
+                    <button onclick="copyContractText()" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-sm inline-flex items-center gap-2">
+                        <i class="fa-solid fa-copy"></i> 複製契約文字
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEVEL 3: Constructive Negotiation Arena -->
+        <section id="tab-3" class="tab-page hidden space-y-6">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">雙向溝通卡牌對決</span>
+                <h2 class="text-2xl sm:text-3xl font-black mt-2">綜合應用：協商與辯論擂台</h2>
+                <p class="mt-2 text-amber-50 text-sm sm:text-base leading-relaxed">
+                    這不是比誰聲音大的輸贏比賽，而是考驗誰能兼顧「尊重」與「雙贏」的智慧！請選擇情境，並從卡牌中選出最能促進建設性溝通的句型回應。
+                </p>
+            </div>
+
+            <!-- Scenario Selection Pills -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button onclick="loadScenario(1)" id="scen-btn-1" class="scen-tab bg-amber-500 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-bus"></i> 情境 1：畢業旅行行程爭執
+                </button>
+                <button onclick="loadScenario(2)" id="scen-btn-2" class="scen-tab bg-white text-slate-600 hover:bg-slate-100 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap">
+                    <i class="fa-solid fa-book-open"></i> 情境 2：社會科分組報告衝突
+                </button>
+                <button onclick="loadScenario(3)" id="scen-btn-3" class="scen-tab bg-white text-slate-600 hover:bg-slate-100 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap">
+                    <i class="fa-solid fa-volleyball"></i> 情境 3：體育課球場借用爭端
+                </button>
+            </div>
+
+            <!-- Scenario Box -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <!-- Situation Description -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shrink-0">
+                        <i class="fa-solid fa-masks-theater"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-amber-600 uppercase tracking-wide">當前衝突情境</span>
+                        <h4 class="text-lg font-black text-slate-800" id="scenario-title">畢業旅行行程規劃分歧</h4>
+                        <p class="text-sm text-slate-600 mt-1 leading-relaxed" id="scenario-desc">
+                            組內討論畢旅景點時，小華堅持要去遊樂園玩一整天，但小明希望能安排2小時參觀歷史博物館，兩人在組內各不相讓，氣氛非常僵硬。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Opponent Speech Bubble -->
+                <div class="flex items-start gap-3 max-w-xl">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                        小華
+                    </div>
+                    <div class="bg-slate-100 text-slate-800 p-4 rounded-2xl rounded-tl-none border border-slate-200 text-sm shadow-sm">
+                        <p id="opponent-speech" class="font-medium">「去博物館有夠無聊的！大家都想去遊樂園啊，為什麼要為了你一個人浪費時間？」</p>
+                    </div>
+                </div>
+
+                <!-- Cards Selection Zone -->
+                <div class="space-y-3 pt-2">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-hand-pointer mr-1"></i> 請選擇你的回應句型卡牌：</p>
+                    <div class="grid grid-cols-1 gap-4" id="cards-container">
+                        <!-- Card Options JS Injected -->
+                    </div>
+                </div>
+
+                <!-- Feedback Box -->
+                <div id="arena-feedback" class="hidden rounded-2xl p-6 border transition-all space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span id="score-badge" class="px-3 py-1 rounded-full text-xs font-black"></span>
+                            <h4 id="feedback-title" class="text-base font-extrabold"></h4>
+                        </div>
+                        <div id="stars-rating" class="text-amber-400 text-lg"></div>
+                    </div>
+                    <p id="feedback-detail" class="text-sm leading-relaxed"></p>
+                    <div id="feedback-suggestion" class="bg-white/60 p-3 rounded-xl text-xs font-medium border"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEVEL 4: Teacher Resource & Dashboard -->
+        <section id="tab-4" class="tab-page hidden space-y-8">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Teacher Navigation & Assessment</span>
+                <h2 class="text-2xl sm:text-3xl font-black mt-2">🍎 師長備課與素養評量專區</h2>
+            </div>
+
+            <!-- Quick Lesson Plan Card -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-800">40 分鐘標準教學流程建議</h3>
+                            <p class="text-xs text-slate-500">綜合活動領域 / 彈性學習課程適用</p>
+                        </div>
+                    </div>
+                    <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">高效率備課</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-purple-50/50 border border-purple-100 p-4 rounded-2xl space-y-2">
+                        <span class="text-xs font-black text-purple-600 uppercase">1. 課前導入 (10 mins)</span>
+                        <h4 class="font-bold text-slate-800 text-sm">協商與辯論擂台體驗</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">運用【關卡三】進行全班情境投票，引導討論「強硬攻擊」與「建設性雙贏」的長遠差異。</p>
+                    </div>
+                    <div class="bg-rose-50/50 border border-rose-100 p-4 rounded-2xl space-y-2">
+                        <span class="text-xs font-black text-rose-600 uppercase">2. 體驗實作 (20 mins)</span>
+                        <h4 class="font-bold text-slate-800 text-sm">修復式對話演練</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">學生操作【關卡二】，選擇近期生活真實或虛擬衝突填寫四步對話卡，產出人際契約書。</p>
+                    </div>
+                    <div class="bg-sky-50/50 border border-sky-100 p-4 rounded-2xl space-y-2">
+                        <span class="text-xs font-black text-sky-600 uppercase">3. 延伸派發 (10 mins)</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Friday Talk 實境挑戰</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">發布【關卡一】週末實境交流任務，預告學生只要完成九宮格任一連線，即可解鎖個人成就勳章。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 108 Curriculum Assessment Matrix -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-extrabold text-slate-800 text-lg">📝 108 課綱 SEL 核心素養檢核量表</h3>
+                        <p class="text-xs text-slate-500">對應 B2 科技資訊與媒體素養、C2 人際關係與團隊合作</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left text-slate-700">
+                        <thead class="bg-slate-100 text-slate-800 font-bold uppercase border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">素養面向</th>
+                                <th class="p-3">具體評量指標</th>
+                                <th class="p-3">對應網站模組</th>
+                                <th class="p-3">檢核標準</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-3 font-bold text-purple-700">自我覺察 (Self-Awareness)</td>
+                                <td class="p-3">能準確辨識衝突中的自我情緒，不盲目指責他人。</td>
+                                <td class="p-3">關卡二 Step 2</td>
+                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">已包含</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-purple-700">同理思考 (Social Awareness)</td>
+                                <td class="p-3">能換位思考，理解己方言行對同儕與班級的影響。</td>
+                                <td class="p-3">關卡二 Step 3</td>
+                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">已包含</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-purple-700">建設性溝通 (Relationship)</td>
+                                <td class="p-3">能運用「先同理、後表達」句型進行協商，不使用攻擊性語言。</td>
+                                <td class="p-3">關卡三 卡牌對決</td>
+                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">已包含</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-purple-700">修復行動 (Responsible Decision)</td>
+                                <td class="p-3">能提出具體可執行的補救措施，並履行人際契約。</td>
+                                <td class="p-3">關卡二 契約書生成</td>
+                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">已包含</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Teacher & Parent Support Zone: SEL Teaching Guide ("給大人的話") -->
+            <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl space-y-6 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-white pointer-events-none">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4 relative z-10">
+                    <div>
+                        <div class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/30 text-purple-200 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                            <i class="fa-solid fa-shield-heart"></i> Support Zone ‧ 給大人的話
+                        </div>
+                        <h3 class="text-2xl font-black text-white">💬 SEL 人際溝通與修復式正義教學指南</h3>
+                        <p class="text-xs sm:text-sm text-purple-200 mt-1">解析互動網頁設計背後的教育價值、國小高年級心理發展與師長實施建議</p>
+                    </div>
+                    
+                    <button onclick="toggleGuideDetails()" id="guide-toggle-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all inline-flex items-center gap-2 self-start sm:self-auto shrink-0">
+                        <i class="fa-solid fa-chevron-down" id="guide-toggle-icon"></i> <span id="guide-toggle-text">展開完整指南與心法</span>
+                    </button>
+                </div>
+
+                <div id="guide-content-box" class="space-y-6 hidden relative z-10 transition-all duration-300">
+                    <!-- Segment 1: Pedagogical Philosophy -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                            <h4 class="font-bold text-amber-300 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-brain"></i> 1. 高年級身心特質與 SEL 核心價值
+                            </h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                小學六年級學生正處於從兒童期邁入前青春期的關鍵轉折點。同儕認同感顯著提升，情緒覺察與個人主見增強，但「非黑即白」的對立思維與社交焦慮亦常引發班級冷暴力或小團體對決。
+                            </p>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                本網站將抽象的 SEL（社會情緒學習）能力拆解為「覺察、同理、溝通、修復」四大實操步驟，幫助孩子在安全的情境中練就一生受用的人際軟實力。
+                            </p>
+                        </div>
+
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                            <h4 class="font-bold text-emerald-300 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-scale-balanced"></i> 2. 為何採用「修復式正義 (Restorative Justice)」？
+                            </h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                傳統處罰僅能「止血」與「懲戒」，卻無法撫平被傷害者的創傷，更無法讓犯錯者學會責任擔當。
+                            </p>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                【關卡二】之四步對話卡（客觀事實 ➔ 覺察情緒 ➔ 同理影響 ➔ 修復行動），引導孩子聚焦於「如何補救損害與重建信任」，將衝突轉化為深化友誼的契機。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Segment 2: Tabs for Teacher vs Parent -->
+                    <div class="space-y-4">
+                        <div class="flex border-b border-white/10 gap-4">
+                            <button onclick="switchGuideRole('teacher')" id="guide-role-btn-teacher" class="pb-2 text-xs font-bold border-b-2 border-purple-400 text-purple-300 flex items-center gap-2">
+                                <i class="fa-solid fa-chalkboard-user"></i> 導師班級經營實施指南
+                            </button>
+                            <button onclick="switchGuideRole('parent')" id="guide-role-btn-parent" class="pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-house-chimney-user"></i> 家長陪伴與身教心法
+                            </button>
+                        </div>
+
+                        <!-- Teacher Role Guide -->
+                        <div id="guide-role-teacher" class="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                                <div class="space-y-1">
+                                    <span class="font-bold text-purple-300 block">💡 打造心理安全感環境</span>
+                                    <p class="text-slate-300 leading-relaxed">向全班傳遞「衝突是了解彼此的開始，而不是壞事」。鼓勵孩子在沒有懲罰恐懼的情況下真誠表達。</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="font-bold text-purple-300 block">📜 修復契約落實應用</span>
+                                    <p class="text-slate-300 leading-relaxed">學生產出「人際修復契約書」後，可列印簽名存查，或貼於聯絡簿，作為導師個案輔導與追蹤的具體指標。</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="font-bold text-purple-300 block">🗣️ Friday Talk 交流日</span>
+                                    <p class="text-slate-300 leading-relaxed">配合【關卡一】，可在週五排定 10 分鐘「實境交流時刻」，鼓勵學生進行面對面互動集章，並完成連線挑戰。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parent Role Guide -->
+                        <div id="guide-role-parent" class="hidden bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                                <div class="space-y-1">
+                                    <span class="font-bold text-teal-300 block">👂 傾聽代替下指導棋</span>
+                                    <p class="text-slate-300 leading-relaxed">當孩子回家訴說學校衝突時，先別幫忙評論或下結論。運用 Step 1「發生了什麼事？」引導孩子說出客觀經過。</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="font-bold text-teal-300 block">❤️ 陪伴覺察背後情緒</span>
+                                    <p class="text-slate-300 leading-relaxed">生氣背後往往藏著「委屈」或「被忽視」。問問孩子：「那時候你的感覺是什麼？」幫孩子為情緒命名。</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="font-bold text-teal-300 block">🤝 家中演練修復語句</span>
+                                    <p class="text-slate-300 leading-relaxed">親子間產生摩擦時，父母亦可示範【關卡三】的「雙贏句型」，展現尊重與建設性溝通的身教。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Callout -->
+                    <div class="bg-purple-900/40 border border-purple-500/30 p-4 rounded-xl text-xs text-purple-200 flex items-start gap-3">
+                        <i class="fa-solid fa-quote-left text-purple-400 text-lg mt-0.5"></i>
+                        <p class="leading-relaxed">
+                            「最好的 SEL 教育，不是給孩子無衝突的溫室，而是賦予他們面對風浪、修復關係、攜手共好的智慧與勇氣。」—— SEL 課程設計團隊 敬上
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Grid Check-in Modal -->
+    <div id="checkin-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-800" id="modal-task-title">任務打卡</h3>
+                    <p class="text-xs text-slate-500">請填寫真實的心得交流紀錄</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-xs font-bold text-slate-700 uppercase">選取交流時的心情感受</label>
+                <div class="flex gap-2" id="modal-mood-picker">
+                    <button type="button" onclick="selectModalMood('😊')" class="mood-btn flex-1 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xl hover:bg-sky-100 transition-all">😊</button>
+                    <button type="button" onclick="selectModalMood('😃')" class="mood-btn flex-1 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xl hover:bg-sky-100 transition-all">😃</button>
+                    <button type="button" onclick="selectModalMood('🤔')" class="mood-btn flex-1 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xl hover:bg-sky-100 transition-all">🤔</button>
+                    <button type="button" onclick="selectModalMood('😅')" class="mood-btn flex-1 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xl hover:bg-sky-100 transition-all">😅</button>
+                </div>
+
+                <label class="block text-xs font-bold text-slate-700 uppercase pt-2">實境心得分享（動態字數統計）</label>
+                <textarea id="modal-note-input" oninput="updateWordCount()" rows="4" class="w-full rounded-2xl border-slate-300 p-3 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="分享一下你這次實境交流的經過與感受吧..."></textarea>
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>建議字數 30-50 字以上</span>
+                    <span id="word-count-text">0 / 50 字</span>
+                </div>
+            </div>
+
+            <button onclick="submitCheckin()" class="w-full bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600 text-white font-extrabold py-3 rounded-2xl shadow-md transition-all text-sm">
+                完成任務並蓋章！
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global App State
+        window.currentTab = 'tab-1';
+        window.activeCardIndex = null;
+        window.selectedMood = '😊';
+        window.currentScenarioId = 1;
+
+        // 9-Grid Cards Initial Data
+        window.gridTasks = [
+            { id: 1, title: '實境對談 10 分鐘', desc: '與同學面對面交流10分鐘，專注傾聽彼此的想法與感受。', icon: 'fa-comments', done: false },
+            { id: 2, title: '課堂主動提問', desc: '於課堂上主動向老師提問，釐清不懂的觀念或延伸探討。', icon: 'fa-hand-dots', done: false },
+            { id: 3, title: '主動認識新朋友', desc: '在下課時間向一位不常說話的隔壁班同學打招呼。', icon: 'fa-handshake', done: false },
+            { id: 4, title: '真誠讚美感謝卡', desc: '口頭讚美一位同學的優點，並謝謝他最近對班級的付出。', icon: 'fa-heart', done: false },
+            { id: 5, title: '離線桌遊同樂', desc: '與兩位以上同學在教室一起玩實體桌遊或棋藝遊戲。', icon: 'fa-chess', done: false },
+            { id: 6, title: '傾聽不插嘴運動', desc: '認真聽完一位同學分享話語至少2分鐘，期間保持眼神接觸。', icon: 'fa-ear-listen', done: false },
+            { id: 7, title: '共同完成值日工作', desc: '主動協助值日生打掃教室或搬補給品。', icon: 'fa-broom', done: false },
+            { id: 8, title: '互敬合作體育賽', desc: '體育課時主動為不同隊伍的精采表現鼓掌加油。', icon: 'fa-basketball', done: false },
+            { id: 9, title: '同理心加油小紙條', desc: '給一位最近看起來心情不佳的同學寫一張溫暖的鼓勵紙條。', icon: 'fa-note-sticky', done: false }
+        ];
+
+        // Scenarios Data for Level 3
+        const scenarios = {
+            1: {
+                title: "畢業旅行行程規劃分歧",
+                desc: "組內討論畢旅景點時，小華堅持要去遊樂園玩一整天，但小明希望能安排2小時參觀歷史博物館，兩人在組內各不相讓，氣氛僵硬。",
+                opponentSpeech: "「去博物館有夠無聊的！大家都想去遊樂園啊，為什麼要為了你一個人浪費時間？」",
+                options: [
+                    {
+                        text: "「博物館那麼無聊，到底有什麼好逛的？少數服從多數啦！」",
+                        constructiveScore: 20,
+                        rating: "★☆☆☆☆",
+                        badgeClass: "bg-rose-100 text-rose-800",
+                        title: "強硬攻擊型回應",
+                        detail: "使用否定性語言（「無聊」、「浪費時間」），會立刻引發對方的防衛機制，導致談判破局或衝突升級。",
+                        suggestion: "💡 SEL建議：試著先認同對方的感受，再提出折衷方案，而非直接否定對方的喜好。"
+                    },
+                    {
+                        text: "「隨便你們啦，反正每次我的意見都沒人要聽，我自己一組算了。」",
+                        constructiveScore: 35,
+                        rating: "★★☆☆☆",
+                        badgeClass: "bg-amber-100 text-amber-800",
+                        title: "消極退縮型回應",
+                        detail: "選擇放棄溝通與情緒化退縮，雖然暫時避免對立，但無法解決實質問題，且會在心中累積委屈感。",
+                        suggestion: "💡 SEL建議：勇敢且溫和地表達自己的需求，團體協商需要每個人的真實參與。"
+                    },
+                    {
+                        text: "「我理解你想去遊樂園好好放鬆玩樂，但我也很期待能去博物館看特別展覽。我們是否能調整上、下午時間，讓兩個地點都能安排到？」",
+                        constructiveScore: 95,
+                        rating: "★★★★★",
+                        badgeClass: "bg-emerald-100 text-emerald-800",
+                        title: "建設性雙贏協商（推薦！）",
+                        detail: "完美的溝通模範！運用「先同理對方（我想放鬆）、再表達自己（期待展覽）、最後提出具體雙贏提案（調整時間）」。",
+                        suggestion: "🌟 大師級表現：展現了高度的同理心與建設性問題解決能力！"
+                    }
+                ]
+            },
+            2: {
+                title: "社會科專題報告分工不均",
+                desc: "分組專題期限快到了，小組長覺得成員小強負責的 PPT 製作太敷衍，字體很亂且沒有附圖，兩人在討論時起爭執。",
+                opponentSpeech: "「我昨天補習到九點，已經盡力做完了啊！你幹嘛一直指責我做不好？」",
+                options: [
+                    {
+                        text: "「你這叫盡力喔？隨便複製貼上誰不會？做不好就不要找藉口！」",
+                        constructiveScore: 15,
+                        rating: "★☆☆☆☆",
+                        badgeClass: "bg-rose-100 text-rose-800",
+                        title: "指責質疑型回應",
+                        detail: "質疑對方的努力只會讓人心生怨恨，無法提升 PPT 的品質。",
+                        suggestion: "💡 SEL建議：將重點放在「具體需要修訂的地方」，而不是人格攻擊。"
+                    },
+                    {
+                        text: "「我知道你補習很辛苦，謝謝你趕出初稿。目前文字部分很齊全，如果我們一起花15分鐘幫簡報補上圖片，效果會更棒，你覺得呢？」",
+                        constructiveScore: 98,
+                        rating: "★★★★★",
+                        badgeClass: "bg-emerald-100 text-emerald-800",
+                        title: "肯定+具體合作型回應（推薦！）",
+                        detail: "先肯定對方的辛苦與付出，再針對具體優化點提出協助方案，極具建設性！",
+                        suggestion: "🌟 大師級表現：不僅維護了同儕關係，還高效推進了專題進度。"
+                    },
+                    {
+                        text: "「算了算了，看你做成這樣我頭很痛，我自己重新做一份好了。」",
+                        constructiveScore: 40,
+                        rating: "★★☆☆☆",
+                        badgeClass: "bg-amber-100 text-amber-800",
+                        title: "攬下包辦型回應",
+                        detail: "雖然解決了作業問題，但會讓對方失去學習成長機會，且自己會累積怨言。",
+                        suggestion: "💡 SEL建議：透過分工協作引導同儕，而不是獨自承受。"
+                    }
+                ]
+            },
+            3: {
+                title: "體育課籃球場使用爭端",
+                desc: "下課時間，六年一班先到了籃球場，但六年二班隨後表示「這場地我們上週就預約了」，雙方吵成一團。",
+                opponentSpeech: "「我們班上週就說好今天要在這裡打球，你們一班憑什麼佔著不走？」",
+                options: [
+                    {
+                        text: "「球場又沒寫你們名字！我們先搶到的就是我們的，不爽去跟老師講啊！」",
+                        constructiveScore: 10,
+                        rating: "★☆☆☆☆",
+                        badgeClass: "bg-rose-100 text-rose-800",
+                        title: "挑釁對立型回應",
+                        detail: "這容易引爆跨班級的大規模言語甚至肢體衝突。",
+                        suggestion: "💡 SEL建議：保持冷靜，專注於資源共享的可能性。"
+                    },
+                    {
+                        text: "「大家都是六年級，為這個吵架會耽誤下課時間。要不要我們直接合併打半場全場比賽，或是前半節你們打、後半節換我們？」",
+                        constructiveScore: 92,
+                        rating: "★★★★★",
+                        badgeClass: "bg-emerald-100 text-emerald-800",
+                        title: "資源共享合作型（推薦！）",
+                        detail: "化衝突為合作！提出共享球場與輪流使用的雙贏方案，兼具社交智慧。",
+                        suggestion: "🌟 大師級表現：將競爭轉化為跨班友誼聯賽！"
+                    },
+                    {
+                        text: "「好啦好啦真倒楣，場地讓你們啦，我們去旁邊發呆好了。」",
+                        constructiveScore: 30,
+                        rating: "★★☆☆☆",
+                        badgeClass: "bg-amber-100 text-amber-800",
+                        title: "抱怨讓步型回應",
+                        detail: "雖然讓出球場，但帶著怨氣，並未建立良好的溝通模式。",
+                        suggestion: "💡 SEL建議：嘗試提出共享方案，而不是屈服或埋怨。"
+                    }
+                ]
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderGrid();
+            loadScenario(1);
+        });
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-page').forEach(page => page.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-sky-50 text-sky-700 shadow-sm border border-sky-100";
+            }
+        }
+
+        // Render 9-Grid Cards
+        function renderGrid() {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+
+            gridTasks.forEach((task, index) => {
+                const card = document.createElement('div');
+                card.className = `gradient-card rounded-2xl p-5 border transition-all duration-300 relative flex flex-col justify-between ${
+                    task.done 
+                    ? 'border-teal-300 bg-teal-50/40 shadow-sm' 
+                    : 'border-slate-200 hover:border-sky-300 hover:shadow-md'
+                }`;
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="w-10 h-10 rounded-xl ${task.done ? 'bg-teal-100 text-teal-600' : 'bg-slate-100 text-slate-600'} flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid ${task.icon}"></i>
+                            </span>
+                            ${
+                                task.done 
+                                ? `<span class="stamp-effect bg-teal-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                                    <i class="fa-solid fa-circle-check mr-1"></i>已蓋章
+                                   </span>`
+                                : `<span class="text-xs text-slate-400 font-bold">未完成</span>`
+                            }
+                        </div>
+                        <h4 class="font-extrabold text-slate-800 text-base">${task.title}</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">${task.desc}</p>
+                    </div>
+
+                    <div class="pt-4 mt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">任務 #${task.id}</span>
+                        <button onclick="openCheckinModal(${index})" class="${
+                            task.done 
+                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' 
+                            : 'bg-sky-500 hover:bg-sky-600 text-white shadow-sm'
+                        } text-xs font-bold px-3 py-2 rounded-xl transition-all">
+                            ${task.done ? '重新打卡' : '進行打卡'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            window.updateClassProgress();
+        };
+
+        window.updateClassProgress = function() {
+            const tasks = window.gridTasks;
+            const completedCount = tasks.filter(t => t.done).length;
+            const percent = Math.min(100, Math.round((completedCount / 9) * 100));
+            
+            // Bingo 連線判定邏輯 (九宮格 3x3)
+            const winningLines = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫向三條
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // 縱向三條
+                [0, 4, 8], [2, 4, 6]             // 交叉斜線兩條
+            ];
+            
+            let hasBingo = false;
+            for (let line of winningLines) {
+                if (tasks[line[0]].done && tasks[line[1]].done && tasks[line[2]].done) {
+                    hasBingo = true;
+                    break; // 只要有一條連線即算達成 Bingo
+                }
+            }
+            
+            // 更新進度文字與長條圖
+            document.getElementById('progress-percent-display').innerText = `${completedCount} / 9 項任務 (${hasBingo ? '已達成連線' : '尚未連線'})`;
+            document.getElementById('class-progress-bar').style.width = `${percent}%`;
+
+            const badgeStatusBox = document.getElementById('badge-status-box');
+            const badgeTitleText = document.getElementById('badge-title-text');
+            const badgeIcon = badgeStatusBox.querySelector('i');
+
+            if (hasBingo) {
+                badgeTitleText.innerText = "🎉 達成連線！成就勳章解鎖！";
+                badgeStatusBox.className = "flex items-center gap-3 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl w-full md:w-auto transition-all";
+                
+                // 動態修改 icon 與背景顏色
+                if(badgeIcon) {
+                    badgeIcon.className = "fa-solid fa-award";
+                    badgeIcon.parentElement.className = "w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-sm";
+                }
+                
+                // Header 小組件更新
+                const headerText = document.getElementById('global-progress-text');
+                if (headerText) headerText.innerText = "已解鎖";
+            } else {
+                badgeTitleText.innerText = "達成任一連線即解鎖！";
+                badgeStatusBox.className = "flex items-center gap-3 bg-amber-50 border border-amber-200 px-4 py-3 rounded-xl w-full md:w-auto transition-all";
+                
+                if(badgeIcon) {
+                    badgeIcon.className = "fa-solid fa-lock";
+                    badgeIcon.parentElement.className = "w-12 h-12 rounded-full bg-amber-400 text-white flex items-center justify-center text-2xl shadow-sm";
+                }
+
+                const headerText = document.getElementById('global-progress-text');
+                if (headerText) headerText.innerText = `${completedCount}/9`;
+            }
+        };
+
+        // Modal Logic
+        function openCheckinModal(index) {
+            activeCardIndex = index;
+            const task = gridTasks[index];
+            document.getElementById('modal-task-title').innerText = `任務打卡：${task.title}`;
+            document.getElementById('checkin-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('checkin-modal').classList.add('hidden');
+            document.getElementById('modal-note-input').value = '';
+            document.getElementById('word-count-text').innerText = '0 / 50 字';
+        }
+
+        function selectModalMood(mood) {
+            selectedMood = mood;
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-sky-200', 'border-sky-400');
+            });
+            event.currentTarget.classList.add('bg-sky-200', 'border-sky-400');
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('modal-note-input').value;
+            document.getElementById('word-count-text').innerText = `${text.length} / 50 字`;
+        }
+
+        function submitCheckin() {
+            const note = document.getElementById('modal-note-input').value;
+            if (note.trim().length < 5) {
+                alert('請至少輸入 5 個字以上的心得分享喔！');
+                return;
+            }
+
+            gridTasks[activeCardIndex].done = true;
+            renderGrid();
+            closeModal();
+
+            // Fire confetti
+            confetti({
+                particleCount: 80,
+                spread: 60,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function nextStep(step) {
+            // Validate previous inputs
+            const prevInput = document.getElementById(`clinic-input-${step - 1}`)?.value;
+            if (step > 1 && (!prevInput || prevInput.trim().length === 0)) {
+                alert('請先填寫當前步驟的內容再進行下一步喔！');
+                return;
+            }
+
+            // Hide all panels
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`clinic-panel-${i}`).classList.add('hidden');
+                
+                const dot = document.getElementById(`step-dot-${i}`);
+                if (i < step) {
+                    dot.className = "w-10 h-10 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center shadow-md";
+                    dot.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                } else if (i === step) {
+                    dot.className = "w-10 h-10 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center shadow-md";
+                    dot.innerHTML = `${i}`;
+                } else {
+                    dot.className = "w-10 h-10 rounded-full bg-slate-200 text-slate-500 font-bold flex items-center justify-center";
+                    dot.innerHTML = `${i}`;
+                }
+            }
+
+            document.getElementById(`clinic-panel-${step}`).classList.remove('hidden');
+            document.getElementById('stepper-progress').style.width = `${((step - 1) / 3) * 100}%`;
+        }
+
+        function addEmotionTag(tag) {
+            const input = document.getElementById('clinic-input-2');
+            if (!input.value.includes(tag)) {
+                input.value += (input.value ? '、' : '') + tag;
+            }
+        }
+
+        function useExample(step) {
+            if (step === 1) {
+                document.getElementById('clinic-input-1').value = "今天中午討論分組專題時，我和小明因為選擇主題意見不同發生爭執，彼此說話聲音變大，最後報告草稿被摔在桌上。";
+            }
+        }
+
+        function generateContract() {
+            const val1 = document.getElementById('clinic-input-1').value;
+            const val2 = document.getElementById('clinic-input-2').value;
+            const val3 = document.getElementById('clinic-input-3').value;
+            const val4 = document.getElementById('clinic-input-4').value;
+
+            if (!val1 || !val2 || !val3 || !val4) {
+                alert('請確定四個步驟都有填寫完整喔！');
+                return;
+            }
+
+            document.getElementById('contract-text-1').innerText = val1;
+            document.getElementById('contract-text-2').innerText = val2;
+            document.getElementById('contract-text-3').innerText = val3;
+            document.getElementById('contract-text-4').innerText = val4;
+            document.getElementById('contract-date-display').innerText = new Date().toLocaleDateString('zh-TW');
+
+            document.getElementById('contract-card').classList.remove('hidden');
+            document.getElementById('contract-card').scrollIntoView({ behavior: 'smooth' });
+
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.7 }
+            });
+        }
+
+        function copyContractText() {
+            const text = `📜 國小六年級人際修復契約書
+日期：${document.getElementById('contract-date-display').innerText}
+1. 客觀事實：${document.getElementById('contract-text-1').innerText}
+2. 覺察情緒：${document.getElementById('contract-text-2').innerText}
+3. 同理影響：${document.getElementById('contract-text-3').innerText}
+4. 修復行動：${document.getElementById('contract-text-4').innerText}`;
+
+            document.execCommand('copy');
+            alert('已成功複製契約書內容至剪貼簿！');
+        }
+
+        function loadScenario(scenId) {
+            currentScenarioId = scenId;
+            const data = scenarios[scenId];
+
+            // Toggle scenario tab styles
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`scen-btn-${i}`);
+                if (i === scenId) {
+                    btn.className = "scen-tab bg-amber-500 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 whitespace-nowrap";
+                } else {
+                    btn.className = "scen-tab bg-white text-slate-600 hover:bg-slate-100 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap";
+                }
+            }
+
+            document.getElementById('scenario-title').innerText = data.title;
+            document.getElementById('scenario-desc').innerText = data.desc;
+            document.getElementById('opponent-speech').innerText = data.opponentSpeech;
+            document.getElementById('arena-feedback').classList.add('hidden');
+
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            data.options.forEach((opt, idx) => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50/50 hover:border-amber-300 transition-all cursor-pointer flex items-start gap-3 shadow-sm";
+                card.onclick = () => selectCardOption(idx);
+
+                card.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        ${String.fromCharCode(65 + idx)}
+                    </div>
+                    <p class="text-sm font-medium text-slate-800 leading-relaxed">${opt.text}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectCardOption(optIdx) {
+            const data = scenarios[currentScenarioId].options[optIdx];
+            const feedbackBox = document.getElementById('arena-feedback');
+
+            feedbackBox.classList.remove('hidden');
+            feedbackBox.className = `rounded-2xl p-6 border transition-all space-y-3 ${
+                data.constructiveScore > 80 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-950' 
+                : 'bg-rose-50 border-rose-200 text-rose-950'
+            }`;
+
+            document.getElementById('score-badge').className = `px-3 py-1 rounded-full text-xs font-black ${data.badgeClass}`;
+            document.getElementById('score-badge').innerText = `建設性指數：${data.constructiveScore}%`;
+            document.getElementById('feedback-title').innerText = data.title;
+            document.getElementById('stars-rating').innerText = data.rating;
+            document.getElementById('feedback-detail').innerText = data.detail;
+            document.getElementById('feedback-suggestion').innerText = data.suggestion;
+
+            if (data.constructiveScore > 80) {
+                confetti({
+                    particleCount: 50,
+                    spread: 50,
+                    origin: { y: 0.8 }
+                });
+            }
+        }
+
+        function toggleGuideDetails() {
+            const box = document.getElementById('guide-content-box');
+            const icon = document.getElementById('guide-toggle-icon');
+            const text = document.getElementById('guide-toggle-text');
+            const isHidden = box.classList.contains('hidden');
+
+            if (isHidden) {
+                box.classList.remove('hidden');
+                icon.className = "fa-solid fa-chevron-up";
+                text.innerText = "收合指南內容";
+            } else {
+                box.classList.add('hidden');
+                icon.className = "fa-solid fa-chevron-down";
+                text.innerText = "展開完整指南與心法";
+            }
+        }
+
+        function switchGuideRole(role) {
+            const teacherBox = document.getElementById('guide-role-teacher');
+            const parentBox = document.getElementById('guide-role-parent');
+            const teacherBtn = document.getElementById('guide-role-btn-teacher');
+            const parentBtn = document.getElementById('guide-role-btn-parent');
+
+            if (role === 'teacher') {
+                teacherBox.classList.remove('hidden');
+                parentBox.classList.add('hidden');
+                teacherBtn.className = "pb-2 text-xs font-bold border-b-2 border-purple-400 text-purple-300 flex items-center gap-2";
+                parentBtn.className = "pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2";
+            } else {
+                teacherBox.classList.add('hidden');
+                parentBox.classList.remove('hidden');
+                teacherBtn.className = "pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2";
+                parentBtn.className = "pb-2 text-xs font-bold border-b-2 border-teal-400 text-teal-300 flex items-center gap-2";
+            }
+        }
+    </script>
+</body>
+</html>

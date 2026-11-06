@@ -1,0 +1,720 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超能自律王！我的情緒與習慣工具箱</title>
+    <!-- 導入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 設置字體為 Inter (通用且清晰) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* 淺灰藍背景 */
+        }
+        .section-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-3px);
+        }
+        .pulse-once {
+            animation: pulse-once 0.5s ease-in-out;
+        }
+        @keyframes pulse-once {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pinwheel-spin {
+            animation: spin 3s infinite linear; /* 速度調慢 */
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .meter {
+            height: 1.5rem;
+            width: 100%;
+            border-radius: 9999px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+        .meter-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        .cbs-step {
+            cursor: pointer;
+            user-select: none;
+        }
+        .cbs-step:hover:not(.active) {
+            background-color: #d1d5db; /* Lighter gray on hover for non-active steps */
+        }
+
+        /* 情緒爆炸視覺效果的 CSS */
+        .explosion-container {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        /* 爆炸等級 3: 最強烈 */
+        .intensity-3 {
+            transform: scale(2.0);
+            opacity: 1;
+            filter: drop-shadow(0 0 15px #f87171); /* 紅色光暈 */
+            color: #ef4444; /* Red-500 */
+        }
+        /* 爆炸等級 2: 中等強度 (C 步驟完成) */
+        .intensity-2 {
+            transform: scale(1.5);
+            opacity: 0.8;
+            filter: drop-shadow(0 0 8px #fca5a5);
+            color: #f97316; /* Orange-500 */
+        }
+        /* 爆炸等級 1: 低強度 (B 步驟完成) */
+        .intensity-1 {
+            transform: scale(1.2);
+            opacity: 0.5;
+            filter: none;
+            color: #facc15; /* Yellow-400 */
+        }
+        /* 爆炸等級 0: 平靜 (S 步驟完成) */
+        .intensity-0 {
+            transform: scale(1.0);
+            opacity: 1;
+            filter: none;
+            color: #10b981; /* Emerald-500 */
+        }
+
+        /* 棒球呼吸法動畫 CSS */
+        @keyframes hand-up {
+            from { bottom: 0; }
+            to { bottom: 80px; } /* 舉高 */
+        }
+        @keyframes hand-down {
+            from { bottom: 80px; } /* 從高處開始 */
+            to { bottom: 0; } /* 放下 */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-xl p-6 md:p-10 shadow-2xl">
+        <!-- 標題區塊 -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-blue-700">
+                超能自律王！💪
+            </h1>
+            <p class="text-xl text-gray-600 mt-2">我的情緒與習慣工具箱 (二年級學習站)</p>
+            <div class="mt-4 meter">
+                <div id="progressMeter" class="meter-fill bg-yellow-500 text-xs font-medium text-center text-white p-0.5" style="width: 0%">
+                    任務進度：0%
+                </div>
+            </div>
+        </header>
+
+        <!-- 區塊一：情緒快速鍵：CBS 超能密碼 (已修改為情緒爆炸模擬) -->
+        <div class="section-card bg-red-50 border-4 border-red-300 p-6 rounded-2xl mb-8">
+            <h2 class="text-2xl font-bold text-red-600 mb-4 flex items-center">
+                <span1️⃣ 情緒炸彈緊急解除：CBS 超能密碼</span>
+                <span id="badge1" class="ml-2 text-3xl opacity-30" title="任務未完成">🔒</span>
+            </h2>
+            <p class="text-gray-700 mb-4">
+                當你感到生氣、緊張或衝動時，你的「情緒炸彈」就會啟動！請**依序點擊 C → B → S** 三個步驟來解除它！
+            </p>
+
+            <!-- 爆炸視覺化區 -->
+            <div id="explosionVisual" class="flex flex-col items-center justify-center mb-6 h-28">
+                <!-- 情緒狀態視覺呈現，初始為平靜 (intensity-0) -->
+                <div id="emotionState" class="w-24 h-24 flex items-center justify-center text-6xl explosion-container intensity-0">
+                    😊
+                </div>
+            </div>
+
+            <!-- CBS 步驟卡片組 (現在可點擊) -->
+            <div id="cbsSteps" class="grid grid-cols-3 gap-4 text-center mb-6">
+                <!-- C: Count -->
+                <div id="stepC" data-step="1" onclick="handleCBSClick(1)" class="cbs-step p-4 rounded-xl bg-gray-200 text-gray-500 transition duration-300">
+                    <span class="text-3xl font-extrabold block">C</span>
+                    <span class="font-semibold text-lg block">數 (Count)</span>
+                    <p class="text-sm mt-1">慢慢數到 5，讓自己停下來。</p>
+                </div>
+                <!-- B: Breathe -->
+                <div id="stepB" data-step="2" onclick="handleCBSClick(2)" class="cbs-step p-4 rounded-xl bg-gray-200 text-gray-500 transition duration-300">
+                    <span class="text-3xl font-extrabold block">B</span>
+                    <span class="font-semibold text-lg block">呼 (Breathe)</span>
+                    <p class="text-sm mt-1">深呼吸 3 次，慢吸慢吐。</p>
+                </div>
+                <!-- S: Squeeze -->
+                <div id="stepS" data-step="3" onclick="handleCBSClick(3)" class="cbs-step p-4 rounded-xl bg-gray-200 text-gray-500 transition duration-300">
+                    <span class="text-3xl font-extrabold block">S</span>
+                    <span class="font-semibold text-lg block">擠 (Squeeze)</span>
+                    <p class="text-sm mt-1">握緊壓力球或手 2 次，再放鬆。</p>
+                </div>
+            </div>
+
+            <!-- 狀態與提示區 -->
+            <button onclick="startExplosionSimulation()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-full transition duration-300 transform hover:scale-105" id="cbsButton">
+                💥 啟動情緒炸彈！ (點擊開始)
+            </button>
+            <p id="cbsMessage" class="mt-3 text-center text-red-700 font-semibold">點擊上方按鈕，體驗情緒爆炸模擬！</p>
+        </div>
+
+        <!-- 區塊二：慢下來！專注呼吸的秘密武器 -->
+        <div class="section-card bg-blue-50 border-4 border-blue-300 p-6 rounded-2xl mb-8">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4 flex items-center">
+                <span>2️⃣ 慢下來！專注呼吸的秘密武器</span>
+                <span id="badge2" class="ml-2 text-3xl opacity-30" title="任務未完成">🔒</span>
+            </h2>
+            
+            <!-- ⚾️ 棒球呼吸法：手部專注訓練 (動畫演示區) -->
+            <div class="bg-yellow-100 p-4 rounded-xl border-2 border-yellow-400 mb-6 flex flex-col items-center">
+                <h3 class="text-xl font-bold text-yellow-700 mb-2">⚾️ 棒球呼吸法：手部專注訓練</h3>
+                <p class="text-gray-800 text-center mb-4">
+                    想像你拿著球。吸氣 4 秒（手舉高），吐氣 6 秒（手放下）。<br>
+                    <span class="font-bold text-red-500">提示：</span> 移動得**越慢越穩**，你的呼吸就**越厲害**！
+                </p>
+                
+                <!-- 視覺動畫區 (高 32 單位以容納移動) -->
+                <div class="w-20 h-32 relative mb-4">
+                    <div id="baseballBreathingVisual" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-red-500 shadow-lg flex items-center justify-center text-xl text-white font-extrabold transition duration-300">
+                        🤚
+                    </div>
+                </div>
+
+                <button onclick="startBaseballBreathing()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105">
+                    開始練習 (10 秒呼吸)
+                </button>
+                <p id="baseballMessage" class="mt-2 text-sm text-red-700">點擊按鈕，讓手緩慢上下移動！</p>
+            </div>
+            
+            <!-- 虛擬風車區 (速度已調慢) -->
+            <p class="text-gray-700 mb-4">
+                另外，你也可以練習「風車呼吸法」，讓你的吐氣像吹風車一樣，又長又慢！
+            </p>
+            <div class="flex flex-col items-center justify-center bg-white p-6 rounded-xl border border-blue-200 mb-4">
+                <div id="pinwheelContainer" class="w-20 h-20 relative mb-4">
+                    <!-- 風車 SVG (使用 SVG 模擬風車) -->
+                    <svg id="pinwheel" viewBox="0 0 100 100" class="w-full h-full text-blue-500 transition duration-500" style="transform: rotate(0deg);">
+                        <path fill="currentColor" d="M50,0 L75,50 L50,100 L25,50 Z"/>
+                        <circle cx="50" cy="50" r="10" fill="#facc15"/>
+                    </svg>
+                </div>
+                <button onclick="startPinwheelBreathing()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105">
+                    練習「慢慢吹」 (專注吐氣 5 秒)
+                </button>
+                <p id="pinwheelMessage" class="mt-2 text-sm text-blue-700"></p>
+            </div>
+        </div>
+
+        <!-- 區塊三：我的目標儀表板：自律超進化 -->
+        <div class="section-card bg-green-50 border-4 border-green-300 p-6 rounded-2xl mb-8">
+            <h2 class="text-2xl font-bold text-green-600 mb-4 flex items-center">
+                <span>3️⃣ 我的目標儀表板：自律超進化</span>
+                <span id="badge3" class="ml-2 text-3xl opacity-30" title="任務未完成">🔒</span>
+            </h2>
+            <p class="text-gray-700 mb-4">
+                設定具體目標，並做出對自己最有利的決定！
+            </p>
+
+            <!-- 習慣養成：每日目標 (學生自填表格) -->
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-green-700 mb-3">📝 我的每日練習目標 (自己填寫)</h3>
+                <div id="customGoalForm" class="space-y-3">
+                    <!-- Custom goals rendered here by JavaScript -->
+                </div>
+                <button onclick="addCustomGoal()" class="mt-3 bg-green-200 hover:bg-green-300 text-green-800 font-bold py-1 px-4 rounded-full transition duration-300">
+                    + 新增我的目標
+                </button>
+                <p class="text-sm text-gray-500 mt-2">請將所有目標打勾，才能完成此區塊任務！</p>
+            </div>
+
+            <!-- 做有利的決定：小遊戲 (多情境選擇題) -->
+            <div class="border-t pt-4 mt-4 border-green-200">
+                <h3 class="text-xl font-semibold text-green-700 mb-3">💡 選擇的結果遊戲</h3>
+                
+                <p id="currentScenario" class="mb-4 font-semibold text-gray-800 text-lg min-h-12">
+                    點擊下方按鈕開始情境遊戲！
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="choiceButtons">
+                    <!-- Buttons loaded by JavaScript -->
+                </div>
+                
+                <button onclick="loadNewScenario()" class="w-full mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-full transition duration-300 transform hover:scale-105">
+                    下一題情境 / 開始遊戲
+                </button>
+
+                <p id="choiceResult" class="mt-4 text-center font-bold text-lg min-h-6"></p>
+            </div>
+        </div>
+
+        <!-- 專區四：給大人的話 (SEL 教學指南) -->
+        <div class="mt-10 pt-6 border-t-4 border-gray-300 bg-gray-50 rounded-xl p-6">
+            <details class="group">
+                <summary class="flex justify-between items-center cursor-pointer text-xl font-bold text-gray-800 hover:text-blue-600 transition duration-200">
+                    給大人的話：SEL 教學指南 (Support Zone) 📘
+                    <span class="group-open:rotate-180 transition duration-300">
+                        <!-- 箭頭圖標 -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </span>
+                </summary>
+                
+                <div class="mt-4 text-gray-700 space-y-4 border-t pt-4 border-gray-200">
+                    <p class="font-semibold text-lg text-blue-700">
+                        本工具旨在幫助孩子提升社會情緒學習（Social and Emotional Learning, SEL）的核心能力，特別是**自我覺察**、**自我管理**與**負責的決策**。
+                    </p>
+
+                    <h3 class="text-xl font-bold text-gray-800 mt-6 border-b pb-1">1. 情緒炸彈緊急解除 (CBS 密碼)</h3>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**SEL 核心：** **自我管理**（應用冷靜策略）、**自我覺察**（辨識情緒強度）。</li>
+                        <li>**來源依據：** 結構化的情緒調節策略，提供孩子在衝動行為發生前的**緩衝區**。</li>
+                        <li>**實施指南：**
+                            <ul class="list-disc list-inside ml-6 text-sm text-gray-600">
+                                <li>**平靜時練習：** 在孩子情緒平穩時，像玩遊戲一樣演練多次 C→B→S 流程。</li>
+                                <li>**預警訊號：** 教導孩子辨識情緒達到 Intensity 2 或 3 時身體的訊號（例如：臉紅、心跳加速）。</li>
+                                <li>**關鍵字提醒：** 在孩子即將失控時，只需提醒一個關鍵字：「**C！**」或「**炸彈！**」，而不需說教。</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-bold text-gray-800 mt-6 border-b pb-1">2. 慢下來！專注呼吸 (棒球/風車呼吸)</h3>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**SEL 核心：** **自我管理**（放鬆與減壓）、**自我覺察**（專注於當下）。</li>
+                        <li>**來源依據：** 正念（Mindfulness）呼吸法，透過視覺化幫助孩子穩定心率，將抽象的「慢」變得具體。</li>
+                        <li>**實施指南：**
+                            <ul class="list-disc list-inside ml-6 text-sm text-gray-600">
+                                <li>**每日例行：** 建議孩子在睡前或開始做需要專注的任務前，主動練習 3-5 次。</li>
+                                <li>**強調品質：** 稱讚他們：「你的手移動得真慢，這證明你現在超平靜！」強調呼吸的**穩定度**而非次數。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mt-6 border-b pb-1">3. 我的目標儀表板與選擇遊戲</h3>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**SEL 核心：** **自我管理**（組織與規劃）、**負責的決策**（分析選擇與結果）。</li>
+                        <li>**來源依據：** 鼓勵孩子設定 SMART 原則下的具體目標，並透過情境遊戲練習**結果預期**。</li>
+                        <li>**實施指南：**
+                            <ul class="list-disc list-inside ml-6 text-sm text-gray-600">
+                                <li>**共同制定目標：** 確保目標是孩子**自己**想完成的，而非家長代勞，培養內在動機。</li>
+                                <li>**情境反思：** 在選擇遊戲後，引導孩子討論：「如果你選了 B，接下來的 30 分鐘會發生什麼事？」從結果中學習。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 狀態管理 ---
+        let tasksCompleted = { cbs: false, pinwheel: false, goalsCompleted: false, choice: false };
+        const totalTasks = 4; // CBS, Pinwheel, Goals, Choice
+        let currentCBSStep = 0; // 0: initial, 1: C done, 2: B done, 3: S done
+        let emotionIntensity = 0; // 0 (calm/解除) to 3 (exploded/啟動)
+
+        let customGoals = [
+            { id: 1, text: '今天練習運球或跳繩 30 分鐘', completed: false },
+            { id: 2, text: '選擇閱讀書籍，而非看電視或打電動 (30分鐘)', completed: false }
+        ];
+        let nextGoalId = 3;
+        
+        // 情境題庫 (4題)
+        const scenarios = [
+            {
+                prompt: "情境 1️⃣: 你寫功課時遇到一個難題，想馬上放棄。你會怎麼辦？",
+                choiceA: { 
+                    label: "棒棒糖 A：馬上找爸爸媽媽或老師幫忙", 
+                    result: "這是聰明的決定！你學會了尋求幫助，很快解決了問題。<br>✅ **例句：** 「我雖然有點卡住，但問了以後就豁然開朗了！我很有成就感！」",
+                    color: "bg-teal-400"
+                },
+                choiceB: { 
+                    label: "棒棒糖 B：生氣丟筆，然後跑去看漫畫", 
+                    result: "這是衝動的決定。雖然你暫時開心了，但難題還在那裡，而且會浪費更多時間。<br>❌ **例句：** 「我雖然在看漫畫，但心裡好氣自己沒辦法解決問題...而且功課沒寫完。」",
+                    color: "bg-yellow-400"
+                }
+            },
+            {
+                prompt: "情境 2️⃣: 你和朋友約好要一起玩積木，但你還有一小部分功課沒寫完。你會怎麼辦？",
+                choiceA: { 
+                    label: "棒棒糖 A：跟朋友說「等我 10 分鐘，我寫完最後一點功課就來！」", 
+                    result: "這是負責任的決定！你對自己和朋友都誠實，可以安心地享受玩樂時光。<br>✅ **例句：** 「我兌現了承諾，功課和玩樂都沒有少！我真是個值得信賴的人！」",
+                    color: "bg-teal-400"
+                },
+                choiceB: { 
+                    label: "棒棒糖 B：假裝寫完了，直接跑去玩，心想「明天再說」", 
+                    result: "這是逃避的決定。你會擔心被發現，而且明天還要處理今天沒完成的事，玩起來不輕鬆。<br>❌ **例句：** 「雖然我在玩，但心裡一直想著功課，有點分心，玩得不太盡興。」",
+                    color: "bg-yellow-400"
+                }
+            },
+            {
+                prompt: "情境 3️⃣: 寫完作業後，你發現桌子亂七八糟，但你最愛的零食就在旁邊。你會怎麼辦？",
+                choiceA: { 
+                    label: "棒棒糖 A：先花 5 分鐘整理桌面，把書本歸位，再吃零食", 
+                    result: "這是負責任的決定！雖然你等了一下，但現在可以在乾淨的環境下，享受美味的零食，心情超棒！<br>✅ **例句：** 「哇！整理完桌子，心情變輕鬆了，這個餅乾吃起來更香甜了！」",
+                    color: "bg-teal-400"
+                },
+                choiceB: { 
+                    label: "棒棒糖 B：馬上打開零食包裝，一邊吃一邊玩，讓桌子繼續亂", 
+                    result: "這是衝動的決定。零食雖然好吃，但你可能會把碎屑弄得更髒，而且等一下收拾會花更多時間。<br>❌ **例句：** 「桌子好亂，零食的碎屑掉得到處都是，現在好像比剛剛更糟了...」",
+                    color: "bg-yellow-400"
+                }
+            },
+            {
+                prompt: "情境 4️⃣: 老師請你擔任小老師發本子，但你很想繼續畫畫。你會怎麼辦？",
+                choiceA: { 
+                    label: "棒棒糖 A：先完成老師的任務，發完本子再回來畫畫", 
+                    result: "這是負責又自律的決定！你優先完成了重要的集體任務，獲得了老師和同學的信任。<br>✅ **例句：** 「我先幫大家服務，很快就完成了！現在我可以專心畫畫，感覺很棒！」",
+                    color: "bg-teal-400"
+                },
+                choiceB: { 
+                    label: "棒棒糖 B：假裝沒聽到，繼續畫完手上這一筆", 
+                    result: "這是缺乏責任感的決定。你讓老師和同學等，而且心裡會一直擔心被點名，畫畫時也會分心。<br>❌ **例句：** 「我好怕老師叫我的名字...這樣畫畫也不專心了。」",
+                    color: "bg-yellow-400"
+                }
+            }
+        ];
+        let currentScenarioIndex = -1;
+        let choiceCompletedCount = 0; // 追蹤學生完成了多少次情境題
+
+        // --- 核心功能: 更新進度條與徽章 ---
+        function updateProgress() {
+            let completedCount = 0;
+            if (tasksCompleted.cbs) completedCount++;
+            // 只要完成棒球呼吸法或風車其中一個就算完成 Section 2
+            if (tasksCompleted.pinwheel) completedCount++; 
+            if (tasksCompleted.goalsCompleted) completedCount++;
+            // 情境題至少完成 1 題就算任務完成
+            if (tasksCompleted.choice) completedCount++;
+            
+            let percentage = Math.round((completedCount / totalTasks) * 100);
+
+            const meter = document.getElementById('progressMeter');
+            meter.style.width = `${percentage}%`;
+            meter.textContent = `任務進度：${percentage}%`;
+            meter.classList.remove('bg-green-600', 'bg-yellow-500'); 
+            
+            if (percentage >= 100) {
+                meter.classList.add('bg-green-600', 'pulse-once');
+                meter.textContent = "恭喜你！你已經是超能自律王！🏆";
+            } else if (percentage > 0) {
+                meter.classList.add('bg-yellow-500');
+            }
+
+            // 更新徽章狀態
+            const badges = [
+                { id: 'badge1', status: tasksCompleted.cbs },
+                { id: 'badge2', status: tasksCompleted.pinwheel },
+                { id: 'badge3', status: tasksCompleted.goalsCompleted && tasksCompleted.choice } // 區塊三的徽章需同時完成目標和情境選擇
+            ];
+
+            badges.forEach(badge => {
+                const element = document.getElementById(badge.id);
+                element.textContent = badge.status ? '✅' : '🔒';
+                element.title = badge.status ? '已完成' : '未完成';
+                element.classList.toggle('opacity-100', badge.status);
+                element.classList.toggle('opacity-30', !badge.status);
+            });
+        }
+        
+        // --- 區塊一：CBS 步驟式訓練 (情緒炸彈模擬) ---
+        const stepColors = ['bg-yellow-400', 'bg-blue-400', 'bg-green-400'];
+        const stepMessages = [
+            'C: 請從 C 步驟開始！數數 5 秒，讓身體停下來...',
+            'B: 很好！情緒緩和了一點。現在點擊 B 步驟，深呼吸 3 次！',
+            'S: 很好！情緒已經快平息了。現在點擊 S 步驟，握緊手再放鬆！',
+            '🎉 太棒了！你的情緒機器人已經重新開機！炸彈解除！'
+        ];
+
+        // 視覺更新：根據 emotionIntensity 狀態更新爆炸圖案
+        function updateExplosionVisual() {
+            const emotionState = document.getElementById('emotionState');
+            
+            // 移除所有 intensity classes
+            emotionState.classList.remove('intensity-0', 'intensity-1', 'intensity-2', 'intensity-3');
+            
+            if (emotionIntensity > 0) {
+                // 爆炸中
+                emotionState.classList.add(`intensity-${emotionIntensity}`);
+                emotionState.textContent = '💥'; // 爆炸 emoji
+            } else {
+                // 平靜狀態 (intensity 0)
+                emotionState.classList.add('intensity-0');
+                emotionState.textContent = '😊'; // 平靜 emoji
+            }
+        }
+        
+        // 啟動情緒炸彈模擬 (取代原來的 resetCBSTraining)
+        function startExplosionSimulation() {
+            // 1. 重設步驟卡片狀態
+            currentCBSStep = 0;
+            const steps = document.querySelectorAll('.cbs-step');
+            steps.forEach(step => {
+                step.className = 'cbs-step p-4 rounded-xl bg-gray-200 text-gray-500 transition duration-300 hover:bg-gray-300';
+            });
+            
+            // 2. 啟動情緒炸彈：設定強度為最大 (3)
+            emotionIntensity = 3;
+            updateExplosionVisual();
+
+            // 3. 更新按鈕與訊息
+            document.getElementById('cbsButton').textContent = '💣 炸彈已啟動！請快點擊 C 開始！';
+            document.getElementById('cbsButton').disabled = true; // 解除前不能再啟動
+            document.getElementById('cbsMessage').textContent = '⚡️ 趕快！情緒正在爆炸，從 C 步驟開始！';
+        }
+
+        function handleCBSClick(step) {
+            const steps = [
+                { id: 'stepC', color: 'bg-yellow-400' },
+                { id: 'stepB', color: 'bg-blue-400' },
+                { id: 'stepS', color: 'bg-green-400' }
+            ];
+            
+            // 檢查模擬是否啟動
+            if (emotionIntensity === 0 && currentCBSStep === 0) {
+                document.getElementById('cbsMessage').textContent = '請先點擊「啟動情緒炸彈！」按鈕來開始遊戲！';
+                return;
+            }
+
+            // 1. 檢查點擊順序是否正確 (從 1 開始)
+            if (step !== currentCBSStep + 1) {
+                const requiredStepName = currentCBSStep === 0 ? 'C' : currentCBSStep === 1 ? 'B' : 'S';
+                document.getElementById('cbsMessage').textContent = `❌ 順序錯誤！情緒炸彈可能會爆炸！請快點擊 ${requiredStepName} 步驟！`;
+                return;
+            }
+
+            // 2. 點亮當前步驟
+            const current = steps[step - 1];
+            const currentElement = document.getElementById(current.id);
+            currentElement.className = `cbs-step p-4 rounded-xl ${current.color} text-white font-extrabold transition duration-300 transform scale-105 active`;
+            
+            currentCBSStep = step;
+            
+            // 3. 降低爆炸強度 (情緒緩和)
+            if (emotionIntensity > 0) {
+                emotionIntensity--;
+            }
+            updateExplosionVisual();
+
+
+            // 4. 檢查是否完成 (S 步驟完成)
+            if (currentCBSStep === 3) {
+                document.getElementById('cbsButton').textContent = '✅ 解除成功！再啟動一次情緒炸彈 (點擊我重新開始)';
+                document.getElementById('cbsButton').disabled = false;
+                document.getElementById('cbsMessage').textContent = stepMessages[3];
+                
+                if (!tasksCompleted.cbs) {
+                    tasksCompleted.cbs = true;
+                    updateProgress();
+                }
+                // 重設步驟狀態，等待下次啟動
+                currentCBSStep = 0; 
+            } else {
+                 // 提示下一個步驟
+                 document.getElementById('cbsMessage').textContent = stepMessages[currentCBSStep];
+            }
+        }
+        
+        // --- 區塊二：專注呼吸 (棒球呼吸法) ---
+        let isBaseballBreathing = false;
+        let baseballTimeout;
+
+        function startBaseballBreathing() {
+            if (isBaseballBreathing) return;
+            isBaseballBreathing = true;
+            const visual = document.getElementById('baseballBreathingVisual');
+            const message = document.getElementById('baseballMessage');
+
+            // 1. 吸氣 (Inhale) - 4 seconds
+            // linear 讓移動速度保持恆定，強調慢速
+            visual.style.animation = 'hand-up 4s forwards linear'; 
+            message.textContent = '吸氣... (慢慢舉高手 👃)';
+            visual.textContent = '👃'; 
+            document.querySelector('button[onclick="startBaseballBreathing()"]').disabled = true;
+
+            baseballTimeout = setTimeout(() => {
+                // 2. 吐氣 (Exhale) - 6 seconds
+                visual.style.animation = 'hand-down 6s forwards linear';
+                message.textContent = '吐氣... (慢慢放下手 💨)';
+                visual.textContent = '💨'; 
+
+                baseballTimeout = setTimeout(() => {
+                    // 3. 完成
+                    visual.style.animation = 'none';
+                    visual.textContent = '✅';
+                    message.textContent = '練習成功！你的呼吸超慢、超穩定！';
+                    isBaseballBreathing = false;
+                    document.querySelector('button[onclick="startBaseballBreathing()"]').disabled = false;
+
+                    // 標記任務完成
+                    if (!tasksCompleted.pinwheel) {
+                        tasksCompleted.pinwheel = true;
+                        updateProgress();
+                    }
+
+                    // Reset visual after a moment
+                    setTimeout(() => {
+                        visual.textContent = '🤚';
+                    }, 1500);
+
+                }, 6000); // 6s for exhale
+            }, 4000); // 4s for inhale
+        }
+
+
+        // --- 區塊二：專注呼吸 (風車呼吸法) ---
+        let pinwheelSpinning = false;
+        let spinTimeout;
+
+        function startPinwheelBreathing() {
+            const pinwheel = document.getElementById('pinwheel');
+            const message = document.getElementById('pinwheelMessage');
+            
+            if (pinwheelSpinning) return;
+
+            // 模擬要求學生緩慢吐氣 5 秒
+            message.textContent = '請專注！慢慢地、長長地吐氣 5 秒鐘...';
+            
+            // 開始旋轉動畫
+            pinwheel.classList.add('pinwheel-spin');
+            pinwheelSpinning = true;
+
+            // 5 秒後停止並給予反饋
+            clearTimeout(spinTimeout);
+            spinTimeout = setTimeout(() => {
+                pinwheel.classList.remove('pinwheel-spin');
+                pinwheelSpinning = false;
+                message.textContent = '成功！你的氣流又慢又穩定！心也平靜下來了！';
+
+                // 標記任務完成
+                if (!tasksCompleted.pinwheel) {
+                    tasksCompleted.pinwheel = true;
+                    updateProgress();
+                }
+            }, 5000);
+        }
+
+        // --- 區塊三：目標與決定 (自訂目標) ---
+        
+        // 渲染目標列表
+        function renderCustomGoals() {
+            const container = document.getElementById('customGoalForm');
+            container.innerHTML = '';
+            
+            // 檢查所有目標是否完成
+            tasksCompleted.goalsCompleted = customGoals.length > 0 && customGoals.every(g => g.completed);
+            
+            customGoals.forEach(goal => {
+                const goalItem = document.createElement('div');
+                goalItem.className = 'flex items-center justify-between bg-white p-3 rounded-lg border border-green-200';
+                
+                // 使用 input 讓學生可以編輯目標內容
+                const goalText = goal.completed 
+                    ? `<span class="text-gray-800 line-through text-green-700 w-2/3">${goal.text}</span>`
+                    : `<input id="goalText-${goal.id}" type="text" value="${goal.text}" class="w-2/3 border-b-2 border-green-300 focus:outline-none focus:border-green-500" onchange="updateGoalText(${goal.id}, this.value)">`;
+
+                const buttonHtml = goal.completed 
+                    ? `<span class="text-green-600 font-bold ml-2">已完成 ✅</span>`
+                    : `<button onclick="toggleGoal(${goal.id})" class="goal-btn bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-3 rounded-full transition duration-300 ml-2">打勾！</button>`;
+                
+                goalItem.innerHTML = `
+                    ${goalText}
+                    ${buttonHtml}
+                `;
+                container.appendChild(goalItem);
+            });
+            updateProgress();
+        }
+
+        function updateGoalText(id, newText) {
+            const goal = customGoals.find(g => g.id === id);
+            if (goal) {
+                goal.text = newText;
+            }
+        }
+
+        function toggleGoal(id) {
+            const goal = customGoals.find(g => g.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                renderCustomGoals();
+            }
+        }
+
+        function addCustomGoal() {
+            customGoals.push({
+                id: nextGoalId++,
+                text: '新增一個我的練習目標...',
+                completed: false
+            });
+            renderCustomGoals();
+        }
+
+
+        // --- 區塊三：目標與決定 (選擇遊戲) ---
+        function loadNewScenario() {
+            // 循環顯示情境題
+            currentScenarioIndex = (currentScenarioIndex + 1) % scenarios.length;
+            const scenario = scenarios[currentScenarioIndex];
+
+            document.getElementById('currentScenario').textContent = scenario.prompt;
+            document.getElementById('choiceResult').innerHTML = ""; // 清空結果
+
+            const buttonsContainer = document.getElementById('choiceButtons');
+            buttonsContainer.innerHTML = `
+                <button onclick="makeChoice('A', ${currentScenarioIndex})" class="${scenario.choiceA.color} hover:opacity-80 text-white font-bold py-3 px-4 rounded-xl transition duration-300 transform hover:scale-[1.02]">
+                    ${scenario.choiceA.label}
+                </button>
+                <button onclick="makeChoice('B', ${currentScenarioIndex})" class="${scenario.choiceB.color} hover:opacity-80 text-gray-800 font-bold py-3 px-4 rounded-xl transition duration-300 transform hover:scale-[1.02]">
+                    ${scenario.choiceB.label}
+                </button>
+            `;
+            document.getElementById('choiceButtons').classList.remove('pointer-events-none', 'opacity-50');
+            document.getElementById('choiceButtons').querySelectorAll('button').forEach(btn => btn.disabled = false);
+            
+            document.querySelector('button[onclick="loadNewScenario()"]').textContent = "下一題情境";
+        }
+
+        function makeChoice(choice, index) {
+            const scenario = scenarios[index];
+            const resultElement = document.getElementById('choiceResult');
+            let resultInfo;
+
+            if (choice === 'A') {
+                resultInfo = scenario.choiceA;
+            } else {
+                resultInfo = scenario.choiceB;
+            }
+
+            // 顯示結果和反思
+            resultElement.innerHTML = `
+                <div class="p-4 rounded-xl shadow-md border border-gray-200">
+                    <p>${resultInfo.result}</p>
+                </div>
+            `;
+            resultElement.className = `mt-4 text-center font-bold text-lg min-h-6`;
+
+            // 禁用按鈕，強制學生點擊「下一題」
+            document.getElementById('choiceButtons').classList.add('pointer-events-none', 'opacity-50');
+            document.getElementById('choiceButtons').querySelectorAll('button').forEach(btn => btn.disabled = true);
+
+
+            // 選擇遊戲視為獨立完成一個任務（只要完成一次即可）
+            if (!tasksCompleted.choice) {
+                tasksCompleted.choice = true;
+                updateProgress();
+            }
+        }
+
+        // 頁面加載時初始化進度條與自訂目標列表
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCustomGoals();
+            updateProgress();
+            updateExplosionVisual(); // 確保初始顯示為平靜狀態 (😊)
+            loadNewScenario(); // 載入第一個情境題
+        });
+    </script>
+
+</body>
+</html>

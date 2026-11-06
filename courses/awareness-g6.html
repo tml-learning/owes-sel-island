@@ -1,0 +1,276 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六年級自我覺察與自我效能提升</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 設定字體為 Inter (或保留系統字體，此處使用 Inter) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #f0f9ff; /* Light sky blue background */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- 標題區 -->
+        <header class="text-center mb-10 p-6 bg-white rounded-xl shadow-2xl shadow-blue-200">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-2">
+                🌟 六年級：深層內省與自信行動
+            </h1>
+            <p class="text-lg text-gray-600">
+                自我覺察學習策略：建立內省、自我效能與目標設定的能力
+            </p>
+        </header>
+
+        <!-- 區塊容器 -->
+        <main class="space-y-12">
+
+            <!-- 策略一：檢視自我效能的四步驟 (互動卡片組) -->
+            <section id="strategy-efficacy" class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-yellow-500">
+                <h2 class="text-3xl font-bold text-yellow-700 mb-6 flex items-center">
+                    <span class="mr-3 text-4xl">💡</span> 策略一：檢視自我效能的四步驟
+                </h2>
+                <p class="text-gray-700 mb-6">
+                    面對新挑戰時，系統性地評估自身能力、預期障礙，並制定成長計畫。請點擊下方的步驟卡片來展開細節！
+                </p>
+
+                <div id="steps-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 步驟卡片會由 JavaScript 動態生成 -->
+                </div>
+            </section>
+
+            <!-- 策略二：深度分析自我對話 (輸入與轉換工具) -->
+            <section id="strategy-self-talk" class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-green-500">
+                <h2 class="text-3xl font-bold text-green-700 mb-6 flex items-center">
+                    <span class="mr-3 text-4xl">🗣️</span> 策略二：深度分析自我對話（信念修正器）
+                </h2>
+                <p class="text-gray-700 mb-6">
+                    識別並挑戰你的「固定型心態」內在對話，將它轉化為強大的「成長型心態」！
+                </p>
+
+                <div class="space-y-4">
+                    <label for="fixed-talk-input" class="block text-lg font-medium text-gray-800">
+                        1. 輸入你的「固定型」負面想法：
+                    </label>
+                    <input type="text" id="fixed-talk-input" placeholder="例如：我數學就是不好，怎麼學都沒用。"
+                           class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    
+                    <button id="convert-button"
+                            class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-150 ease-in-out transform hover:scale-[1.01]">
+                        🔄 轉換！成為成長型心態
+                    </button>
+                    
+                    <div id="growth-output-box" class="mt-6 p-4 border-l-4 border-green-500 bg-green-50 rounded-lg hidden">
+                        <p class="text-sm font-medium text-gray-600 mb-2">2. 修正後的「成長型」信念：</p>
+                        <p id="growth-talk-output" class="text-xl font-bold text-green-800">
+                            <!-- 轉換結果將顯示在這裡 -->
+                        </p>
+                    </div>
+                    
+                    <div id="example-output-box" class="mt-4 text-sm text-gray-500">
+                        <!-- 範例提示 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 策略三：「每個學生都有自己的故事」 (敘事引導) -->
+            <section id="strategy-narrative" class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-blue-500">
+                <h2 class="text-3xl font-bold text-blue-700 mb-6 flex items-center">
+                    <span class="mr-3 text-4xl">📘</span> 策略三：我的學習者故事書 (優勢識別與自我概念)
+                </h2>
+                <p class="text-gray-700 mb-6">
+                    我們如何定義自己，就會如何行動！讓我們一起找出你的**優勢**，並為你的學習故事加上一個新的精彩特質！
+                </p>
+
+                <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                    <h3 class="text-2xl font-semibold text-blue-600 mb-4">活動引導：</h3>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li>**撰寫/回想：** 寫下或回想一個關於「你感到驕傲的一次學習突破」的短篇故事。</li>
+                        <li>**定義自我：** 回答：在你的故事裡，你展現了一個什麼樣的「學習者」特質？ (例如：細心、永不放棄、善於提問)</li>
+                        <li>**優勢轉化：** 思考：如果你要讓自己的學習故事更精彩，你希望為這個「學習者」加上哪一個新的**優勢特質**？</li>
+                    </ol>
+
+                    <button id="show-goal-setting"
+                            class="mt-6 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 ease-in-out transform hover:scale-[1.01]">
+                        📝 點擊設定我的新行動目標！
+                    </button>
+                    
+                    <!-- 目標設定區塊 (預設隱藏) -->
+                    <div id="goal-setting-area" class="mt-8 p-5 bg-indigo-100 rounded-lg shadow-inner hidden">
+                        <h4 class="text-xl font-bold text-indigo-800 mb-3">🎯 目標設定：將新特質轉化為行動！</h4>
+                        <div class="space-y-3 text-indigo-700">
+                            <p>
+                                ✍️ 我想成為：<span id="target-trait-display" class="font-extrabold text-blue-900">[請填寫你的新特質，例如：「有組織的學習者」]</span>
+                            </p>
+                            <label for="action-goal" class="block font-medium">
+                                📢 為了實現這個新特質，我會制定一個具體的「行動目標」：
+                            </label>
+                            <textarea id="action-goal" rows="2" placeholder="例如：每天放學前花 5 分鐘整理書包和課桌。"
+                                      class="w-full p-3 border-2 border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            <p class="text-sm italic">
+                                💡 提示：具體的目標更容易達成哦！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // JavaScript 邏輯開始
+
+        // =================================================================
+        // 策略一：檢視自我效能的四步驟 (互動卡片組)
+        // =================================================================
+        const efficacySteps = [
+            {
+                id: 1,
+                title: "1. 我能做到什麼？",
+                question: "針對這個任務，我過去的經驗中，有哪些是**我已經會的**？我具備哪些**優勢和能力**？",
+                action: "我會運用這些能力來完成任務的 **開頭部分**。",
+                color: "bg-red-100 border-red-500 text-red-700 hover:bg-red-200"
+            },
+            {
+                id: 2,
+                title: "2. 我需克服的挑戰？",
+                question: "在這個任務中，我**還不確定**或**需要幫助**的部分是什麼？",
+                action: "我會向老師或同學 **尋求支援**，或花時間 **額外學習** 這部分。",
+                color: "bg-orange-100 border-orange-500 text-orange-700 hover:bg-orange-200"
+            },
+            {
+                id: 3,
+                title: "3. 我預計遇到的障礙？",
+                question: "**環境上或內心上**，可能會讓我分心、想放棄或影響表現的**具體**因素是什麼？",
+                action: "**預先制定**「如果...，我就...」的應對計畫。",
+                color: "bg-lime-100 border-lime-500 text-lime-700 hover:bg-lime-200"
+            },
+            {
+                id: 4,
+                title: "4. 我將如何改進？",
+                question: "如果我成功了，我可以**如何做得更好**？如果結果不如預期，我會從中**學到什麼**？",
+                action: "我會用這次的經驗，**調整下一次**的策略，讓自己**持續成長**。",
+                color: "bg-cyan-100 border-cyan-500 text-cyan-700 hover:bg-cyan-200"
+            },
+        ];
+
+        const stepsContainer = document.getElementById('steps-container');
+
+        efficacySteps.forEach(step => {
+            const stepHtml = `
+                <div id="step-${step.id}" class="p-4 rounded-xl shadow cursor-pointer transition duration-300 transform hover:scale-[1.02] ${step.color}" onclick="toggleStep(${step.id})">
+                    <h3 class="text-xl font-bold flex justify-between items-center">
+                        ${step.title}
+                        <span id="icon-${step.id}" class="text-2xl">+</span>
+                    </h3>
+                    <div id="content-${step.id}" class="mt-3 space-y-2 text-sm leading-relaxed hidden">
+                        <p class="font-semibold border-b border-opacity-30 border-current pb-1">🤔 自我提問:</p>
+                        <p>${step.question}</p>
+                        <p class="font-semibold border-b border-opacity-30 border-current pb-1 pt-2">🚀 轉化行動:</p>
+                        <p>${step.action}</p>
+                    </div>
+                </div>
+            `;
+            stepsContainer.innerHTML += stepHtml;
+        });
+
+        function toggleStep(id) {
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+
+            if (content.classList.contains('hidden')) {
+                // 展開內容
+                content.classList.remove('hidden');
+                icon.textContent = '−';
+            } else {
+                // 收起內容
+                content.classList.add('hidden');
+                icon.textContent = '+';
+            }
+        }
+
+
+        // =================================================================
+        // 策略二：深度分析自我對話 (輸入與轉換工具)
+        // =================================================================
+        const convertButton = document.getElementById('convert-button');
+        const fixedTalkInput = document.getElementById('fixed-talk-input');
+        const growthTalkOutput = document.getElementById('growth-talk-output');
+        const growthOutputBox = document.getElementById('growth-output-box');
+        const exampleOutputBox = document.getElementById('example-output-box');
+
+        const conversionMap = [
+            { fixed: "我數學就是不好", growth: "我正在學習新的數學方法，我可以再試一次。" },
+            { fixed: "我怎麼試都沒用", growth: "雖然現在不理想，但這告訴我，我需要換個策略了。" },
+            { fixed: "這樣太難了", growth: "挑戰讓我成長！這代表我的大腦正在努力學習中。" },
+            { fixed: "我不是這塊料", growth: "只要努力和堅持，我可以培養任何技能。" },
+            { fixed: "我一定會失敗", growth: "失敗是學習的一部分，我會從中找到改進的機會。" }
+        ];
+
+        function getGrowthMindset(fixedPhrase) {
+            // 嘗試從預設列表尋找關鍵字匹配
+            const match = conversionMap.find(item => fixedPhrase.includes(item.fixed.substring(2))); // 匹配關鍵詞而非整個句子
+            
+            if (match) {
+                return match.growth;
+            }
+
+            // 廣泛轉換邏輯 (通用模板)
+            if (fixedPhrase.includes("做不到") || fixedPhrase.includes("不會") || fixedPhrase.includes("很難")) {
+                return "我會尋找不同的方法來解決這個問題，我正在進步！";
+            }
+            if (fixedPhrase.includes("失敗") || fixedPhrase.includes("沒用")) {
+                return "每一次嘗試都讓我更接近成功，我從中學到了寶貴的經驗。";
+            }
+            
+            // 預設回應
+            return "我正在學習！只要給我更多時間和不同的方法，我一定能做到！";
+        }
+
+        convertButton.addEventListener('click', () => {
+            const fixedPhrase = fixedTalkInput.value.trim();
+            if (fixedPhrase === "") {
+                growthOutputBox.classList.add('hidden');
+                exampleOutputBox.innerHTML = '<span class="text-red-500">請輸入你的負面想法哦！</span>';
+                return;
+            }
+
+            const growthPhrase = getGrowthMindset(fixedPhrase);
+            
+            growthTalkOutput.textContent = growthPhrase;
+            growthOutputBox.classList.remove('hidden');
+            exampleOutputBox.innerHTML = ''; // 清除提示
+        });
+
+        // 初始化範例提示
+        exampleOutputBox.innerHTML = `<span class="font-semibold">💡 試試看輸入：</span> ${conversionMap.map(i => i.fixed).join('、')}`;
+
+
+        // =================================================================
+        // 策略三：「我的學習者故事書」 (敘事引導)
+        // =================================================================
+        const showGoalSettingButton = document.getElementById('show-goal-setting');
+        const goalSettingArea = document.getElementById('goal-setting-area');
+
+        showGoalSettingButton.addEventListener('click', () => {
+            if (goalSettingArea.classList.contains('hidden')) {
+                goalSettingArea.classList.remove('hidden');
+                showGoalSettingButton.textContent = '👍 已展開目標設定區';
+                showGoalSettingButton.classList.add('bg-indigo-500');
+            } else {
+                goalSettingArea.classList.add('hidden');
+                showGoalSettingButton.textContent = '📝 點擊設定我的新行動目標！';
+                showGoalSettingButton.classList.remove('bg-indigo-500');
+            }
+        });
+        
+    </script>
+</body>
+</html>

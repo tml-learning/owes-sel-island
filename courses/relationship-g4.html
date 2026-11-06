@@ -1,0 +1,1227 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>班級協商冒險島 🔍 四年級 SEL 人際互動探索網</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: 適合小學生的圓體風格感覺 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 豐富圖標 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- canvas-confetti 慶祝特效 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dopa: {
+                            pink: '#FF4B91',    /* 活力甜心粉 */
+                            yellow: '#FFD131',  /* 陽光爆米黃 */
+                            orange: '#FF6B35',  /* 多巴胺澄橘 */
+                            teal: '#00F5D4',    /* 薄荷汽水綠 */
+                            blue: '#00B4D8',    /* 夢幻初戀藍 */
+                            purple: '#7B2CBF',  /* 宇宙香芋紫 */
+                            softbg: '#FFF5F5'   /* 草莓奶霜底 */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        fun: ['Fredoka One', 'Noto Sans TC', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', 'sans-serif';
+            background: linear-gradient(135deg, #FFF3F8 0%, #FFFDF0 50%, #E0F2FE 100%);
+            background-attachment: fixed;
+            /* 防止行動裝置選取文字產生不必要的反白 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* 泡泡感與 3D 陰影 */
+        .bubble-btn {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0px 8px 0px 0px rgba(0,0,0,0.15);
+            border: 3px solid #1E293B;
+        }
+        .bubble-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 12px 0px 0px rgba(0,0,0,0.15);
+        }
+        .bubble-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0px 4px 0px 0px rgba(0,0,0,0.15);
+        }
+        /* 多巴胺活力框 */
+        .dopa-card {
+            border: 4px solid #1E293B;
+            box-shadow: 8px 8px 0px 0px #1E293B;
+            border-radius: 24px;
+            transition: transform 0.2s ease;
+        }
+        .dopa-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px 0px #1E293B;
+        }
+        /* 動態流光效果 */
+        .rainbow-text {
+            background: linear-gradient(to right, #FF4B91, #FF6B35, #FFD131, #00B4D8, #7B2CBF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+        .active-tab {
+            background-color: #FF4B91 !important;
+            color: white !important;
+            border-color: #1E293B !important;
+            box-shadow: 4px 4px 0px 0px #1E293B !important;
+        }
+        .support-tab-active {
+            background-color: #7B2CBF !important;
+            color: white !important;
+            border-color: #1E293B !important;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col pb-12">
+
+    <!-- 頂部高對比多巴胺導覽列 -->
+    <header class="bg-white border-b-8 border-slate-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 w-full sm:w-auto justify-center sm:justify-start">
+                <div class="bg-dopa-yellow text-slate-800 p-3 sm:p-4 rounded-2xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-2xl sm:text-3xl animate-bounce shrink-0">
+                    <i class="fa-solid fa-magnifying-glass-chart text-dopa-orange"></i>
+                </div>
+                <div class="flex-1 text-center sm:text-left">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex flex-wrap justify-center sm:justify-start items-center gap-2">
+                        <span class="rainbow-text">班級協商冒險島</span> 
+                        <span class="text-sm bg-dopa-pink text-white px-3 py-1 rounded-full font-bold border-2 border-slate-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">四年級 SEL</span>
+                    </h1>
+                    <p class="text-base font-bold text-slate-500 mt-2">💡 108課綱「人際關係與團隊合作」實踐樂園</p>
+                </div>
+            </div>
+            
+            <div class="w-full sm:w-auto flex justify-center sm:justify-end">
+                <!-- 教師備課模式切換器 -->
+                <button onclick="toggleTeacherMode()" id="teacherModeBtn" class="w-full sm:w-auto justify-center bg-dopa-teal hover:bg-emerald-300 text-slate-900 border-4 border-slate-800 px-5 py-3 rounded-2xl text-base font-black flex items-center gap-2 transition-all shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(30,41,59,1)]">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    <span>開啟教師指引</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 教師備課專區（預設隱藏，點選後滑出） -->
+    <div id="teacherGuidePanel" class="hidden bg-purple-50 border-b-8 border-slate-800 px-4 sm:px-6 py-6 transition-all duration-300">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-start gap-4">
+                <div class="bg-dopa-purple text-white p-4 rounded-2xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-2xl shrink-0 self-center md:self-start">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-black text-dopa-purple text-xl sm:text-2xl mb-3 text-center md:text-left">🍎 108課綱備課指引</h3>
+                    <p class="text-base sm:text-lg text-slate-700 font-medium leading-relaxed mb-6">
+                        四年級學生核心在於「正向相互依賴（Positive Interdependence）」的落實。引導學生在小組中透過**輪流職務**和**自我回饋**，將「合作」實體化；並利用**修復式對話**，在不小心犯錯或爭執時建立不指責的溝通模式。
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-base">
+                        <div class="bg-white p-5 rounded-2xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] leading-relaxed">
+                            <span class="font-extrabold text-dopa-pink text-lg block mb-2">🍭 Unit 01：小組神隊友</span>
+                            用職務轉盤打碎「便車效應」。讓每個人都持有「神鑰匙」角色，並以每日評估，在非責怪的基礎上檢視組內互動。
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] leading-relaxed">
+                            <span class="font-extrabold text-dopa-orange text-lg block mb-2">🍊 Unit 02：視角放大鏡</span>
+                            當爭執卡關時，透過互動翻牌讓對方看見「看不見的心聲」；同時提供「共創畫布」讓學生協商調色，完成共同目標。
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] leading-relaxed">
+                            <span class="font-extrabold text-dopa-blue text-lg block mb-2">💧 Unit 03：修復偵探</span>
+                            解決衝突的靈魂在於「不問：你為什麼做錯？」，改問「發生什麼事？」和「怎麼一起修補？」，在遊戲中練習四部曲。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">
+        <!-- 單元切換大按鈕 (多巴胺撞色風) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-10">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="active-tab bg-white text-slate-800 font-black p-5 sm:p-6 rounded-2xl border-4 border-slate-800 transition-all text-left flex items-center justify-between bubble-btn w-full">
+                <div class="flex items-center space-x-4">
+                    <span class="text-4xl sm:text-5xl filter drop-shadow shrink-0">🧩</span>
+                    <div>
+                        <span class="text-sm sm:text-base text-slate-500 block font-bold tracking-wider mb-1">UNIT 01</span>
+                        <span class="text-lg sm:text-xl font-black">小組神隊友計分卡</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-500 text-xl hidden sm:block"></i>
+            </button>
+
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="bg-white text-slate-800 font-black p-5 sm:p-6 rounded-2xl border-4 border-slate-800 transition-all text-left flex items-center justify-between bubble-btn w-full">
+                <div class="flex items-center space-x-4">
+                    <span class="text-4xl sm:text-5xl filter drop-shadow shrink-0">🎨</span>
+                    <div>
+                        <span class="text-sm sm:text-base text-slate-500 block font-bold tracking-wider mb-1">UNIT 02</span>
+                        <span class="text-lg sm:text-xl font-black">視角放大鏡與協商</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-500 text-xl hidden sm:block"></i>
+            </button>
+
+            <button onclick="switchTab('tab3')" id="btn-tab3" class="bg-white text-slate-800 font-black p-5 sm:p-6 rounded-2xl border-4 border-slate-800 transition-all text-left flex items-center justify-between bubble-btn w-full">
+                <div class="flex items-center space-x-4">
+                    <span class="text-4xl sm:text-5xl filter drop-shadow shrink-0">🕵️‍♂️</span>
+                    <div>
+                        <span class="text-sm sm:text-base text-slate-500 block font-bold tracking-wider mb-1">UNIT 03</span>
+                        <span class="text-lg sm:text-xl font-black">修復對話偵探解密</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-500 text-xl hidden sm:block"></i>
+            </button>
+        </div>
+
+        <!-- 單元一：個人與團體責任 -->
+        <section id="tab1" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- 左側：職務輪流轉盤 -->
+                <div class="lg:col-span-5 bg-white p-6 md:p-8 dopa-card flex flex-col justify-between border-dopa-pink">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-3 mb-5">
+                            <span class="bg-dopa-pink text-white border-2 border-slate-800 px-4 py-1.5 rounded-full text-sm sm:text-base font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">合作要素 01</span>
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">🎡 神隊友職務輪盤</h2>
+                        </div>
+                        <p class="text-base md:text-lg font-medium text-slate-600 mb-8 leading-relaxed">
+                            合作學習要成功，必須「每個人都有清楚的責任」！點擊下方彩虹按鈕，為組員隨機抽出今天的秘密超級任務！
+                        </p>
+                        
+                        <!-- 轉盤顯示區 -->
+                        <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto my-8 flex items-center justify-center">
+                            <div id="wheel-graphic" class="absolute inset-0 rounded-full border-8 border-slate-800 flex items-center justify-center transition-all duration-1000 bg-amber-100 shadow-[6px_6px_0px_0px_rgba(30,41,59,1)]">
+                                <i class="fa-solid fa-compass text-dopa-orange text-6xl sm:text-7xl"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- 目前分配的角色卡 -->
+                        <div id="role-display-card" class="bg-amber-100 border-4 border-slate-800 p-5 rounded-3xl mt-6 hidden shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] animate-fade-in">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                                <span id="role-icon" class="text-5xl">⏱️</span>
+                                <div>
+                                    <h4 id="role-title" class="font-black text-slate-900 text-xl mb-2">角色名稱</h4>
+                                    <p id="role-desc" class="text-base font-bold text-slate-700 leading-relaxed">角色責任說明。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="spinForRole()" class="w-full mt-10 bg-dopa-yellow text-slate-900 font-black py-4 px-6 rounded-2xl text-lg bubble-btn flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-arrows-spin text-xl"></i>
+                        <span>隨機抽取一項神職務！</span>
+                    </button>
+                </div>
+
+                <!-- 右側：小組互動計分卡 -->
+                <div class="lg:col-span-7 bg-white p-6 md:p-8 dopa-card border-dopa-orange">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="bg-dopa-orange text-white border-2 border-slate-800 px-4 py-1.5 rounded-full text-sm sm:text-base font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">小組自評 02</span>
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">📊 每日神隊友計分卡</h2>
+                        </div>
+                        <button onclick="resetScorecard()" class="text-sm sm:text-base font-extrabold text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center gap-2 bg-slate-50 px-4 py-3 rounded-xl border-2 border-slate-200">
+                            <i class="fa-solid fa-rotate-right"></i>重新評估
+                        </button>
+                    </div>
+                    <p class="text-base md:text-lg font-medium text-slate-600 mb-8 leading-relaxed">
+                        下課前，大家一起討論今天的合作表現。點選符合狀況的糖果貼紙！重點是討論「我們下次可以怎麼做得更棒」！
+                    </p>
+
+                    <!-- 自評題目 -->
+                    <div class="space-y-5 my-6">
+                        <!-- 第一題 -->
+                        <div class="bg-[#FFFDF0] p-5 rounded-3xl border-2 border-slate-800 shadow-[4px_4px_0px_0px_rgba(30,41,59,0.05)]">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <span class="inline-block mb-2 text-sm sm:text-base bg-dopa-yellow text-slate-800 border-2 border-slate-800 px-3 py-1 rounded-lg font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">指標 1</span>
+                                    <div class="font-black text-slate-800 text-lg leading-relaxed">⏰ 守時：我們有在時間內完成任務嗎？</div>
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button onclick="setScore(1, 2)" id="score-1-2" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>👍 超級準時</span>
+                                    </button>
+                                    <button onclick="setScore(1, 1)" id="score-1-1" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>😐 下次更好</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二題 -->
+                        <div class="bg-[#FFF0F5] p-5 rounded-3xl border-2 border-slate-800 shadow-[4px_4px_0px_0px_rgba(30,41,59,0.05)]">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <span class="inline-block mb-2 text-sm sm:text-base bg-dopa-pink text-white border-2 border-slate-800 px-3 py-1 rounded-lg font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">指標 2</span>
+                                    <div class="font-black text-slate-800 text-lg leading-relaxed">🙋‍♂️ 參與：每個人都有開口或動手做事嗎？</div>
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button onclick="setScore(2, 2)" id="score-2-2" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>👍 都有做</span>
+                                    </button>
+                                    <button onclick="setScore(2, 1)" id="score-2-1" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>😐 下次更好</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第三題 -->
+                        <div class="bg-[#F0FDF4] p-5 rounded-3xl border-2 border-slate-800 shadow-[4px_4px_0px_0px_rgba(30,41,59,0.05)]">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <span class="inline-block mb-2 text-sm sm:text-base bg-dopa-teal text-slate-900 border-2 border-slate-800 px-3 py-1 rounded-lg font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">指標 3</span>
+                                    <div class="font-black text-slate-800 text-lg leading-relaxed">🤝 合作：我們有用好口氣、互相幫忙嗎？</div>
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button onclick="setScore(3, 2)" id="score-3-2" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>👍 語氣溫柔</span>
+                                    </button>
+                                    <button onclick="setScore(3, 1)" id="score-3-1" class="score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all">
+                                        <span>😐 下次更好</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 綜合評價動態回饋 (多巴胺彈出感) -->
+                    <div id="feedback-box" class="bg-dopa-teal/20 border-4 border-slate-800 p-6 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 hidden shadow-[6px_6px_0px_0px_rgba(30,41,59,1)] mt-6">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left w-full">
+                            <span class="text-5xl filter drop-shadow">🎉</span>
+                            <div>
+                                <h4 class="font-black text-slate-900 text-xl">這就是正向相互依賴！自評完成！</h4>
+                                <p id="feedback-text" class="text-base font-extrabold text-slate-700 mt-2 leading-relaxed">只要每個人都有發揮功能，我們就無堅不摧！</p>
+                            </div>
+                        </div>
+                        <button onclick="celebrateTeam()" class="w-full md:w-auto shrink-0 bg-dopa-pink text-white font-black text-base px-6 py-4 rounded-2xl border-2 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all">
+                            全組撒花慶祝！
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 單元二：協商溝通（視角換位） -->
+        <section id="tab2" class="tab-content hidden">
+            <div class="bg-white p-6 md:p-10 dopa-card border-dopa-teal max-w-5xl mx-auto">
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="bg-dopa-teal text-slate-900 border-2 border-slate-800 px-4 py-1.5 rounded-full text-sm sm:text-base font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">視角換位與協商 03</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900">🔍 「如果我是他」視角放大鏡</h2>
+                </div>
+                <p class="text-base md:text-lg font-medium text-slate-600 mb-8 leading-relaxed">
+                    在小組裡，大家想法不一樣是很正常的！當意見有摩擦時，請先深呼吸，拿出<strong>視角放大鏡</strong>，看看雙方大腦袋裡究竟藏著什麼真心話！
+                </p>
+
+                <!-- 衝突情境卡片 -->
+                <div class="bg-amber-100 border-4 border-slate-800 rounded-3xl p-6 md:p-8 mb-10 flex flex-col sm:flex-row gap-5 items-start shadow-[6px_6px_0px_0px_rgba(30,41,59,1)]">
+                    <span class="text-5xl self-center sm:self-start">📢</span>
+                    <div>
+                        <h4 class="font-black text-slate-900 text-xl mb-3 text-center sm:text-left">今日衝突案件：海報背景顏色爭執</h4>
+                        <p class="text-base md:text-lg font-bold text-slate-700 leading-relaxed text-center sm:text-left">小組要畫一張成果海報。<strong>小明</strong>非常堅持用藍色當背景，<strong>小華</strong>拼命主張一定要用紅色。兩個人互不相讓，進度完全卡住了...</p>
+                    </div>
+                </div>
+
+                <!-- 互動透視區 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+                    <!-- 小明視角 -->
+                    <div onclick="revealThought('ming')" class="cursor-pointer border-4 border-slate-800 hover:border-dopa-blue p-8 rounded-3xl transition-all duration-300 hover:shadow-[8px_8px_0px_0px_rgba(0,180,216,1)] text-center bg-[#EBF8FF] relative overflow-hidden group">
+                        <div class="w-28 h-28 bg-sky-200 border-4 border-slate-800 rounded-full mx-auto flex items-center justify-center text-6xl mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">👦</div>
+                        <h3 class="font-black text-slate-900 text-xl">小明 (堅持藍色)</h3>
+                        <p class="text-sm sm:text-base font-bold text-slate-500 mt-4 bg-white/60 inline-block px-4 py-2 rounded-full border-2 border-slate-200">✨ 點擊拿起放大鏡看他的真心話</p>
+                        
+                        <!-- 隱藏想法 -->
+                        <div id="thought-ming" class="absolute inset-0 bg-dopa-blue text-white p-8 flex flex-col justify-center items-center transition-all duration-500 transform translate-y-full border-t-4 border-slate-800 z-10">
+                            <span class="text-4xl mb-4">💭 小明的真心話</span>
+                            <p class="text-base sm:text-lg font-bold leading-relaxed text-left">「藍色是大海和天空的顏色，讓人覺得非常平靜、很舒服。我也怕如果全部用紅色，整張海報會太刺眼，大家不喜歡...」</p>
+                        </div>
+                    </div>
+
+                    <!-- 小華視角 -->
+                    <div onclick="revealThought('hua')" class="cursor-pointer border-4 border-slate-800 hover:border-dopa-pink p-8 rounded-3xl transition-all duration-300 hover:shadow-[8px_8px_0px_0px_rgba(255,75,145,1)] text-center bg-[#FFF5F5] relative overflow-hidden group">
+                        <div class="w-28 h-28 bg-rose-200 border-4 border-slate-800 rounded-full mx-auto flex items-center justify-center text-6xl mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">👧</div>
+                        <h3 class="font-black text-slate-900 text-xl">小華 (堅持紅色)</h3>
+                        <p class="text-sm sm:text-base font-bold text-slate-500 mt-4 bg-white/60 inline-block px-4 py-2 rounded-full border-2 border-slate-200">✨ 點擊拿起放大鏡看她的真心話</p>
+                        
+                        <!-- 隱藏想法 -->
+                        <div id="thought-hua" class="absolute inset-0 bg-dopa-pink text-white p-8 flex flex-col justify-center items-center transition-all duration-500 transform translate-y-full border-t-4 border-slate-800 z-10">
+                            <span class="text-4xl mb-4">💭 小華的真心話</span>
+                            <p class="text-base sm:text-lg font-bold leading-relaxed text-left">「紅色代表熱情和活力！這樣別的組別一進教室，第一眼就會注意到我們的海報，我只是希望能幫我們這組拿到第一名！」</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 協商句型引導 -->
+                <div class="bg-slate-50 p-6 md:p-8 rounded-3xl border-4 border-slate-800 shadow-[6px_6px_0px_0px_rgba(30,41,59,1)] mt-10">
+                    <h4 class="font-black text-slate-950 mb-6 text-center flex flex-wrap items-center justify-center gap-3 text-xl">
+                        <i class="fa-solid fa-handshake text-dopa-orange text-2xl"></i>
+                        <span>尋求雙贏：我們可以怎麼說？</span>
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+                        <button onclick="selectNegotiationOption(false)" class="bg-white hover:bg-rose-50 text-slate-800 p-6 rounded-2xl border-4 border-slate-800 text-base md:text-lg font-bold transition-all text-left flex gap-4 shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(30,41,59,1)] leading-relaxed">
+                            <span class="text-dopa-pink text-3xl shrink-0">❌</span>
+                            <span>「反正一定要聽我的，不然我就乾脆不畫、不合作了！」<br><span class="text-slate-500 text-sm sm:text-base mt-2 block">(防衛與退出)</span></span>
+                        </button>
+                        <button onclick="selectNegotiationOption(true)" class="bg-white hover:bg-emerald-50 text-slate-800 p-6 rounded-2xl border-4 border-slate-800 text-base md:text-lg font-bold transition-all text-left flex gap-4 shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(30,41,59,1)] leading-relaxed">
+                            <span class="text-dopa-teal text-3xl shrink-0">✅</span>
+                            <span>「那我們各退一步，背景用藍色（舒服），但標題用紅色（顯眼），你覺得怎麼樣？」<br><span class="text-slate-500 text-sm sm:text-base mt-2 block">(雙贏協商)</span></span>
+                        </button>
+                    </div>
+
+                    <!-- 協商回饋訊息 -->
+                    <div id="nego-feedback" class="mt-8 p-6 rounded-2xl text-center text-lg font-bold border-4 border-slate-800 hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] leading-relaxed"></div>
+                </div>
+
+                <!-- 雙贏創意合作畫布體驗區 (Canvas) -->
+                <div id="canvas-section" class="hidden mt-12 p-6 md:p-8 bg-[#EDFDFB] rounded-3xl border-4 border-slate-800 shadow-[8px_8px_0px_0px_rgba(0,245,212,0.3)] animate-fade-in w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                        <h3 class="font-black text-slate-900 text-2xl flex items-center gap-3">
+                            <i class="fa-solid fa-palette text-dopa-pink text-3xl"></i>
+                            <span>🎨 雙贏合作畫布</span>
+                        </h3>
+                        <span class="text-base bg-dopa-pink text-white px-4 py-1.5 rounded-full font-black border-2 border-slate-800 self-start sm:self-auto">實踐專區</span>
+                    </div>
+                    <p class="text-base sm:text-lg font-bold text-slate-700 mb-8 leading-relaxed">
+                        協商大成功！我們解鎖了合作繪圖畫布。請試著跟同伴一起拿起「小明的藍色」與「小華的紅色」，或是兩色完美調和代表共創的「紫色」畫筆，在下方的畫面上盡情塗鴉成果草稿吧！
+                    </p>
+                    
+                    <div class="flex flex-col md:flex-row gap-6 w-full items-stretch">
+                        <!-- 調色盤與工具欄 -->
+                        <div class="flex md:flex-col gap-4 w-full md:w-auto justify-center flex-wrap bg-white p-5 rounded-3xl border-4 border-slate-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <button onclick="setCanvasColor('#00B4D8')" id="brush-blue" class="w-14 h-14 rounded-full bg-[#00B4D8] border-4 border-slate-800 shadow-md transform hover:scale-110 active:scale-95 transition-transform border-dopa-pink" title="藍色 (小明)"></button>
+                            <button onclick="setCanvasColor('#FF4B91')" id="brush-red" class="w-14 h-14 rounded-full bg-[#FF4B91] border-4 border-slate-800 shadow-md transform hover:scale-110 active:scale-95 transition-transform" title="紅色 (小華)"></button>
+                            <button onclick="setCanvasColor('#7B2CBF')" id="brush-purple" class="w-14 h-14 rounded-full bg-[#7B2CBF] border-4 border-slate-800 shadow-md transform hover:scale-110 active:scale-95 transition-transform" title="和解紫"></button>
+                            <button onclick="setCanvasColor('#FFD131')" id="brush-yellow" class="w-14 h-14 rounded-full bg-[#FFD131] border-4 border-slate-800 shadow-md transform hover:scale-110 active:scale-95 transition-transform" title="陽光黃"></button>
+                            
+                            <hr class="hidden md:block border-slate-800 border-2 my-2"/>
+                            
+                            <button onclick="useEraser()" id="tool-eraser" class="w-14 h-14 rounded-2xl bg-slate-100 border-4 border-slate-800 shadow-sm flex items-center justify-center text-3xl hover:bg-slate-200 active:scale-95 transition-all" title="橡皮擦">🧽</button>
+                            <button onclick="clearCanvas()" class="w-14 h-14 rounded-2xl bg-rose-100 border-4 border-slate-800 text-rose-600 shadow-sm flex items-center justify-center text-2xl hover:bg-rose-200 active:scale-95 transition-all" title="清除畫布"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+
+                        <!-- 畫布主體 -->
+                        <div class="flex-1 w-full relative min-h-[350px] md:min-h-[450px] bg-white rounded-3xl border-4 border-slate-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] overflow-hidden">
+                            <!-- 確保畫布自適應外框 -->
+                            <canvas id="coop-canvas" class="absolute top-0 left-0 w-full h-full cursor-crosshair touch-none bg-white"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 筆刷大小調節與提示 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-5 mt-8 px-2">
+                        <div class="flex items-center gap-4 text-base font-black text-slate-700 w-full md:w-auto justify-center bg-white border-2 border-slate-800 p-4 rounded-2xl shadow-sm">
+                            <span>畫筆大小：</span>
+                            <input type="range" id="brush-size" min="3" max="30" value="8" oninput="updateBrushSize(this.value)" class="accent-dopa-pink cursor-pointer flex-1 md:w-32">
+                            <span id="brush-size-val" class="font-extrabold text-dopa-pink min-w-[50px] text-right">8 px</span>
+                        </div>
+                        <div class="text-base font-black text-dopa-orange italic text-center w-full md:w-auto p-4 bg-orange-50 rounded-2xl border-2 border-orange-200">
+                            💡 滑鼠點擊拖曳或用手指觸控，一起完成繽紛的海報草稿！
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 單元三：基礎修復對話 -->
+        <section id="tab3" class="tab-content hidden">
+            <div class="bg-white p-6 md:p-10 dopa-card border-dopa-purple max-w-5xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="bg-dopa-purple text-white border-2 border-slate-800 px-4 py-1.5 rounded-full text-sm sm:text-base font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">修復式實踐 04</span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">🩹 修復對話偵探解密</h2>
+                    </div>
+                    <!-- 關卡進度指示 -->
+                    <div class="flex items-center space-x-3 bg-slate-100 border-2 border-slate-800 px-4 py-3 rounded-xl text-base font-black">
+                        <span>進度：</span>
+                        <span id="step-indicator" class="text-dopa-purple">收集線索 0 / 4</span>
+                    </div>
+                </div>
+                
+                <p class="text-base md:text-lg font-medium text-slate-600 mb-8 leading-relaxed">
+                    在小組活動時，不小心發生意外或弄壞別人的東西，如果大家互相指責，只會讓關係受傷。<br/>
+                    現在，讓我們套用<strong>「修復式對話四部曲」</strong>，一起解開<strong>【弄破小組海報事件】</strong>的嫌隙吧！
+                </p>
+
+                <!-- 四部曲地圖 (多巴胺色調進度指示) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-10">
+                    <div id="flow-step-1" class="bg-dopa-pink/20 text-slate-900 rounded-2xl py-4 px-2 text-sm sm:text-base font-black border-2 border-slate-800">1. 發生什麼</div>
+                    <div id="flow-step-2" class="bg-gray-100 text-gray-400 rounded-2xl py-4 px-2 text-sm sm:text-base font-bold border-2 border-transparent">2. 當下想法</div>
+                    <div id="flow-step-3" class="bg-gray-100 text-gray-400 rounded-2xl py-4 px-2 text-sm sm:text-base font-bold border-2 border-transparent">3. 誰受影響</div>
+                    <div id="flow-step-4" class="bg-gray-100 text-gray-400 rounded-2xl py-4 px-2 text-sm sm:text-base font-bold border-2 border-transparent">4. 如何修復</div>
+                </div>
+
+                <!-- 互動式對話視窗 -->
+                <div class="bg-slate-900 text-white rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col justify-between shadow-inner relative overflow-hidden border-4 border-slate-800">
+                    <!-- 背景裝飾 -->
+                    <div class="absolute -top-10 -right-10 text-slate-800 text-[200px] pointer-events-none opacity-40">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+
+                    <!-- 角色與對話紀錄區 -->
+                    <div id="dialogue-box" class="space-y-6 mb-8 z-10 flex-1 flex flex-col justify-center">
+                        <!-- 動態插入對話 -->
+                    </div>
+
+                    <!-- 玩家選項按鈕 -->
+                    <div id="options-container" class="space-y-4 mt-6 z-10">
+                        <!-- 按鈕會動態生成 -->
+                    </div>
+                </div>
+
+                <!-- 師長家長專區展開與重置排版區 -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mt-10 pt-6 border-t-2 border-dashed border-slate-200">
+                    <!-- 師長專屬隱藏暗鈕 -->
+                    <button onclick="toggleSupportZone()" id="supportToggleBtn" class="w-full sm:w-auto justify-center bg-dopa-purple text-white border-4 border-slate-800 px-6 py-4 rounded-2xl text-base md:text-lg font-black flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all">
+                        <i class="fa-solid fa-user-shield text-xl"></i>
+                        <span>展開大人指引卡</span>
+                    </button>
+
+                    <button onclick="restartDetectiveGame()" class="w-full sm:w-auto justify-center text-base font-bold text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 bg-slate-50 px-6 py-4 sm:py-3 rounded-2xl border-2 border-slate-200">
+                        <i class="fa-solid fa-rotate-right"></i>重啟偵探挑戰
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 師長與家長專區 (Support Zone - 預設隱藏) -->
+        <section id="support-zone-wrapper" class="hidden bg-indigo-950 text-white rounded-3xl p-6 md:p-10 mt-12 border-t-8 border-slate-800 border-x-4 border-b-4 shadow-lg">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-5 mb-8 text-center sm:text-left">
+                <div class="bg-dopa-purple text-white p-4 rounded-2xl border-2 border-slate-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-3xl animate-pulse shrink-0">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black tracking-tight flex flex-col sm:flex-row items-center gap-3">
+                        ❤️ 師長與家長專區 
+                        <span class="text-sm bg-dopa-teal text-slate-900 font-extrabold px-3 py-1 rounded-lg border-2 border-slate-800 whitespace-nowrap mt-2 sm:mt-0">大人指引卡</span>
+                    </h2>
+                    <p class="text-base text-indigo-300 font-bold mt-3 leading-relaxed">給大人的話：理解本網頁背後的教育心理學、素養與實施指南</p>
+                </div>
+            </div>
+
+            <!-- 分頁切換鈕 -->
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 border-b-2 border-indigo-900 pb-6 mb-8">
+                <button onclick="switchSupportTab('curriculum')" id="btn-support-curriculum" class="support-tab-active bg-indigo-900 hover:bg-indigo-800 text-indigo-100 border-2 border-slate-800 px-5 py-4 sm:py-3 rounded-xl text-base font-extrabold transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] w-full sm:w-auto">
+                    🍎 課綱核心與 SEL
+                </button>
+                <button onclick="switchSupportTab('psychology')" id="btn-support-psychology" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 border-2 border-slate-800 px-5 py-4 sm:py-3 rounded-xl text-base font-extrabold transition-all w-full sm:w-auto">
+                    🧠 心理學教育原理
+                </button>
+                <button onclick="switchSupportTab('script')" id="btn-support-script" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 border-2 border-slate-800 px-5 py-4 sm:py-3 rounded-xl text-base font-extrabold transition-all w-full sm:w-auto">
+                    💬 教師實用劇本
+                </button>
+                <button onclick="switchSupportTab('family')" id="btn-support-family" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 border-2 border-slate-800 px-5 py-4 sm:py-3 rounded-xl text-base font-extrabold transition-all w-full sm:w-auto">
+                    🏠 家長餐桌對話
+                </button>
+            </div>
+
+            <!-- 分頁內容 -->
+            <!-- 1. 課綱與 SEL -->
+            <div id="support-content-curriculum" class="support-tab-content space-y-5">
+                <h3 class="text-xl font-black text-dopa-yellow flex items-center gap-3">
+                    <span class="text-2xl">🎯</span> 結合 108 課綱人際互動與社會情緒學習 (SEL)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-base text-indigo-100 leading-relaxed">
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <h4 class="font-black text-white text-lg mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-dopa-teal"></i>
+                            <span>108課綱對應素養</span>
+                        </h4>
+                        <ul class="list-disc pl-6 space-y-3 text-indigo-200 font-medium">
+                            <li><strong>E-B4 規劃執行與創新應變</strong>：學生能在小組合作中明確地分配職責、落實個人責任並如期完成任務。</li>
+                            <li><strong>E-C2 人際關係與團隊合作</strong>：學習同理與觀點採擇，在衝突發生時，透過正向協商共同找出最佳解決方案。</li>
+                        </ul>
+                    </div>
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <h4 class="font-black text-white text-lg mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-heart text-dopa-pink"></i>
+                            <span>SEL 社會情緒學習指標</span>
+                        </h4>
+                        <ul class="list-disc pl-6 space-y-3 text-indigo-200 font-medium">
+                            <li><strong>他人覺察與同理心（Social Awareness）</strong>：利用「真心話放大鏡」看見他人立場，建立情緒剎車。</li>
+                            <li><strong>負責任的決策能力（Responsible Decision-Making）</strong>：在修復式解密中思索「修復關係、補償方案」而非逃避或退縮。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 心理學教育原理 -->
+            <div id="support-content-psychology" class="support-tab-content space-y-5 hidden">
+                <h3 class="text-xl font-black text-dopa-yellow flex items-center gap-3">
+                    <span class="text-2xl">🧠</span> 為什麼這套教材要這樣設計？（學理依據）
+                </h3>
+                <div class="space-y-5 text-base text-indigo-100 leading-relaxed">
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <span class="font-black text-white block text-lg mb-2">🤝 正向相互依賴 (Positive Interdependence)</span>
+                        合作學習的靈魂是「沒有你，我們沒辦法完成這項成就」。透過<strong>神隊友職務輪盤</strong>，指派每個人具體的工具人任務，可有效克制「社會懈怠/搭便車」現象。
+                    </div>
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <span class="font-black text-white block text-lg mb-2">👓 觀點採擇 (Perspective-Taking Theory)</span>
+                        四年級學生前額葉皮質（理性控制區）仍處於高度成長中，衝突時杏仁核過載，容易進入非理性的相互撕扯。透過網頁「將心聲視覺化（放大鏡）」，能有效給予大腦冷靜緩衝。
+                    </div>
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <span class="font-black text-white block text-lg mb-2">🩹 修復式正義 (Restorative Practices)</span>
+                        傳統處罰往往是「老師是法官、裁決對錯、逼迫道歉」，這會促使學生心生防備。修復式做法著重在「關係重建」：讓孩子親手修補（海報或感情），學習承擔後果的建設性行為。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 教師引導劇本 -->
+            <div id="support-content-script" class="support-tab-content space-y-5 hidden">
+                <h3 class="text-xl font-black text-dopa-yellow flex items-center gap-3">
+                    <span class="text-2xl">💬</span> 教師實務引導劇本（老師可以直接這樣說）
+                </h3>
+                <div class="space-y-6 text-base text-indigo-100 leading-relaxed bg-indigo-900/60 p-6 sm:p-8 rounded-2xl border-2 border-indigo-800">
+                    <div>
+                        <span class="font-black text-dopa-teal block text-lg mb-3">📣 情境一：學生在合作時，開始計較、互告黑狀指責時...</span>
+                        <p class="italic text-indigo-100 bg-indigo-950 p-5 rounded-2xl border border-indigo-900 text-lg">
+                            「老師看到大家都很希望海報能拿到第一名，這代表每個人都非常有榮譽心。但是，如果我們把時間拿來吵架，那我們的海報進度就得停擺囉！現在各組組長把『神隊友自評卡』拿出來，今天的計時管理員在哪裡？有做好時間管理嗎？關懷員有沒有溫柔地問問看對方需要什麼幫忙？」
+                        </p>
+                    </div>
+                    <div>
+                        <span class="font-black text-dopa-orange block text-lg mb-3">📣 情境二：兩位同學意見僵持不下時...</span>
+                        <p class="italic text-indigo-100 bg-indigo-950 p-5 rounded-2xl border border-indigo-900 text-lg">
+                            「兩位優秀的小偵探，我們現在來當『心聲偵探』。小明，你剛才堅持要藍色，是因為藍色讓你覺得怎樣？小華，你堅持紅色，是想達到什麼效果？（聽完後）所以小明希望舒服，小華希望顯眼。那我們可以怎麼調配，既能讓人看得很舒服、又很顯眼呢？我們在『雙贏合作畫布』上畫看看！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 家長餐桌對話本 -->
+            <div id="support-content-family" class="support-tab-content space-y-5 hidden">
+                <h3 class="text-xl font-black text-dopa-yellow flex items-center gap-3">
+                    <span class="text-2xl">🏠</span> 家長餐桌延伸對話：將 SEL 帶入家庭生活
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-base text-indigo-100 leading-relaxed">
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <h4 class="font-black text-white text-lg mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-comments text-dopa-yellow"></i>
+                            <span>餐桌好提問：不聊乖不乖，聊合作</span>
+                        </h4>
+                        <p class="text-indigo-200 font-medium space-y-3">
+                            <span class="block">試著用這些開放式問題引導孩子：</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">1. 「今天在學校分組時，你負責的是轉盤上的哪個神隊友任務呢？」</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">2. 「今天小組合作時，有沒有人的點子跟你的不一樣？後來你們是怎麼妥協的？」</span>
+                        </p>
+                    </div>
+                    <div class="bg-indigo-900/60 p-6 rounded-2xl border-2 border-indigo-800">
+                        <h4 class="font-black text-white text-lg mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-house-chimney-medical text-dopa-teal"></i>
+                            <span>當手足或親子發生摩擦時</span>
+                        </h4>
+                        <p class="text-indigo-200 font-medium space-y-3">
+                            <span class="block">在家中實踐「修復對話四要素」：</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">1. 「剛剛房間裡發生了什麼事？」（聽事實，不聽指責）</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">2. 「你這時候在想什麼？你當時的感覺怎麼樣？」</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">3. 「那你的行為，對姊姊（或媽媽）造成了什麼影響？」</span>
+                            <span class="block bg-indigo-950 p-4 rounded-lg border border-indigo-900">4. 「現在，我們該怎麼做，才能把弄倒的玩具復原，並找回好心情？」</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 乾淨的頁尾 (已移除多餘文句) -->
+    <footer class="bg-slate-900 text-slate-300 py-8 mt-12 border-t-8 border-slate-800 text-center">
+        <p class="text-base md:text-lg font-black text-white px-4">班級協商冒險島 🌟 讓合作學習變得快樂、自主、又有效！</p>
+    </footer>
+
+    <script>
+        // ----------------------------------------
+        // 教師模式切換
+        // ----------------------------------------
+        let isTeacherModeOpen = false;
+        function toggleTeacherMode() {
+            isTeacherModeOpen = !isTeacherModeOpen;
+            const panel = document.getElementById('teacherGuidePanel');
+            const btn = document.getElementById('teacherModeBtn');
+            if (isTeacherModeOpen) {
+                panel.classList.remove('hidden');
+                btn.classList.add('bg-dopa-purple', 'text-white');
+                btn.classList.remove('bg-dopa-teal', 'text-slate-900');
+            } else {
+                panel.classList.add('hidden');
+                btn.classList.remove('bg-dopa-purple', 'text-white');
+                btn.classList.add('bg-dopa-teal', 'text-slate-900');
+            }
+        }
+
+        // ----------------------------------------
+        // 頁籤切換 (大單元)
+        // ----------------------------------------
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="btn-tab"]').forEach(btn => {
+                btn.classList.remove('active-tab');
+            });
+            document.getElementById(`btn-${tabId}`).classList.add('active-tab');
+
+            if (tabId === 'tab2') {
+                const canvasSec = document.getElementById('canvas-section');
+                if (!canvasSec.classList.contains('hidden')) {
+                    setTimeout(() => {
+                        resizeCanvas();
+                    }, 100);
+                }
+            }
+        }
+
+        // ----------------------------------------
+        // 教師與家長專區分頁切換 (已修復 ID 錯誤)
+        // ----------------------------------------
+        function switchSupportTab(tabKey) {
+            document.querySelectorAll('.support-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`support-content-${tabKey}`).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="btn-support-"]').forEach(btn => {
+                btn.classList.remove('support-tab-active', 'bg-dopa-purple', 'text-white');
+                btn.classList.add('bg-indigo-900', 'text-indigo-200');
+            });
+
+            const activeBtn = document.getElementById(`btn-support-${tabKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('support-tab-active', 'bg-dopa-purple', 'text-white');
+                activeBtn.classList.remove('bg-indigo-900', 'text-indigo-200');
+            }
+        }
+
+        // ----------------------------------------
+        // 單元一邏輯：神隊友輪盤
+        // ----------------------------------------
+        const roles = [
+            { title: "⏰ 計時守時員", desc: "當小組的時鐘守護者。在大家偏離主題、或者時間快不夠時，溫柔大聲說：『我們只剩下5分鐘囉！』", icon: "⏰" },
+            { title: "📝 記錄發言員", desc: "負責在海報、筆記紙上寫下大家的想法。把大家吵鬧的意見，歸納整理成超棒的重點！", icon: "📝" },
+            { title: "🎒 材料管理員", desc: "守護彩色筆、剪刀與海報紙。下課前帶領全組一起做資源分類，完美回收到位！", icon: "🎒" },
+            { title: "❤️ 關懷鼓勵員", desc: "小組的心靈太陽！如果有人都沒說到話，主動問他：『你想看看喔，我很想聽你的點子』，並常說讚賞好話！", icon: "❤️" }
+        ];
+
+        function spinForRole() {
+            const wheel = document.getElementById('wheel-graphic');
+            const displayCard = document.getElementById('role-display-card');
+            
+            const randomRotation = 360 * 3 + Math.floor(Math.random() * 360);
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+            
+            const selectedRole = roles[Math.floor(Math.random() * roles.length)];
+            
+            setTimeout(() => {
+                document.getElementById('role-icon').innerText = selectedRole.icon;
+                document.getElementById('role-title').innerText = selectedRole.title;
+                document.getElementById('role-desc').innerText = selectedRole.desc;
+                displayCard.classList.remove('hidden');
+                
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    colors: ['#FF4B91', '#FFD131', '#FF6B35', '#00F5D4', '#00B4D8'],
+                    origin: { y: 0.8 }
+                });
+            }, 1000);
+        }
+
+        // ----------------------------------------
+        // 計分卡邏輯
+        // ----------------------------------------
+        let userScores = { 1: null, 2: null, 3: null };
+
+        function setScore(questionId, score) {
+            userScores[questionId] = score;
+            
+            const defaultClass = "score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all";
+            
+            document.getElementById(`score-${questionId}-1`).className = defaultClass;
+            document.getElementById(`score-${questionId}-2`).className = defaultClass;
+            
+            const selectedBtn = document.getElementById(`score-${questionId}-${score}`);
+            if (score === 2) {
+                selectedBtn.className = "score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-dopa-teal text-slate-900 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+            } else {
+                selectedBtn.className = "score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-dopa-yellow text-slate-900 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+            }
+
+            if (userScores[1] && userScores[2] && userScores[3]) {
+                const feedbackBox = document.getElementById('feedback-box');
+                const feedbackText = document.getElementById('feedback-text');
+                feedbackBox.classList.remove('hidden');
+
+                const idealCount = Object.values(userScores).filter(s => s === 2).length;
+                if (idealCount === 3) {
+                    feedbackText.innerText = "超級完美的黃金神隊友！請繼續在合作中聽進每個人的聲音！";
+                } else {
+                    feedbackText.innerText = "誠實面對小組狀況是最棒的第一步！下次我們針對「改進項目」一起微調！";
+                }
+            }
+        }
+
+        function resetScorecard() {
+            userScores = { 1: null, 2: null, 3: null };
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                btn.className = "score-btn flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border-2 border-slate-800 px-4 py-3 rounded-2xl text-base font-black transition-all";
+            });
+            document.getElementById('feedback-box').classList.add('hidden');
+        }
+
+        function celebrateTeam() {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                colors: ['#FF4B91', '#FFD131', '#FF6B35', '#00F5D4', '#00B4D8'],
+                origin: { y: 0.6 }
+            });
+        }
+
+        // ----------------------------------------
+        // 單元二：觀點採擇邏輯
+        // ----------------------------------------
+        function revealThought(person) {
+            const thoughtCard = document.getElementById(`thought-${person}`);
+            if (person === 'ming') {
+                document.getElementById('thought-hua').classList.add('translate-y-full');
+            } else {
+                document.getElementById('thought-ming').classList.add('translate-y-full');
+            }
+            thoughtCard.classList.toggle('translate-y-full');
+        }
+
+        function selectNegotiationOption(isRestorative) {
+            const fb = document.getElementById('nego-feedback');
+            const canvasSec = document.getElementById('canvas-section');
+            fb.classList.remove('hidden', 'bg-rose-100', 'text-rose-900', 'bg-[#E6FFFA]', 'text-slate-900');
+            
+            if (isRestorative) {
+                fb.classList.add('bg-[#E6FFFA]', 'text-slate-950');
+                fb.innerHTML = "🎉 太讚了！這是雙贏的協商思想！你們成功各退一步：背景採用藍色（小明覺得平靜），標題字體採用大紅色（小華覺得最搶眼），兩人的意見都完美融入海報！<br/><br/><strong class='text-dopa-pink text-lg block mt-3'>👇 合作畫布已解鎖！請在下方與同伴一起塗鴉測試協商成果吧！</strong>";
+                canvasSec.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    resizeCanvas();
+                    initCanvas();
+                }, 100);
+
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    colors: ['#00B4D8', '#FF4B91', '#7B2CBF'],
+                    origin: { y: 0.8 }
+                });
+                
+                setTimeout(() => {
+                    canvasSec.scrollIntoView({ behavior: 'smooth' });
+                }, 200);
+            } else {
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = "🥺 哎呀...這樣說的話，小華可能會覺得不被尊重，兩個人可能會吵得更兇，海報進度就真的完全卡死了。再想一想，怎麼樣才能各退一步呢？";
+                canvasSec.classList.add('hidden');
+            }
+        }
+
+        // ----------------------------------------
+        // Canvas 畫布邏輯 (響應式/行動裝置友善)
+        // ----------------------------------------
+        const canvas = document.getElementById('coop-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let isDrawing = false;
+        let brushColor = '#00B4D8';
+        let brushSize = 8;
+        let lastX = 0;
+        let lastY = 0;
+
+        function initCanvas() {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = brushColor;
+            ctx.lineWidth = brushSize;
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = 'rgba(255, 75, 145, 0.15)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([12, 12]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.strokeStyle = brushColor;
+            ctx.lineWidth = brushSize;
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            initCanvas();
+        }
+
+        window.addEventListener('resize', () => {
+            const canvasSec = document.getElementById('canvas-section');
+            if (!canvasSec.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        });
+
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const x = (clientX - rect.left) * (canvas.width / rect.width);
+            const y = (clientY - rect.top) * (canvas.height / rect.height);
+            return { x, y };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const coords = getCanvasCoordinates(e);
+            lastX = coords.x;
+            lastY = coords.y;
+            
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, brushSize / 2, 0, Math.PI * 2);
+            ctx.fillStyle = brushColor;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            if (e.cancelable) e.preventDefault();
+            
+            const coords = getCanvasCoordinates(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.strokeStyle = brushColor;
+            ctx.lineWidth = brushSize;
+            ctx.stroke();
+            
+            lastX = coords.x;
+            lastY = coords.y;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => {
+            startDrawing(e);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            draw(e);
+        }, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function setCanvasColor(color) {
+            brushColor = color;
+            document.querySelectorAll('[id^="brush-"]').forEach(btn => {
+                btn.classList.remove('border-dopa-pink', 'scale-110');
+            });
+            const selectedBtnId = color === '#00B4D8' ? 'brush-blue' : 
+                                color === '#FF4B91' ? 'brush-red' :
+                                color === '#7B2CBF' ? 'brush-purple' : 'brush-yellow';
+            document.getElementById(selectedBtnId).classList.add('border-dopa-pink', 'scale-110');
+        }
+
+        function useEraser() {
+            brushColor = '#FFFFFF';
+            document.querySelectorAll('[id^="brush-"]').forEach(btn => {
+                btn.classList.remove('border-dopa-pink', 'scale-110');
+            });
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(255, 75, 145, 0.15)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([12, 12]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function updateBrushSize(size) {
+            brushSize = size;
+            document.getElementById('brush-size-val').innerText = `${size} px`;
+        }
+
+        // ----------------------------------------
+        // 單元三邏輯：修復對話偵探
+        // ----------------------------------------
+        let currentGameStep = 1;
+        
+        const gameSteps = {
+            1: {
+                question: "第一步（發生什麼）：我們要釐清客觀的事實。你會怎麼向哭泣、發抖的小強開啟話題呢？",
+                options: [
+                    { 
+                        text: "❌ 「小強！你怎麼這麼不小心把海報扯破？」", 
+                        isCorrect: false, 
+                        feedback: "偵探回饋：這句指責會瞬間嚇壞小強，激發他大腦的防禦反擊，害怕到說不出實話唷！" 
+                    },
+                    { 
+                        text: "✅ 「小強，我們深呼吸。剛剛這裡發生了什麼事，可以跟老師說說看嗎？」", 
+                        isCorrect: true, 
+                        feedback: "偵探回饋：完美！用中立且關心的語氣，不帶指責詢問「發生什麼事」，能給當事人充分的安全感！" 
+                    }
+                ],
+                dialogueUpdate: [
+                    { speaker: "偵探老師", text: "「小強，剛剛這裡發生了什麼事，你可以說說看嗎？」", icon: "🕵️‍♂️", color: "text-dopa-yellow" },
+                    { speaker: "小強", text: "「我...只是想轉身拿膠水，結果外套拉鍊卡在海報邊角，一拉，海報就『刷』一聲被撕開了...我不是故意的。」", icon: "👦", color: "text-sky-300" }
+                ]
+            },
+            2: {
+                question: "第二步（當下想法）：了解當事人的情緒與想法。這時你應該引導他表達內心：",
+                options: [
+                    { 
+                        text: "❌ 「你是不是故意不配合大家，想要惡作劇？」", 
+                        isCorrect: false, 
+                        feedback: "偵探回饋：帶著猜疑和成見提問，會撕裂彼此的信任，讓犯錯的孩子更加退縮和憋屈。" 
+                    },
+                    { 
+                        text: "✅ 「撕破的那一瞬間，你當時在想什麼？你感覺怎麼樣？」", 
+                        isCorrect: true, 
+                        feedback: "偵探回饋：棒極了！關心他的動機與心理狀態，小強才能卸下心防，吐露出真正的恐懼。" 
+                    }
+                ],
+                dialogueUpdate: [
+                    { speaker: "偵探老師", text: "「撕破的那一瞬間，你當時在想什麼？你感覺怎麼樣？」", icon: "🕵️‍♂️", color: "text-dopa-yellow" },
+                    { speaker: "小強", text: "「我腦袋一片空白...心跳超快。我很怕組員會生我的氣、不跟我當朋友，我真的好害怕...」", icon: "👦", color: "text-sky-300" }
+                ]
+            },
+            3: {
+                question: "第三步（誰受影響）：引導孩子換位思考，看見自己行為對他人的真正影響：",
+                options: [
+                    { 
+                        text: "✅ 「這件事，對我們這組的其他組員、對海報帶來了什麼影響？」", 
+                        isCorrect: true, 
+                        feedback: "偵探回饋：回答得太妙了！引導他從內疚中走出來，正視自己的行為對團體帶來的不便與情緒。" 
+                    },
+                    { 
+                        text: "❌ 「你看！大家都快被你氣哭了，你覺得你這樣對得起大家嗎？」", 
+                        isCorrect: false, 
+                        feedback: "偵探回饋：這句是情緒勒索與羞辱，無法轉化為具體的修復行動，只會加深罪惡感與仇恨。" 
+                    }
+                ],
+                dialogueUpdate: [
+                    { speaker: "偵探老師", text: "「這件事，對我們的海報與組員帶來了什麼影響呢？」", icon: "🕵️‍♂️", color: "text-dopa-yellow" },
+                    { speaker: "小組組員", text: "「這張海報我們下課寫了整整20分鐘...現在破掉了，我們怕下午交不出去被老師扣分，覺得努力都不見了。」", icon: "👥", color: "text-emerald-300" }
+                ]
+            },
+            4: {
+                question: "第四步（如何修復）：最重要的修補！我們要如何一起找出雙贏、可執行的修補方案？",
+                options: [
+                    { 
+                        text: "❌ 「既然是你弄破的，你就回家重新畫一張一模一樣的還大家！」", 
+                        isCorrect: false, 
+                        feedback: "偵探回饋：這是在施加懲罰和排擠，並非關係的『修復』與合作精神喔！" 
+                    },
+                    { 
+                        text: "✅ 「聽起來大家都非常可惜。那我們可以一起怎麼做，把海報修補回來？」", 
+                        isCorrect: true, 
+                        feedback: "偵探回饋：大功告成！這不只關注修海報，更注重修補小組中破碎、緊張的同儕關係！" 
+                    }
+                ],
+                dialogueUpdate: [
+                    { speaker: "偵探老師", text: "「那我們現在可以一起怎麼做，把海報修補回來呢？」", icon: "🕵️‍♂️", color: "text-dopa-yellow" },
+                    { speaker: "小強", text: "「我知道有一種隱形膠帶。我可以從背後貼好，中午我留下來幫大家做底色著色，幫大家把時間補回來，對不起！」", icon: "👦", color: "text-sky-300" },
+                    { speaker: "小組組員", text: "「那我們在破掉貼膠帶的位置，用立體的亮色膠帶蓋著，說不定海報看起來會更亮眼！」", icon: "👥", color: "text-emerald-300" }
+                ]
+            }
+        };
+
+        function renderGameScreen() {
+            document.getElementById('step-indicator').innerText = `收集線索 ${currentGameStep <= 4 ? currentGameStep - 1 : 4} / 4`;
+            
+            for (let i = 1; i <= 4; i++) {
+                const mapStep = document.getElementById(`flow-step-${i}`);
+                if (i === currentGameStep) {
+                    mapStep.className = "bg-dopa-pink text-white rounded-2xl py-4 px-2 text-sm sm:text-base font-black border-2 border-slate-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+                } else if (i < currentGameStep) {
+                    mapStep.className = "bg-dopa-teal text-slate-900 rounded-2xl py-4 px-2 text-sm sm:text-base font-black border-2 border-slate-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+                } else {
+                    mapStep.className = "bg-gray-100 text-gray-400 rounded-2xl py-4 px-2 text-sm sm:text-base font-bold border-2 border-transparent";
+                }
+            }
+
+            const dialogueBox = document.getElementById('dialogue-box');
+            const optionsContainer = document.getElementById('options-container');
+            const stepData = gameSteps[currentGameStep];
+
+            if (currentGameStep <= 4) {
+                dialogueBox.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                        <span class="text-5xl filter drop-shadow">🕵️‍♂️</span>
+                        <div>
+                            <h5 class="font-black text-dopa-yellow text-base mb-2">人際關係小偵探</h5>
+                            <p class="text-lg font-bold leading-relaxed text-slate-100">${stepData.question}</p>
+                        </div>
+                    </div>
+                `;
+
+                optionsContainer.innerHTML = '';
+                stepData.options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full bg-slate-800 hover:bg-slate-700 text-left p-5 rounded-2xl border-2 border-slate-700 text-base md:text-lg font-bold transition-all flex items-start gap-4 text-white bubble-btn leading-relaxed";
+                    btn.innerHTML = `<span class="text-2xl shrink-0">💬</span> <span>${opt.text}</span>`;
+                    btn.onclick = () => handleGameChoice(opt);
+                    optionsContainer.appendChild(btn);
+                });
+            } else {
+                dialogueBox.innerHTML = `
+                    <div class="text-center py-8">
+                        <span class="text-[80px] filter drop-shadow">🏆</span>
+                        <h4 class="font-extrabold text-dopa-yellow text-2xl sm:text-3xl mt-6">恭喜你！人際衝突案件完美破案！</h4>
+                        <p class="text-lg text-slate-300 mt-4 max-w-2xl mx-auto leading-relaxed font-bold">
+                            你完美示範了「修復式對話」！當我們不一味指責，而是詢問「發生什麼事」與「可以怎麼修補」，受傷的心反而會靠得更近！
+                        </p>
+                    </div>
+                `;
+                optionsContainer.innerHTML = `
+                    <button onclick="restartDetectiveGame()" class="w-full bg-dopa-teal text-slate-950 font-black py-5 px-6 rounded-2xl shadow-md transition-all text-center bubble-btn text-lg">
+                        再玩一次！精進人際調和超能力 🌟
+                    </button>
+                `;
+                
+                confetti({
+                    particleCount: 180,
+                    spread: 90,
+                    colors: ['#FF4B91', '#FFD131', '#FF6B35', '#00F5D4', '#00B4D8'],
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function handleGameChoice(selectedOption) {
+            const dialogueBox = document.getElementById('dialogue-box');
+            const optionsContainer = document.getElementById('options-container');
+            const stepData = gameSteps[currentGameStep];
+
+            if (selectedOption.isCorrect) {
+                dialogueBox.innerHTML = `
+                    <div class="bg-emerald-950/80 p-5 rounded-2xl border-2 border-emerald-500 text-base md:text-lg text-emerald-200 font-bold mb-6 leading-relaxed">
+                        🎉 ${selectedOption.feedback}
+                    </div>
+                    <div class="space-y-6 mt-4">
+                        ${stepData.dialogueUpdate.map(d => `
+                            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                                <span class="text-4xl shrink-0">${d.icon}</span>
+                                <div>
+                                    <h5 class="font-black text-base ${d.color} mb-1">${d.speaker}</h5>
+                                    <p class="text-lg text-slate-100 leading-relaxed font-bold">${d.text}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                optionsContainer.innerHTML = `
+                    <button onclick="goToNextStep()" class="w-full bg-dopa-pink text-white font-black py-5 px-6 rounded-2xl shadow-md transition-all text-center bubble-btn flex items-center justify-center gap-3 text-lg">
+                        <span>解鎖下一道修復線索</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                `;
+
+                confetti({
+                    particleCount: 40,
+                    spread: 55,
+                    colors: ['#00F5D4', '#FF4B91', '#FFD131'],
+                    origin: { y: 0.8 }
+                });
+            } else {
+                dialogueBox.innerHTML = `
+                    <div class="bg-rose-950/80 p-6 rounded-2xl border-2 border-rose-500 text-lg text-rose-200 font-bold leading-relaxed">
+                        ⚠️ 糟糕！${selectedOption.feedback} <br><br>
+                        <strong>再想一想，身為優秀的人際引導者，要怎麼開口才能幫大家降低敵意，找出建設性的答案呢？</strong>
+                    </div>
+                `;
+
+                optionsContainer.innerHTML = `
+                    <button onclick="renderGameScreen()" class="w-full bg-dopa-yellow text-slate-900 font-black py-5 px-6 rounded-2xl shadow-md transition-all text-center bubble-btn text-lg">
+                        重新思考，選擇另一個問法！
+                    </button>
+                `;
+            }
+        }
+
+        function goToNextStep() {
+            currentGameStep++;
+            renderGameScreen();
+        }
+
+        function restartDetectiveGame() {
+            currentGameStep = 1;
+            renderGameScreen();
+        }
+
+        // ----------------------------------------
+        // 大人專區開關邏輯
+        // ----------------------------------------
+        function toggleSupportZone() {
+            const wrapper = document.getElementById('support-zone-wrapper');
+            const btn = document.getElementById('supportToggleBtn');
+            const isHidden = wrapper.classList.contains('hidden');
+            
+            if (isHidden) {
+                wrapper.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-eye-slash text-xl"></i> <span>隱藏大人指引卡</span>`;
+                btn.className = "w-full sm:w-auto justify-center bg-slate-700 text-white border-4 border-slate-800 px-6 py-4 rounded-2xl text-base md:text-lg font-black flex items-center gap-3 shadow-[2px_2px_0px_0px_rgba(30,41,59,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all";
+                
+                confetti({
+                    particleCount: 60,
+                    spread: 40,
+                    colors: ['#7B2CBF', '#00B4D8'],
+                    origin: { y: 0.9 }
+                });
+
+                setTimeout(() => {
+                    wrapper.scrollIntoView({ behavior: 'smooth' });
+                }, 150);
+            } else {
+                wrapper.classList.add('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-user-shield text-xl"></i> <span>展開大人指引卡</span>`;
+                btn.className = "w-full sm:w-auto justify-center bg-dopa-purple text-white border-4 border-slate-800 px-6 py-4 rounded-2xl text-base md:text-lg font-black flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all";
+            }
+        }
+
+        // ----------------------------------------
+        // 初始化載入
+        // ----------------------------------------
+        window.onload = function() {
+            renderGameScreen();
+        }
+    </script>
+</body>
+</html>

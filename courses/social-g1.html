@@ -1,0 +1,792 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情緒小偵探 SEL 互動網 </title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 React 函式庫 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- 載入 Babel 進行 JSX 轉譯 -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script type="text/babel">
+        // 為了在單一 HTML 檔案中使用 Lucide Icons，我們手動定義 SVG Icons
+        const ArrowLeft = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>;
+        const CheckCircle = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>;
+        const XCircle = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>;
+        const BookOpen = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 15a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v3a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6Z"/><path d="M22 15a6 6 0 0 0-6-6H4a6 6 0 0 0-6 6"/><path d="M12 9v12"/></svg>;
+        const Star = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+        
+        // 從 React 取得所需的 Hook
+        const { useState, useEffect, useRef } = React;
+
+        // 輔助函式：亂序排列陣列
+        const shuffleArray = (array) => {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        };
+
+        // --- 元件：按鈕與卡片 (多巴胺風格更新) ---
+
+        const GameButton = ({ onClick, children, className = "", color = "pink" }) => {
+          // 使用高飽和度的顏色組合
+          const colorClasses = {
+            pink: "bg-fuchsia-400 hover:bg-fuchsia-500 border-b-4 border-fuchsia-600 active:border-b-0 active:translate-y-1 shadow-fuchsia-400/50",
+            green: "bg-lime-400 hover:bg-lime-500 border-b-4 border-lime-600 active:border-b-0 active:translate-y-1 text-gray-900 shadow-lime-400/50",
+            yellow: "bg-amber-400 hover:bg-amber-500 border-b-4 border-amber-600 active:border-b-0 active:translate-y-1 shadow-amber-400/50",
+            blue: "bg-cyan-400 hover:bg-cyan-500 border-b-4 border-cyan-600 active:border-b-0 active:translate-y-1 text-gray-900 shadow-cyan-400/50",
+          };
+
+          return (
+            <button
+              onClick={onClick}
+              className={`${colorClasses[color]} text-white font-black py-3 px-6 rounded-full transition-all duration-150 flex items-center justify-center gap-2 shadow-xl w-full sm:w-auto ${className}`}
+            >
+              {children}
+            </button>
+          );
+        };
+
+        const FeedbackModal = ({ isCorrect, message, onNext, visible }) => {
+          if (!visible) return null;
+
+          return (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in p-4">
+              <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-4 border-fuchsia-400 transform scale-100 animate-bounce-small">
+                <div className="flex justify-center mb-4">
+                  {isCorrect ? (
+                    <CheckCircle className="w-20 h-20 text-lime-500 animate-pulse" />
+                  ) : (
+                    <XCircle className="w-20 h-20 text-red-500" />
+                  )}
+                </div>
+                <h2 className="text-2xl font-black text-gray-800 mb-2">
+                  {isCorrect ? "超讚！" : "再試一次！"}
+                </h2>
+                <p className="text-gray-600 text-lg mb-6">{message}</p>
+                <GameButton onClick={onNext} color={isCorrect ? "green" : "blue"}>
+                  {isCorrect ? "下一關 / 繼續" : "再挑戰一次"}
+                </GameButton>
+              </div>
+            </div>
+          );
+        };
+        
+        // --- 活動 1：情緒字母樂園 ---
+
+        const Activity1 = ({ onBack }) => {
+          // 更新配色方案為多巴胺風格
+          const initialPairs = [
+            { id: 1, text: "開心", emoji: "😆", color: "bg-yellow-300", matched: false },
+            { id: 2, text: "生氣", emoji: "😡", color: "bg-red-400", matched: false },
+            { id: 3, text: "難過", emoji: "😢", color: "bg-cyan-300", matched: false },
+            { id: 4, text: "害怕", emoji: "😱", color: "bg-purple-300", matched: false },
+            { id: 5, text: "驚訝", emoji: "😮", color: "bg-orange-300", matched: false }, 
+            { id: 6, text: "平靜", emoji: "😌", color: "bg-teal-300", matched: false }, 
+          ];
+          
+          const [pairs, setPairs] = useState(initialPairs);
+          const [selectedWord, setSelectedWord] = useState(null);
+          const [feedback, setFeedback] = useState({ show: false, correct: false, msg: "" });
+          const [completedCount, setCompletedCount] = useState(0);
+
+          const [shuffledWords, setShuffledWords] = useState([]);
+          const [shuffledEmojis, setShuffledEmojis] = useState([]);
+
+          useEffect(() => {
+            const availablePairs = pairs.filter(p => !p.matched);
+            
+            const words = availablePairs.map(p => ({ id: p.id, text: p.text }));
+            const emojis = availablePairs.map(p => ({ id: p.id, emoji: p.emoji, color: p.color }));
+
+            setShuffledWords(shuffleArray(words));
+            setShuffledEmojis(shuffleArray(emojis));
+
+          }, [pairs]);
+
+          const handleWordClick = (id) => {
+            setSelectedWord(id);
+          };
+
+          const handleEmojiClick = (id) => {
+            if (!selectedWord) return;
+
+            if (selectedWord === id) {
+              const newPairs = pairs.map(p => p.id === id ? { ...p, matched: true } : p);
+              setPairs(newPairs);
+              setCompletedCount(prev => prev + 1);
+              setFeedback({ show: true, correct: true, msg: "你找到了正確的情緒配對！太棒啦！" });
+              setSelectedWord(null);
+            } else {
+              setFeedback({ show: true, correct: false, msg: "這兩個好像不太一樣喔？再看仔細一點！" });
+              setSelectedWord(null);
+            }
+          };
+
+          if (completedCount === initialPairs.length) {
+            return (
+              <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-6">
+                <div className="text-8xl animate-bounce">🥳</div>
+                <h2 className="text-3xl font-black text-fuchsia-600">恭喜你！</h2>
+                <p className="text-xl text-gray-700">你已經認識了所有的情緒字寶寶！</p>
+                <GameButton onClick={onBack} color="pink">回到總部</GameButton>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex flex-col h-full max-w-4xl mx-auto p-4 bg-white/70 rounded-3xl shadow-xl border-4 border-fuchsia-300">
+              <div className="flex justify-between items-center mb-6">
+                <button onClick={onBack} className="p-2 bg-pink-100 hover:bg-pink-300 rounded-full transition-colors"><ArrowLeft className="w-6 h-6 text-fuchsia-600" /></button>
+                <h2 className="text-2xl font-black text-fuchsia-600 flex items-center gap-2">
+                  <span className="text-3xl">🅰️</span> 情緒字母樂園
+                </h2>
+                <div className="w-10"></div>
+              </div>
+
+              <p className="text-center text-lg mb-8 text-gray-700 bg-yellow-200/80 p-3 rounded-xl border border-yellow-400 font-bold">
+                我是情緒小偵探！請把 <span className="font-extrabold text-fuchsia-600">文字</span> 點選起來，再點擊正確的 <span className="font-extrabold text-orange-600">表情氣球</span> 喔！
+              </p>
+
+              <div className="grid grid-cols-2 gap-8 flex-1 overflow-y-auto pb-4"> 
+                {/* Words Column */}
+                <div className="space-y-4">
+                  {shuffledWords.map((item) => (
+                      <button
+                        key={`word-${item.id}`}
+                        onClick={() => handleWordClick(item.id)}
+                        className={`w-full p-4 text-xl font-black rounded-3xl shadow-lg transition-all transform hover:scale-105 border-4 
+                          ${selectedWord === item.id ? 'border-fuchsia-600 bg-fuchsia-200 text-fuchsia-800' : 'border-pink-500 bg-pink-300 text-white'}
+                        `}
+                      >
+                        {item.text}
+                      </button>
+                  ))}
+                </div>
+
+                {/* Emojis Column */}
+                <div className="space-y-4">
+                  {shuffledEmojis.map((item) => (
+                      <button
+                        key={`emoji-${item.id}`}
+                        onClick={() => handleEmojiClick(item.id)}
+                        className={`w-full p-4 text-4xl rounded-3xl shadow-lg transition-all transform hover:scale-105 border-4 border-white ${item.color} hover:shadow-2xl`}
+                      >
+                        {item.emoji}
+                      </button>
+                  ))}
+                </div>
+              </div>
+
+              <FeedbackModal 
+                visible={feedback.show} 
+                isCorrect={feedback.correct} 
+                message={feedback.msg} 
+                onNext={() => setFeedback({ ...feedback, show: false })} 
+              />
+            </div>
+          );
+        };
+
+        // --- 活動 2：表情猜猜看 ---
+
+        const Activity2 = ({ onBack }) => {
+          const [step, setStep] = useState(0); 
+          const [scenarioIndex, setScenarioIndex] = useState(0);
+          const [feedback, setFeedback] = useState({ show: false, correct: false, msg: "" });
+
+          const scenarios = [
+            {
+              text: "小明拿到最喜歡的草莓冰淇淋，還沒吃到一口，不小心將它掉到了地上，變成一灘水。他的眼淚快要......",
+              icon: "🍦",
+              correctEmoji: "😢",
+              correctLabel: "難過",
+              options: [
+                { emoji: "😆", label: "開心" },
+                { emoji: "😢", label: "難過" },
+                { emoji: "😡", label: "生氣" },
+                { emoji: "😱", label: "驚訝" }
+              ]
+            },
+            {
+              text: "今天是小希的生日，朋友們大聲唱著歌，小希的嘴角忍不住往上揚，眼睛笑成了一條線。",
+              icon: "🎂",
+              correctEmoji: "😆",
+              correctLabel: "開心",
+              options: [
+                { emoji: "😆", label: "開心" },
+                { emoji: "😢", label: "難過" },
+                { emoji: "😴", label: "想睡" },
+                { emoji: "😡", label: "生氣" }
+              ]
+            },
+            {
+              text: "小剛正開心地玩著他最心愛的積木機器人，突然間，隔壁的小美沒有經過小剛的同意，就把機器人搶走了。小剛的臉瞬間脹紅，雙手緊緊握成了拳頭，他覺得肚子裡好像有一團火在燒！",
+              icon: "🤖",
+              correctEmoji: "😡",
+              correctLabel: "生氣",
+              options: [
+                { emoji: "😆", label: "開心" },
+                { emoji: "😢", label: "難過" },
+                { emoji: "😡", label: "生氣" },
+                { emoji: "😎", label: "得意" }
+              ]
+            }
+          ];
+
+          const currentScenario = scenarios[scenarioIndex];
+
+          const handleGuess = (option) => {
+            if (option.emoji === currentScenario.correctEmoji) {
+              setFeedback({ show: true, correct: true, msg: "答對了！這時候心裡會覺得" + currentScenario.correctLabel + "。" });
+            } else {
+              setFeedback({ show: true, correct: false, msg: "嗯...再想想看，這種情況下你是什麼感覺？" });
+            }
+          };
+
+          const nextStep = () => {
+            setFeedback({ ...feedback, show: false });
+            if (feedback.correct) {
+              setStep(2); 
+            }
+          };
+
+          const finishMimic = () => {
+            if (scenarioIndex < scenarios.length - 1) {
+              setScenarioIndex(prev => prev + 1);
+              setStep(1);
+            } else {
+              setStep(3); 
+            }
+          };
+
+          if (step === 3) {
+            return (
+              <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-6">
+                <div className="text-8xl animate-spin-slow">🕵️‍♀️</div>
+                <h2 className="text-3xl font-black text-cyan-600">任務完成！</h2>
+                <p className="text-xl text-gray-700">你是最棒的表情偵探！</p>
+                <GameButton onClick={onBack} color="blue">回到總部</GameButton>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex flex-col h-full max-w-4xl mx-auto p-4 bg-white/70 rounded-3xl shadow-xl border-4 border-cyan-300">
+              <div className="flex justify-between items-center mb-6">
+                <button onClick={onBack} className="p-2 bg-pink-100 hover:bg-pink-300 rounded-full"><ArrowLeft className="w-6 h-6 text-fuchsia-600" /></button>
+                <h2 className="text-2xl font-black text-cyan-600 flex items-center gap-2">
+                  <span className="text-3xl">🕵️‍♀️</span> 表情猜猜看
+                </h2>
+                <div className="w-10"></div>
+              </div>
+
+              {step === 0 && (
+                 <div className="flex flex-col items-center justify-center flex-1 space-y-6">
+                   <h3 className="text-3xl font-black text-gray-800">觀察小挑戰</h3>
+                   <p className="text-xl text-center max-w-md text-gray-700">仔細看看發生的事情，然後猜猜看主角現在是什麼表情？</p>
+                   <GameButton onClick={() => setStep(1)} color="green">開始挑戰</GameButton>
+                 </div>
+              )}
+
+              {step === 1 && (
+                <div className="flex flex-col items-center flex-1">
+                  <div className="bg-yellow-200 p-8 rounded-3xl shadow-xl border-4 border-amber-400 w-full max-w-2xl mb-8 text-center transform rotate-1">
+                    <div className="text-6xl mb-4">{currentScenario.icon}</div>
+                    <p className="text-2xl font-black text-gray-900 leading-relaxed">{currentScenario.text}</p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
+                    {currentScenario.options.map((opt, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleGuess(opt)}
+                        className="bg-white hover:bg-cyan-100 border-4 border-cyan-400 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl"
+                      >
+                        <span className="text-5xl">{opt.emoji}</span>
+                        <span className="font-black text-gray-700">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="flex flex-col items-center flex-1">
+                   <h3 className="text-2xl font-black mb-4 text-fuchsia-600">鏡子模仿秀</h3>
+                   <div className="bg-gradient-to-br from-fuchsia-300 to-yellow-300 p-8 rounded-full w-64 h-64 flex items-center justify-center border-8 border-white shadow-xl mb-6 animate-pulse-slow">
+                     <span className="text-9xl">{currentScenario.correctEmoji}</span>
+                   </div>
+                   <p className="text-xl mb-8 text-center text-gray-700">
+                     做一個 <span className="font-extrabold text-cyan-600 text-2xl">「{currentScenario.correctLabel}」</span> 的表情！<br/>
+                     看看旁邊的鏡子，或是模仿這個表情給老師看。
+                   </p>
+                   <GameButton onClick={finishMimic} color="yellow">我做好了！</GameButton>
+                </div>
+              )}
+
+              <FeedbackModal 
+                visible={feedback.show} 
+                isCorrect={feedback.correct} 
+                message={feedback.msg} 
+                onNext={nextStep} 
+              />
+            </div>
+          );
+        };
+
+        // --- 活動 3：小耳朵大眼睛 ---
+        
+        // 2D SVG 元件：專心傾聽 (Correct) - (配色更新)
+        const ActiveListenerSVG = () => (
+            <svg viewBox="0 0 100 80" className="w-full h-full">
+                {/* 地面 (亮黃色) */}
+                <rect x="0" y="70" width="100" height="10" fill="#FDE047" /> 
+
+                {/* Speaker (Left) - Profile facing Right */}
+                <rect x="20" y="38" width="10" height="32" fill="#F472B6" rx="3" /> {/* Body (熱粉) */}
+                <circle cx="25" cy="30" r="8" fill="#FDBA74" /> {/* Head (亮橙) */}
+                {/* 眼睛：位於臉部右側，看向右方 (對著 Listener) */}
+                <circle cx="31" cy="30" r="1.5" fill="#4B5563" /> 
+
+                {/* Talk bubble (白色色塊) */}
+                <rect x="35" y="10" width="15" height="10" fill="#FFFFFF" rx="3" />
+                <text x="42.5" y="17" fontSize="5" textAnchor="middle" fill="#4B5563" fontWeight="bold">說話</text>
+                <line x1="33" y1="20" x2="28" y2="28" stroke="#FFFFFF" strokeWidth="1" /> 
+                
+                {/* Listener (Right) - Profile facing Left */}
+                <rect x="70" y="38" width="10" height="32" fill="#4ADE80" rx="3" /> {/* Body (萊姆綠) */}
+                <circle cx="75" cy="30" r="8" fill="#FBBF24" /> {/* Head (亮黃) */}
+                {/* 眼睛：位於臉部左側，看向左方 (對著 Speaker) */}
+                <circle cx="69" cy="30" r="1.5" fill="#4B5563" /> 
+
+                {/* Active Listening Indicators (Gaze line) - 虛線，萊姆綠 */}
+                <line x1="33" y1="30" x2="67" y2="30" stroke="#4ADE80" strokeDasharray="3, 3" strokeWidth="1.5" /> 
+                <text x="50" y="45" fontSize="6" textAnchor="middle" fill="#4ADE80" fontWeight="bold">眼神接觸</text>
+            </svg>
+        );
+
+        // 2D SVG 元件：分心玩樂 (Incorrect) - (配色更新)
+        const DistractedListenerSVG = () => (
+            <svg viewBox="0 0 100 80" className="w-full h-full">
+                {/* 地面 (亮黃色) */}
+                <rect x="0" y="70" width="100" height="10" fill="#FDE047" />
+                
+                {/* Speaker (Left) - Profile facing Right */}
+                <rect x="20" y="38" width="10" height="32" fill="#F472B6" rx="3" /> {/* Body (熱粉) */}
+                <circle cx="25" cy="30" r="8" fill="#FDBA74" /> {/* Head (亮橙) */}
+                {/* Speaker 眼睛：位於臉部右側，看向右方 (對著 Listener) */}
+                <circle cx="31" cy="30" r="1.5" fill="#4B5563" /> 
+
+                {/* Talk bubble (白色色塊) */}
+                <rect x="35" y="10" width="15" height="10" fill="#FFFFFF" rx="3" />
+                <text x="42.5" y="17" fontSize="5" textAnchor="middle" fill="#4B5563" fontWeight="bold">說話</text>
+                <line x1="33" y1="20" x2="28" y2="28" stroke="#FFFFFF" strokeWidth="1" /> 
+
+                {/* Distracted Listener (Right) - Profile facing Right (Away from Speaker) */}
+                <rect x="70" y="38" width="30" height="32" fill="#A78BFA" rx="3" /> {/* Body (電光紫) */}
+                <circle cx="78" cy="30" r="8" fill="#FBBF24" /> {/* Head (亮黃) - 向右微調中心 */}
+                {/* Listener 眼睛：位於臉部右側，看向右方 (對著車子) */}
+                <circle cx="84" cy="30" r="1.5" fill="#4B5563" />
+                
+                {/* Car Toy (Looked at object) - 鮮豔的紅色車子 */}
+                <rect x="85" y="60" width="15" height="10" fill="#EF4444" rx="2" /> {/* Car body */}
+                <circle cx="88" cy="70" r="3" fill="#1F2937" /> {/* Wheel 1 (深色) */}
+                <circle cx="97" cy="70" r="3" fill="#1F2937" /> {/* Wheel 2 (深色) */}
+                <rect x="88" y="62" width="10" height="5" fill="#67E8F9" rx="1" /> {/* Window (亮藍色) */}
+
+                {/* Distracted Gaze line (熱粉虛線) - 指向新的車子位置 */}
+                <path d="M 84 33 C 88 45, 95 60, 95 65" stroke="#F472B6" strokeDasharray="3, 3" strokeWidth="1.5" fill="none" />
+            </svg>
+        );
+
+
+        const Activity3 = ({ onBack }) => {
+          const [subActivity, setSubActivity] = useState('menu'); // menu, polite, eyes
+          const [feedback, setFeedback] = useState({ show: false, correct: false, msg: "" });
+
+          // Eyes Game State
+          const [eyeScore, setEyeScore] = useState(0);
+          const [eyePosition, setEyePosition] = useState({ x: 50, y: 50 });
+          const [gameActive, setGameActive] = useState(false);
+          const containerRef = useRef(null);
+
+          // Move eyes randomly
+          useEffect(() => {
+            let interval;
+            if (gameActive && eyeScore < 5) {
+              interval = setInterval(() => {
+                setEyePosition({
+                  x: 20 + Math.random() * 60,
+                  y: 20 + Math.random() * 60
+                });
+              }, 1500);
+            } else if (eyeScore >= 5) {
+              setGameActive(false);
+              setFeedback({ show: true, correct: true, msg: "太厲害了！你的眼睛一直看著我，這就是專心傾聽喔！" });
+            }
+            return () => clearInterval(interval);
+          }, [gameActive, eyeScore]);
+
+          const handlePoliteChoice = (isCorrect) => {
+            if (isCorrect) {
+              setFeedback({ show: true, correct: true, msg: "沒錯！看著對方的眼睛，身體轉向對方，才是禮貌小幫手！" });
+            } else {
+              setFeedback({ show: true, correct: false, msg: "哎呀，如果不看對方，對方會覺得你不想聽他說話喔。" });
+            }
+          };
+
+          const startEyeGame = () => {
+            setEyeScore(0);
+            setGameActive(true);
+            setEyePosition({ x: 50, y: 50 });
+          };
+
+          const handleEyeClick = () => {
+            if(!gameActive) return;
+            setEyeScore(prev => prev + 1);
+            // Instant move on click
+            setEyePosition({
+              x: 20 + Math.random() * 60,
+              y: 20 + Math.random() * 60
+            });
+          };
+
+          const resetActivity = () => {
+            setFeedback({ ...feedback, show: false });
+            if (feedback.correct) setSubActivity('menu');
+          };
+
+          if (subActivity === 'menu') {
+            return (
+              <div className="flex flex-col h-full max-w-4xl mx-auto p-4 bg-white/70 rounded-3xl shadow-xl border-4 border-lime-300">
+                <div className="flex justify-between items-center mb-6">
+                  <button onClick={onBack} className="p-2 bg-pink-100 hover:bg-pink-300 rounded-full"><ArrowLeft className="w-6 h-6 text-fuchsia-600" /></button>
+                  <h2 className="text-2xl font-black text-lime-600 flex items-center gap-2">
+                    <span className="text-3xl">👂</span> 小耳朵大眼睛
+                  </h2>
+                  <div className="w-10"></div>
+                </div>
+                
+                <div className="flex flex-col gap-6 items-center justify-center flex-1">
+                  <button onClick={() => setSubActivity('polite')} className="bg-white hover:bg-lime-50 w-full max-w-md p-6 rounded-3xl shadow-lg border-b-8 border-lime-400 flex items-center gap-4 transition-transform hover:scale-105">
+                    <div className="bg-lime-200 p-4 rounded-full text-4xl">👼</div>
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold text-gray-800">禮貌行為點點名</h3>
+                      <p className="text-gray-500">誰才是好聽眾呢？</p>
+                    </div>
+                  </button>
+
+                  <button onClick={() => setSubActivity('eyes')} className="w-full bg-white hover:bg-amber-50 max-w-md p-6 rounded-3xl shadow-lg border-b-8 border-amber-400 flex items-center gap-4 transition-transform hover:scale-105">
+                    <div className="bg-amber-200 p-4 rounded-full text-4xl">👀</div>
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold text-gray-800">眼神接觸訓練</h3>
+                      <p className="text-gray-500">練習看著對方的眼睛</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          if (subActivity === 'polite') {
+            return (
+              <div className="flex flex-col h-full p-4 items-center bg-white/70 rounded-3xl shadow-xl border-4 border-lime-300">
+                <h2 className="text-2xl font-black text-lime-600 mb-2">誰是禮貌小幫手？</h2>
+                <p className="mb-6 text-gray-700 font-medium">小華正在說話，誰有在專心聽？</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+                  {/* Option 1: Correct (Active Listener) */}
+                  <button onClick={() => handlePoliteChoice(true)} className="group bg-lime-100 rounded-3xl p-6 shadow-xl border-4 border-transparent hover:border-lime-500 transition-all transform hover:scale-[1.02]">
+                    <div className="h-48 bg-lime-50 rounded-2xl mb-4 flex items-center justify-center relative overflow-hidden">
+                        <ActiveListenerSVG />
+                    </div>
+                    <p className="font-black text-xl text-gray-800">看著對方，身體轉向他</p>
+                  </button>
+
+                  {/* Option 2: Incorrect (Distracted Listener) */}
+                  <button onClick={() => handlePoliteChoice(false)} className="group bg-red-100 rounded-3xl p-6 shadow-xl border-4 border-transparent hover:border-red-500 transition-all transform hover:scale-[1.02]">
+                    <div className="h-48 bg-fuchsia-50 rounded-2xl mb-4 flex items-center justify-center relative overflow-hidden">
+                        <DistractedListenerSVG />
+                    </div>
+                    <p className="font-black text-xl text-gray-800">在玩車子，不看對方</p>
+                  </button>
+                </div>
+                <div className="mt-8">
+                   <GameButton onClick={() => setSubActivity('menu')} color="pink">返回選單</GameButton>
+                </div>
+
+                <FeedbackModal visible={feedback.show} isCorrect={feedback.correct} message={feedback.msg} onNext={resetActivity} />
+              </div>
+            );
+          }
+
+          if (subActivity === 'eyes') {
+            return (
+              <div className="flex flex-col h-full p-4 items-center relative overflow-hidden bg-white/70 rounded-3xl shadow-xl border-4 border-lime-300">
+                <h2 className="text-2xl font-black text-amber-600 mb-2">抓住我的眼睛！</h2>
+                <p className="mb-4 text-gray-700 font-medium">當這個臉移動時，請點擊它的眼睛保持接觸 (<span className="text-amber-600 font-black">{eyeScore}</span>/5)</p>
+                
+                <div ref={containerRef} className="bg-amber-100 w-full max-w-2xl h-80 rounded-3xl border-4 border-amber-400 relative overflow-hidden shadow-inner">
+                   {!gameActive && eyeScore === 0 && (
+                     <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                       <GameButton onClick={startEyeGame} color="green">開始練習</GameButton>
+                     </div>
+                   )}
+
+                   <div 
+                     className="absolute transition-all duration-1000 ease-in-out cursor-pointer"
+                     style={{ 
+                       left: `${eyePosition.x}%`, 
+                       top: `${eyePosition.y}%`, 
+                       transform: 'translate(-50%, -50%)' 
+                     }}
+                     onClick={handleEyeClick}
+                   >
+                     <div className="w-24 h-24 bg-yellow-300 rounded-full border-4 border-amber-600 flex items-center justify-center shadow-lg relative">
+                       {/* Eyes */}
+                       <div className="flex gap-2">
+                         <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                         </div>
+                         <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                         </div>
+                       </div>
+                       {/* Mouth */}
+                       <div className="absolute bottom-4 w-8 h-4 border-b-4 border-red-500 rounded-full"></div>
+                     </div>
+                     {gameActive && <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-fuchsia-400 text-white font-bold px-2 py-1 rounded-full shadow-lg text-sm whitespace-nowrap animate-bounce">點我看著我！</div>}
+                   </div>
+                </div>
+
+                <div className="mt-8">
+                   <GameButton onClick={() => setSubActivity('menu')} color="pink">返回選單</GameButton>
+                </div>
+
+                <FeedbackModal visible={feedback.show} isCorrect={feedback.correct} message={feedback.msg} onNext={resetActivity} />
+              </div>
+            );
+          }
+        };
+
+        // --- 教師專區 ---
+
+        const TeacherZone = ({ onBack }) => {
+          return (
+            <div className="h-full flex flex-col max-w-4xl mx-auto p-4 bg-white/70 rounded-3xl shadow-xl border-4 border-cyan-300 overflow-y-auto">
+              <div className="flex items-center gap-4 mb-8 border-b pb-4 border-cyan-400">
+                <button onClick={onBack} className="p-2 bg-pink-100 hover:bg-pink-300 rounded-full"><ArrowLeft className="w-6 h-6 text-fuchsia-600" /></button>
+                <h1 className="text-3xl font-black text-gray-800">👩‍🏫 教師教學指引</h1>
+              </div>
+
+              <div className="space-y-8">
+                <section>
+                  <h2 className="text-xl font-black text-cyan-600 mb-3 flex items-center gap-2 bg-cyan-100 p-2 rounded-xl">
+                    <BookOpen className="w-5 h-5"/> 課程核心目標
+                  </h2>
+                  <div className="bg-cyan-50 p-4 rounded-xl text-gray-700 leading-relaxed border-l-4 border-cyan-400">
+                    <p>本單元旨在協助國小一年級學生建立基礎的<strong>社會覺察 (Social Awareness)</strong> 能力。透過互動遊戲，讓學生學習：</p>
+                    <ul className="list-disc pl-5 mt-2 space-y-1">
+                      <li>辨識並命名基礎情緒（開心、生氣、難過、害怕等）。</li>
+                      <li>透過臉部表情推測他人的感受。</li>
+                      <li>理解並練習積極傾聽的肢體語言（眼神接觸、身體面向）。</li>
+                    </ul>
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="text-xl font-black text-lime-600 mb-3 flex items-center gap-2 bg-lime-100 p-2 rounded-xl">
+                    <CheckCircle className="w-5 h-5"/> 活動引導建議
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-fuchsia-100 p-4 rounded-xl shadow-md border-b-4 border-fuchsia-400">
+                      <h3 className="font-black text-fuchsia-600 mb-2">🅰️ 情緒字母樂園</h3>
+                      <p className="text-sm text-gray-700 mb-2"><strong>重點：</strong>詞彙與感受連結。</p>
+                      <p className="text-sm text-gray-600"><strong>提問：</strong>「你上次覺得很開心是什麼時候？你的臉會變成什麼樣子？」</p>
+                    </div>
+                    <div className="bg-yellow-100 p-4 rounded-xl shadow-md border-b-4 border-amber-400">
+                      <h3 className="font-black text-amber-600 mb-2">🕵️‍♀️ 表情猜猜看</h3>
+                      <p className="text-sm text-gray-700 mb-2"><strong>重點：</strong>非語言訊息覺察。</p>
+                      <p className="text-sm text-gray-600"><strong>準備：</strong>可準備實體鏡子讓學生觀察自己。</p>
+                    </div>
+                    <div className="bg-cyan-100 p-4 rounded-xl shadow-md border-b-4 border-cyan-400">
+                      <h3 className="font-black text-cyan-600 mb-2">👂 小耳朵大眼睛</h3>
+                      <p className="text-sm text-gray-700 mb-2"><strong>重點：</strong>尊重與專注。</p>
+                      <p className="text-sm text-gray-600"><strong>延伸：</strong>在日常對話中，適時提醒學生「眼睛有沒有抓到老師的眼睛？」</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="text-xl font-black text-amber-600 mb-3 flex items-center gap-2 bg-amber-100 p-2 rounded-xl">
+                    <Star className="w-5 h-5"/> 課堂延伸活動
+                  </h2>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex gap-2 p-2 bg-white rounded-lg shadow-sm"><span className="text-amber-500 font-bold">1.</span> <strong>情緒溫度計：</strong> 每天早上讓學生指出今天的心情氣球顏色。</li>
+                    <li className="flex gap-2 p-2 bg-white rounded-lg shadow-sm"><span className="text-amber-500 font-bold">2.</span> <strong>無聲傳話筒：</strong> 只能用表情和動作傳達一句話（如：我肚子餓了），讓下一位同學猜。</li>
+                  </ul>
+                </section>
+                <div className="flex justify-center mt-8">
+                  <GameButton onClick={onBack} color="pink">返回首頁</GameButton>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // --- 主程式：首頁與導航 ---
+
+        const App = () => {
+          const [currentScreen, setCurrentScreen] = useState('home'); 
+
+          const renderScreen = () => {
+            switch(currentScreen) {
+              case 'act1': return <Activity1 onBack={() => setCurrentScreen('home')} />;
+              case 'act2': return <Activity2 onBack={() => setCurrentScreen('home')} />;
+              case 'act3': return <Activity3 onBack={() => setCurrentScreen('home')} />;
+              case 'teacher': return <TeacherZone onBack={() => setCurrentScreen('home')} />;
+              default: return (
+                <div className="flex flex-col h-full max-w-md mx-auto p-6 items-center justify-center space-y-8">
+                  <header className="text-center mb-4">
+                    {/* 移除彩虹圖案，改為偵探表情符號 */}
+                    <div className="text-7xl mb-2 animate-bounce">🕵️</div>
+                    <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-yellow-500 tracking-tighter transform hover:scale-105 transition duration-300">
+                      情緒小偵探
+                    </h1>
+                    <p className="text-xl font-bold text-gray-700 mt-2">點亮你的情緒雷達！</p>
+                  </header>
+
+                  <nav className="w-full space-y-4">
+                    <button 
+                      onClick={() => setCurrentScreen('act1')}
+                      className="w-full bg-pink-300 hover:bg-pink-400 p-4 rounded-3xl shadow-xl border-b-8 border-fuchsia-500 flex items-center gap-4 transition-transform active:scale-95 transform hover:-translate-y-1"
+                    >
+                      <div className="bg-fuchsia-500 p-3 rounded-2xl">
+                        <span className="text-3xl">🅰️</span>
+                      </div>
+                      <div className="text-left flex-1 text-white">
+                        <h3 className="text-xl font-black">情緒字母樂園</h3>
+                        <p className="text-sm font-medium">認識心情的名字</p>
+                      </div>
+                    </button>
+
+                    <button 
+                      onClick={() => setCurrentScreen('act2')}
+                      className="w-full bg-yellow-300 hover:bg-yellow-400 p-4 rounded-3xl shadow-xl border-b-8 border-amber-500 flex items-center gap-4 transition-transform active:scale-95 transform hover:-translate-y-1"
+                    >
+                      <div className="bg-amber-500 p-3 rounded-2xl">
+                        <span className="text-3xl">🧐</span>
+                      </div>
+                      <div className="text-left flex-1 text-gray-900">
+                        <h3 className="text-xl font-black">表情猜猜看</h3>
+                        <p className="text-sm font-medium">觀察臉上的秘密</p>
+                      </div>
+                    </button>
+
+                    <button 
+                      onClick={() => setCurrentScreen('act3')}
+                      className="w-full bg-cyan-300 hover:bg-cyan-400 p-4 rounded-3xl shadow-xl border-b-8 border-cyan-500 flex items-center gap-4 transition-transform active:scale-95 transform hover:-translate-y-1"
+                    >
+                      <div className="bg-cyan-500 p-3 rounded-2xl">
+                        <span className="text-3xl">👂</span>
+                      </div>
+                      <div className="text-left flex-1 text-gray-900">
+                        <h3 className="text-xl font-black">小耳朵大眼睛</h3>
+                        <p className="text-sm font-medium">學習怎麼聽別人說</p>
+                      </div>
+                    </button>
+                  </nav>
+
+                  <div className="mt-8 pt-6 border-t border-gray-300 w-full flex justify-center">
+                    <button 
+                      onClick={() => setCurrentScreen('teacher')}
+                      className="text-fuchsia-500 text-base font-bold flex items-center gap-2 hover:text-fuchsia-700 transition-colors"
+                    >
+                      <BookOpen size={16} className="w-5 h-5" /> 教師專用入口
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-yellow-200 via-pink-200 to-fuchsia-300 font-sans text-gray-800 p-4 md:p-8">
+              <main className="h-full sm:h-[calc(100vh-2rem)] md:h-[calc(100vh-4rem)] overflow-y-auto relative p-2">
+                {renderScreen()}
+              </main>
+            </div>
+          );
+        }
+
+        // 渲染 App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+    <!-- 內聯 CSS 僅用於定義動畫和基礎樣式 -->
+    <style>
+        @keyframes bounce-small {
+          0%, 100% { transform: translateY(-5%); }
+          50% { transform: translateY(0); }
+        }
+        .animate-bounce-small {
+          animation: bounce-small 2s infinite;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 15s linear infinite;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: .5;
+          }
+        }
+        @keyframes pulse-slow {
+            0%, 100% {
+              transform: scale(1);
+              box-shadow: 0 0 0 0 rgba(253, 230, 138, 0.7); /* Yellow/Amber color */
+            }
+            50% {
+              transform: scale(1.05);
+              box-shadow: 0 0 0 10px rgba(253, 230, 138, 0);
+            }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+        }
+        /* 確保全高和寬度 */
+        html, body, #root {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 應用程式將被掛載到此 div -->
+    <div id="root"></div>
+</body>
+</html>

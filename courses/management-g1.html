@@ -1,0 +1,655 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小小的我，厲害的控制家</title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 Lucide Icons (用於圖示) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 載入 Tone.js (用於聲音提示) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* 柔和背景 */
+        }
+        /* 呼吸指示球的動畫效果 */
+        .breath-indicator {
+            transition: transform 4000ms cubic-bezier(0.4, 0, 0.2, 1); /* 標準加速/減速曲線 */
+        }
+        .scale-in {
+            transform: scale(1.5); /* 吸氣時放大 */
+        }
+        .scale-out {
+            transform: scale(1); /* 吐氣時縮小 */
+        }
+        /* 獎勵彈窗動畫 */
+        .reward-toast {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .reward-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 拖曳清單項目樣式 */
+        .schedule-item {
+            cursor: grab;
+            transition: background-color 0.1s;
+        }
+        .schedule-item:active {
+            cursor: grabbing;
+        }
+        /* 拖曳目標區塊樣式 */
+        .drag-target {
+            min-height: 200px;
+        }
+        .drag-target.hover {
+            border-color: #fcd34d; /* 拖曳時顯示黃色邊框 */
+            background-color: #fffbeb;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+    <div id="app-container" class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8 p-4 bg-white rounded-2xl shadow-lg">
+            <h1 class="text-3xl font-bold text-indigo-700">小小的我，厲害的控制家！</h1>
+            <p class="text-gray-600 mt-1">一年級 SEL 自我管理學習：身體與環境的基礎控制</p>
+        </header>
+
+        <!-- Loading Indicator (Simplified) -->
+        <div id="loading" class="text-center p-8 bg-amber-100 rounded-xl shadow-md hidden">
+            <p class="text-amber-700 font-semibold">載入中... 正在準備你的超能力工具箱！</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="space-y-8">
+            
+            <!-- 模組一：4x4x4x 魔法呼吸區 (衝動控制 / 情緒穩定) -->
+            <section class="bg-indigo-100 p-6 rounded-2xl shadow-xl border-4 border-indigo-400">
+                <h2 class="text-2xl font-bold text-indigo-800 mb-4 flex items-center">
+                    <i data-lucide="wind" class="w-6 h-6 mr-2"></i> 1. 我的「暫停鍵」超能力：4x4x4x 魔法呼吸
+                </h2>
+                <p class="text-gray-700 mb-4">這是一個讓你**按下你的暫停鍵**、讓心情變安靜的魔法。跟著節奏和聲音深呼吸！</p>
+
+                <div class="flex flex-col items-center justify-center p-4">
+                    <div id="breath-indicator" class="breath-indicator w-32 h-32 md:w-48 md:h-48 rounded-full bg-teal-400 flex items-center justify-center transition-transform duration-[4000ms] ease-linear shadow-2xl">
+                        <p id="breath-status" class="text-white font-extrabold text-lg text-center select-none">預備，深呼吸！</p>
+                    </div>
+                    <div class="mt-6 flex space-x-4">
+                        <button id="start-breath" onclick="startBreathingCycle()" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition transform hover:scale-105">
+                            開始魔法呼吸
+                        </button>
+                        <button id="stop-breath" onclick="stopBreathingCycle()" class="px-6 py-3 bg-red-500 text-white font-semibold rounded-full shadow-lg hover:bg-red-600 transition transform hover:scale-105" disabled>
+                            停止
+                        </button>
+                    </div>
+                </div>
+                <p class="text-sm text-center text-gray-500 mt-4">口訣：吸氣(4) → 憋氣(4) → 吐氣(4) → 憋氣(4)</p>
+            </section>
+
+            <!-- 模組二：教室裡的「時鐘」和「地圖」 (組織能力) - 視覺化互動 -->
+            <section class="bg-yellow-100 p-6 rounded-2xl shadow-xl border-4 border-yellow-400">
+                <h2 class="text-2xl font-bold text-yellow-800 mb-4 flex items-center">
+                    <i data-lucide="layout-grid" class="w-6 h-6 mr-2"></i> 2. 我的「規律」超能力：視覺化行程與儀式
+                </h2>
+                
+                <!-- 2A: 今日行程表 (Drag & Drop) -->
+                <h3 class="text-xl font-bold text-yellow-700 mb-3 border-b border-yellow-300 pb-2">今日行程表 (拖曳來完成任務)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- 待辦清單 (To Do) -->
+                    <div id="todo-list" class="drag-target p-4 bg-white rounded-xl shadow-md border-2 border-yellow-500/50" ondragover="allowDrop(event)" ondrop="drop(event)" data-list="todo">
+                        <p class="font-bold text-yellow-800 mb-3 flex items-center">
+                            <i data-lucide="list-todo" class="w-5 h-5 mr-1"></i> 待辦清單
+                        </p>
+                        <div id="schedule-item-1" draggable="true" ondragstart="drag(event, this)" class="schedule-item p-3 mb-2 bg-yellow-100 border border-yellow-300 rounded-lg flex items-center text-yellow-700">
+                            <i data-lucide="bell" class="w-5 h-5 mr-3"></i> 早上集合 (進教室，安靜坐好)
+                        </div>
+                        <div id="schedule-item-2" draggable="true" ondragstart="drag(event, this)" class="schedule-item p-3 mb-2 bg-yellow-100 border border-yellow-300 rounded-lg flex items-center text-yellow-700">
+                            <i data-lucide="glasses" class="w-5 h-5 mr-3"></i> 專心上課 (看老師，動手寫)
+                        </div>
+                        <div id="schedule-item-3" draggable="true" ondragstart="drag(event, this)" class="schedule-item p-3 mb-2 bg-yellow-100 border border-yellow-300 rounded-lg flex items-center text-yellow-700">
+                            <i data-lucide="sandwich" class="w-5 h-5 mr-3"></i> 午餐時間 (安靜吃，不浪費)
+                        </div>
+                        <div id="schedule-item-4" draggable="true" ondragstart="drag(event, this)" class="schedule-item p-3 mb-2 bg-yellow-100 border border-yellow-300 rounded-lg flex items-center text-yellow-700">
+                            <i data-lucide="bus" class="w-5 h-5 mr-3"></i> 放學準備 (收東西，排椅子)
+                        </div>
+                    </div>
+
+                    <!-- 已完成清單 (Done) -->
+                    <div id="done-list" class="drag-target p-4 bg-lime-50 rounded-xl shadow-inner border-2 border-lime-500/50" ondragover="allowDrop(event)" ondrop="drop(event)" data-list="done">
+                        <p class="font-bold text-lime-800 mb-3 flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-1"></i> 已完成
+                        </p>
+                        <!-- 拖曳進來的項目會在這裡顯示 -->
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button id="reset-schedule" onclick="resetSchedule()" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-lg hover:bg-yellow-600 transition transform hover:scale-105">
+                        重設每日清單
+                    </button>
+                </div>
+
+                <!-- 2B: 我的專屬儀式 (Visual Rituals) -->
+                <h3 class="text-xl font-bold text-yellow-700 mb-3 mt-8 border-b border-yellow-300 pb-2">我的專屬儀式 (小小的我，厲害的控制家)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 收東西的步驟圖 -->
+                    <div class="p-4 bg-white rounded-xl shadow-md border-2 border-yellow-300">
+                        <p class="font-semibold text-lg text-yellow-700 flex items-center mb-2">
+                            <i data-lucide="package-open" class="w-6 h-6 mr-2"></i> 桌子收納儀式 (3 步驟)
+                        </p>
+                        <ol class="list-decimal list-inside text-gray-700 space-y-1 ml-4">
+                            <li><span class="font-bold">收：</span>課本、筆記本疊整齊</li>
+                            <li><span class="font-bold">淨：</span>橡皮擦屑、垃圾丟光光</li>
+                            <li><span class="font-bold">排：</span>椅子輕輕靠桌邊</li>
+                        </ol>
+                    </div>
+                    <!-- 排隊的站姿圖 -->
+                    <div class="p-4 bg-white rounded-xl shadow-md border-2 border-yellow-300">
+                        <p class="font-semibold text-lg text-yellow-700 flex items-center mb-2">
+                            <i data-lucide="users" class="w-6 h-6 mr-2"></i> 排隊站姿儀式 (像棵樹)
+                        </p>
+                        <div class="text-center">
+                            <!-- SVG Representation of "Like a Tree" Posture -->
+                            <svg class="mx-auto w-24 h-24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Head -->
+                                <circle cx="50" cy="15" r="10" fill="#facc15"/> 
+                                <!-- Body (Straight Trunk) -->
+                                <rect x="47" y="25" width="6" height="40" fill="#4ade80"/> 
+                                <!-- Arms at sides (calm branches) -->
+                                <rect x="40" y="30" width="3" height="25" transform="rotate(-5 40 30)" fill="#4ade80"/>
+                                <rect x="57" y="30" width="3" height="25" transform="rotate(5 57 30)" fill="#4ade80"/>
+                                <!-- Legs (Rooted Feet) -->
+                                <path d="M50 65 L40 90 L60 90 Z" fill="#22c55e"/>
+                                <text x="50" y="80" text-anchor="middle" font-size="8" fill="#166534" font-weight="bold">腳跟靠攏</text>
+                            </svg>
+                            <p class="text-sm text-gray-600 mt-1">身體站直，手像兩條直線貼好。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 模組三：大腦的「充電」時間 (學習專注度) - 多元指令 -->
+            <section class="bg-green-100 p-6 rounded-2xl shadow-xl border-4 border-green-400">
+                <h2 class="text-2xl font-bold text-green-800 mb-4 flex items-center">
+                    <i data-lucide="activity" class="w-6 h-6 mr-2"></i> 3. 大腦的「充電」小站
+                </h2>
+                <p class="text-gray-700 mb-4">專注力跑走時，給大腦 30 秒休息，然後再回來喔！</p>
+
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <p id="brain-break-text" class="text-lg font-medium text-green-700 mb-3">
+                        任務：點擊下方按鈕，領取你的休息指令！
+                    </p>
+                    <div class="flex space-x-4">
+                        <button id="start-brain-break" onclick="startBrainBreak()" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-full shadow-lg hover:bg-green-700 transition transform hover:scale-105">
+                            領取休息指令！
+                        </button>
+                        <button id="finish-brain-break" onclick="finishBrainBreak()" class="px-4 py-2 bg-pink-500 text-white font-semibold rounded-full shadow-lg hover:bg-pink-600 transition transform hover:scale-105 hidden">
+                            我完成了！
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 我的成就 -->
+            <section class="bg-white p-6 rounded-2xl shadow-xl border-4 border-gray-300">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i data-lucide="star" class="w-6 h-6 mr-2 text-yellow-500"></i> 我的努力星星榜
+                    </div>
+                    <!-- CLEAR BUTTON -->
+                    <button onclick="showClearConfirmation()" class="px-3 py-1 bg-red-100 text-red-600 text-sm font-semibold rounded-full hover:bg-red-200 transition transform hover:scale-105">
+                        全部清除
+                    </button>
+                    <!-- END CLEAR BUTTON -->
+                </h2>
+                <p class="text-gray-700 mb-4">恭喜你！每次練習，你都讓自己的自我控制力更強大！</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                        <p class="text-lg font-semibold text-indigo-800">
+                            控制星星 (呼吸練習)：<span id="breathing-count" class="text-3xl font-extrabold text-indigo-600">0</span> 次
+                        </p>
+                    </div>
+                    <div class="p-4 bg-lime-50 rounded-lg border border-lime-200">
+                        <p class="text-lg font-semibold text-lime-800">
+                            冷靜勳章 (休息/規律)：<span id="achievement-count" class="text-3xl font-extrabold text-lime-600">0</span> 次
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 教師/家長專區 (Support Zone) -->
+            <section class="mt-10">
+                <details class="bg-gray-200 p-6 rounded-2xl shadow-inner cursor-pointer">
+                    <summary class="text-xl font-bold text-gray-800 flex items-center">
+                        <i data-lucide="bookmark" class="w-6 h-6 mr-2 text-gray-600"></i>
+                        給大人的話：SEL 實施指南
+                    </summary>
+                    <div class="mt-4 p-4 bg-white rounded-xl border border-gray-300 space-y-4">
+                        <p class="text-lg font-semibold text-indigo-700">關於「身體與環境的基礎控制」</p>
+                        <p class="text-gray-700">
+                            這個階段的核心在於建立學童的**安全感與可預測性**，這是所有高階自我管理能力的基石。
+                        </p>
+                        
+                        <div class="bg-indigo-50 p-3 rounded-lg">
+                            <h4 class="font-bold text-indigo-800">1. 4x4x4x 魔法呼吸（衝動控制）</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                **教育意義：** 節奏性呼吸是神經系統的「重置鍵」。讓學童習慣在情緒高漲時執行這個機械性的動作，可以有效中斷杏仁核的衝動反應，將控制權從情緒腦轉移到理性腦。
+                            </p>
+                        </div>
+
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <h4 class="font-bold text-yellow-800">2. 規律超能力（組織能力）</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                **教育意義：** **視覺化規律**提供了一種外部的執行功能輔助。拖曳動作幫助孩子將抽象的「完成」具象化，建立對時間和流程的掌握感。
+                            </p>
+                        </div>
+
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <h4 class="font-bold text-green-800">3. 大腦的充電小站（學習專注度）</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                **實施指南：** 專注力轉移活動（例如找綠色物體）的目的是讓大腦執行一個短暫、低認知負荷的任務。這比單純休息更能快速重置專注力，協助學生在 30-60 秒內重新集中注意力，避免專注力疲勞導致的課堂分心。
+                            </p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Custom Confirmation/Message Modal (Replaces alert() and confirm()) -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+            <h3 id="modal-title" class="text-xl font-bold text-red-600 mb-4">提醒！</h3>
+            <p id="modal-message" class="text-gray-700 mb-4"></p>
+            <div class="flex justify-end space-x-3">
+                <!-- Cancel/Dismiss Button -->
+                <button id="modal-dismiss" onclick="document.getElementById('message-modal').classList.add('hidden')" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition">確定</button>
+                <!-- Primary Action Button (used for confirmation) -->
+                <button id="modal-primary-action" class="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition hidden">確定清除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reward Toast/Notification -->
+    <div id="reward-toast" class="reward-toast fixed bottom-5 left-1/2 -translate-x-1/2 p-4 rounded-xl shadow-2xl bg-white border-2 border-yellow-500 z-50 flex items-center space-x-3 pointer-events-none">
+        <span id="reward-icon" class="text-3xl">⭐</span>
+        <p id="reward-message" class="text-lg font-bold text-gray-800">恭喜！獲得控制星星！</p>
+    </div>
+
+    <!-- General App Logic (Now handles state locally) -->
+    <script>
+        // --- 本地狀態追蹤 (取代 Firestore) ---
+        let brainBreaksCompleted = 0; // 冷靜勳章 (休息/規律)
+        let breathingCyclesCompleted = 0; // 控制星星 (呼吸練習)
+
+        const ACHIEVEMENT_COUNT = document.getElementById('achievement-count');
+        const BREATHING_COUNT = document.getElementById('breathing-count');
+        const MODAL = document.getElementById('message-modal');
+        const MODAL_MESSAGE = document.getElementById('modal-message');
+        const MODAL_DISMISS = document.getElementById('modal-dismiss');
+        const MODAL_PRIMARY_ACTION = document.getElementById('modal-primary-action');
+
+        function updateAchievementsDisplay() {
+            BREATHING_COUNT.textContent = breathingCyclesCompleted;
+            ACHIEVEMENT_COUNT.textContent = brainBreaksCompleted;
+        }
+
+        // 核心更新函數
+        function updateProgress(newBrainBreaks, newBreathingCycles) {
+            brainBreaksCompleted = newBrainBreaks;
+            breathingCyclesCompleted = newBreathingCycles;
+            updateAchievementsDisplay();
+            console.log("進度已在瀏覽器記憶體中更新。");
+        }
+
+        // 儲存冷靜勳章 (來自儀式或大腦休息)
+        async function saveBrainBreakProgress() {
+            updateProgress(brainBreaksCompleted + 1, breathingCyclesCompleted);
+            window.showReward('medal'); // 冷靜勳章
+        }
+
+        // 儲存控制星星 (來自呼吸練習)
+        async function saveBreathingProgress() {
+            updateProgress(brainBreaksCompleted, breathingCyclesCompleted + 1);
+            window.showReward('star'); // 控制星星
+        }
+        
+        // 清除所有進度
+        function clearAllProgress() {
+            updateProgress(0, 0);
+            showMessageModal("所有星星和勳章都已經清空了！開始新的挑戰吧！✨");
+        }
+
+        function showClearConfirmation() {
+            const message = "你確定要清除所有「控制星星」和「冷靜勳章」嗎？這個動作不能復原喔！";
+            showMessageModal(message, true, clearAllProgress);
+        }
+
+        // 讓函數在 HTML 中可以調用
+        window.saveBrainBreakProgress = saveBrainBreakProgress;
+        window.saveBreathingProgress = saveBreathingProgress;
+        window.updateAchievementsDisplay = updateAchievementsDisplay;
+        window.showClearConfirmation = showClearConfirmation;
+        window.clearAllProgress = clearAllProgress;
+
+
+        // --- 彈出訊息框 (取代 alert/confirm) ---
+        function showMessageModal(message, isConfirmation = false, confirmAction = null) {
+            document.getElementById('modal-title').textContent = isConfirmation ? '危險確認！' : '提醒！';
+            MODAL_MESSAGE.textContent = message;
+            
+            MODAL_DISMISS.textContent = '確定';
+            MODAL_DISMISS.onclick = () => MODAL.classList.add('hidden');
+            MODAL_PRIMARY_ACTION.classList.add('hidden');
+
+            if (isConfirmation && confirmAction) {
+                MODAL_DISMISS.textContent = '取消';
+                MODAL_DISMISS.onclick = () => MODAL.classList.add('hidden');
+
+                MODAL_PRIMARY_ACTION.textContent = '確定清除';
+                MODAL_PRIMARY_ACTION.classList.remove('hidden');
+                
+                MODAL_PRIMARY_ACTION.onclick = () => {
+                    confirmAction();
+                    MODAL.classList.add('hidden');
+                };
+            }
+
+            MODAL.classList.remove('hidden');
+        }
+        window.showMessageModal = showMessageModal;
+
+
+        // --- 虛擬獎勵系統 (Reward Toast) ---
+        const rewardToast = document.getElementById('reward-toast');
+        const rewardIcon = document.getElementById('reward-icon');
+        const rewardMessage = document.getElementById('reward-message');
+        let rewardTimeout = null;
+
+        function showReward(type) {
+            clearTimeout(rewardTimeout);
+            
+            let icon, message;
+            if (type === 'star') {
+                icon = '⭐';
+                message = '恭喜！獲得控制星星！';
+                rewardToast.style.borderColor = '#fbbf24'; // Yellow
+            } else if (type === 'medal') {
+                icon = '🏅';
+                message = '太棒了！獲得冷靜勳章！';
+                rewardToast.style.borderColor = '#34d399'; // Green
+            } else {
+                return;
+            }
+
+            rewardIcon.textContent = icon;
+            rewardMessage.textContent = message;
+            rewardToast.classList.add('show');
+
+            // Hide after 3 seconds
+            rewardTimeout = setTimeout(() => {
+                rewardToast.classList.remove('show');
+            }, 3000);
+        }
+        window.showReward = showReward;
+
+        // Initialize Tone.js Synth for auditory guidance
+        let synth = null;
+        try {
+            // 確保在使用者互動後再啟動 Tone.js
+            document.addEventListener('DOMContentLoaded', () => {
+                synth = new Tone.Synth({
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.05, decay: 0.1, sustain: 0.2, release: 0.8 } 
+                }).toDestination();
+                console.log("Tone.js initialized for audio cues.");
+            });
+        } catch (e) {
+            console.warn("Tone.js initialization failed:", e);
+        }
+
+        function playCalmTone() {
+            if (synth) {
+                // 檢查 AudioContext 狀態並啟動
+                if (Tone.context.state !== 'running') {
+                    Tone.start().then(() => synth.triggerAttackRelease("C4", "4n"));
+                } else {
+                    synth.triggerAttackRelease("C4", "4n"); 
+                }
+            }
+        }
+        
+        // --- 模組一：4x4x4x 呼吸法邏輯 ---
+        let intervalId = null;
+        let currentCycle = 0; // 0: Idle, 1: Inhale, 2: Hold1, 3: Exhale, 4: Hold2
+        let cycleCounter = 0; // 追蹤完成的循環次數
+        
+        const cycleNames = [
+            "預備，深呼吸！",
+            "**吸氣** (數到 4) 🎈", 
+            "**憋住** (數到 4) 🔒", 
+            "**吐氣** (數到 4) 💨", 
+            "**再憋住** (數到 4) 🤫"
+        ];
+        const cycleClasses = [
+            'scale-100', // Idle
+            'scale-in',  // Inhale (放大)
+            'scale-in',  // Hold1 (保持放大)
+            'scale-out', // Exhale (縮小)
+            'scale-out'  // Hold2 (保持縮小)
+        ];
+        const duration = 4000; // 4 seconds
+
+        function updateBreathUI(index) {
+            const statusText = document.getElementById('breath-status');
+            const indicator = document.getElementById('breath-indicator');
+            
+            statusText.innerHTML = cycleNames[index];
+            
+            indicator.classList.remove('scale-in', 'scale-out');
+            if (index > 0) {
+                indicator.classList.add(cycleClasses[index]);
+            }
+            
+            // Check if one full cycle is complete (after Hold2)
+            if (index === 4) {
+                cycleCounter++;
+            }
+        }
+
+        function nextBreathStep() {
+            currentCycle = (currentCycle % 4) + 1; // Cycles 1 to 4
+            updateBreathUI(currentCycle);
+            playCalmTone(); 
+        }
+
+        function startBreathingCycle() {
+            document.getElementById('start-breath').disabled = true;
+            document.getElementById('stop-breath').disabled = false;
+            
+            currentCycle = 0;
+            cycleCounter = 0; // Reset cycle counter when starting
+            updateBreathUI(currentCycle);
+
+            if (intervalId) clearInterval(intervalId);
+
+            setTimeout(() => {
+                nextBreathStep(); 
+                intervalId = setInterval(nextBreathStep, duration);
+            }, 1000);
+        }
+
+        async function stopBreathingCycle() {
+            if (intervalId) clearInterval(intervalId);
+            intervalId = null;
+            currentCycle = 0;
+
+            // 檢查是否完成至少一個完整的 4x4x4x 循環
+            if (cycleCounter > 0) {
+                await window.saveBreathingProgress(); // 儲存並發放獎勵
+            }
+
+            // Reset UI
+            document.getElementById('breath-status').textContent = "停止了，隨時可以再練習喔！";
+            document.getElementById('breath-indicator').classList.remove('scale-in', 'scale-out');
+            
+            // Enable start and disable stop button
+            document.getElementById('start-breath').disabled = false;
+            document.getElementById('stop-breath').disabled = true;
+        }
+
+        window.startBreathingCycle = startBreathingCycle;
+        window.stopBreathingCycle = stopBreathingCycle;
+
+
+        // --- 模組二：視覺化排隊小幫手 (Drag & Drop Logic) ---
+        
+        function allowDrop(ev) {
+            ev.preventDefault();
+            const target = ev.currentTarget;
+            if (target.getAttribute('data-list') === 'done') {
+                target.classList.add('hover');
+            }
+        }
+        window.allowDrop = allowDrop;
+
+        function drag(ev, element) {
+            ev.dataTransfer.setData("text", element.id);
+            // Optional: Hide the element being dragged
+            setTimeout(() => element.style.opacity = '0.4', 0); 
+        }
+        window.drag = drag;
+
+        function drop(ev) {
+            ev.preventDefault();
+            const targetList = ev.currentTarget.getAttribute('data-list');
+            const data = ev.dataTransfer.getData("text"); // Item ID
+            const draggedElement = document.getElementById(data);
+
+            if (draggedElement) {
+                draggedElement.style.opacity = '1'; // Restore opacity
+            }
+            
+            // Check if the drop target is the 'Done' list
+            if (targetList === 'done') {
+                ev.currentTarget.appendChild(draggedElement);
+                checkScheduleCompletion();
+            }
+             ev.currentTarget.classList.remove('hover');
+        }
+        window.drop = drop;
+
+        function checkScheduleCompletion() {
+            const doneList = document.getElementById('done-list');
+            
+            // 初始清單有 4 個項目，done-list 的第一個子元素是標題 <p>
+            const requiredCount = 4; 
+            const completedCount = doneList.children.length - 1; 
+            
+            if (completedCount >= requiredCount) {
+                // All items moved to done list
+                window.saveBrainBreakProgress(); // Reward: Cold Calm Medal
+                showMessageModal("一天的行程都順利完成了！你真是時間和規律的厲害控制家！🏅", false);
+            }
+        }
+
+        function resetSchedule() {
+            const todoList = document.getElementById('todo-list');
+            const doneList = document.getElementById('done-list');
+            
+            // Find the list items (skip the title element) and move them back to the todo list
+            const doneItems = Array.from(doneList.children).filter(child => child.id && child.id.startsWith('schedule-item'));
+
+            if (doneItems.length === 0) {
+                 showMessageModal("清單已經是空的了，不需要重設喔！", false);
+                 return;
+            }
+
+            doneItems.forEach(item => {
+                todoList.appendChild(item);
+            });
+
+            showMessageModal("行程表已重設，明天又是新的開始囉！", false);
+        }
+        window.resetSchedule = resetSchedule;
+
+        // --- 模組三：大腦休息邏輯 (Brain Breaks) ---
+        const brainBreakInstructions = [
+            "在教室裡走一走，找到 3 個綠色的物體！🌳",
+            "站起來，像一隻小鳥一樣拍手 10 次！🐦",
+            "閉上眼睛 30 秒，聽聽周圍有什麼聲音。👂",
+            "在座位上做 5 次深蹲，讓身體動起來！🤸",
+            "找一個好朋友，和他說一句讚美的話！😊",
+            "假裝你是一隻貓，伸展身體，發出輕輕的「喵」！🐱",
+            "數一數你的手指和腳趾共有幾根？ (20根！)",
+            "原地踏步 30 秒，像個小小行軍隊員！🥁",
+            "對著鏡子（或你的手）做 3 個誇張的表情！🤪",
+            "輕輕轉動你的脖子 3 圈，然後往回轉 3 圈！🔄"
+        ];
+        
+        function getRandomInstruction() {
+            const randomIndex = Math.floor(Math.random() * brainBreakInstructions.length);
+            return brainBreakInstructions[randomIndex];
+        }
+
+        function startBrainBreak() {
+            const newGoal = getRandomInstruction();
+            const brainBreakText = document.getElementById('brain-break-text');
+            const finishButton = document.getElementById('finish-brain-break');
+            
+            brainBreakText.textContent = `任務開始：${newGoal} (快去完成！) 🏃`;
+            finishButton.classList.remove('hidden');
+            document.getElementById('start-brain-break').disabled = true;
+        }
+
+        async function finishBrainBreak() {
+            const finishButton = document.getElementById('finish-brain-break');
+            const startButton = document.getElementById('start-brain-break');
+            
+            document.getElementById('brain-break-text').textContent = "你做得太棒了！大腦休息好了，可以重新專注了。🌟";
+            finishButton.classList.add('hidden');
+            startButton.disabled = false;
+            
+            // 儲存進度並發放獎勵 (冷靜勳章)
+            await window.saveBrainBreakProgress();
+        }
+
+        window.startBrainBreak = startBrainBreak;
+        window.finishBrainBreak = finishBrainBreak;
+        
+        // Load icons and setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateAchievementsDisplay(); // 初始化顯示為 0/0
+            
+            // 隱藏 Loading 並顯示主內容
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+
+            // Attach drag leave/enter events for visual feedback
+            const dragTargets = document.querySelectorAll('.drag-target');
+            dragTargets.forEach(target => {
+                target.addEventListener('dragenter', (e) => {
+                    if (e.currentTarget.getAttribute('data-list') === 'done') {
+                         e.currentTarget.classList.add('hover');
+                    }
+                });
+                target.addEventListener('dragleave', (e) => {
+                    e.currentTarget.classList.remove('hover');
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

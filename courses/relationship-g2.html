@@ -1,0 +1,1434 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星際拍檔任務 - 國小低年級 SEL 人際合作互動網</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Custom Colors and Fonts -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: {
+              dark: '#0B0D1B',
+              panel: '#1A1D36',
+              border: '#3D4475',
+              accent: '#6C5DD3',
+              glow: '#FF007A'
+            }
+          },
+          animation: {
+            'bounce-slow': 'bounce 3s infinite',
+            'pulse-slow': 'pulse 3s infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'shaking': 'shaking 0.5s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    @keyframes shaking {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      25% { transform: translateX(-3px) rotate(-1deg); }
+      75% { transform: translateX(3px) rotate(1deg); }
+    }
+    .animate-float {
+      animation: float 4s ease-in-out infinite;
+    }
+    .animate-shaking {
+      animation: shaking 0.6s ease-in-out infinite;
+    }
+    /* 隱藏滾動條但保持功能 */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0D1B;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3D4475;
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6C5DD3;
+    }
+    /* 適合兒童閱讀的字型防擠壓設定 */
+    body {
+      font-size: 1.125rem; /* 預設大字體 */
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body class="bg-space-dark text-white font-sans selection:bg-pink-500 selection:text-white min-h-screen flex flex-col justify-between overflow-x-hidden text-lg">
+
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-space-dark to-space-dark -z-10 overflow-hidden">
+    <div class="absolute top-10 left-10 w-2.5 h-2.5 bg-white rounded-full animate-ping opacity-75"></div>
+    <div class="absolute top-1/4 right-20 w-4.5 h-4.5 bg-yellow-300 rounded-full animate-pulse opacity-50"></div>
+    <div class="absolute bottom-1/3 left-1/4 w-2 h-2 bg-pink-400 rounded-full animate-bounce opacity-60"></div>
+    <div class="absolute bottom-10 right-1/3 w-2.5 h-2.5 bg-blue-300 rounded-full animate-pulse opacity-80"></div>
+  </div>
+
+  <header class="border-b border-space-border/50 bg-space-dark/80 backdrop-blur-md sticky top-0 z-40 py-2">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <!-- 標題與 LOGO -->
+      <div class="flex items-center gap-4 cursor-pointer" onclick="switchTab('home')">
+        <div class="text-4xl animate-float">🚀</div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-pink-400 to-yellow-300 bg-clip-text text-transparent flex items-center gap-2">
+            星際拍檔任務
+          </h1>
+          <p class="text-xs md:text-sm text-slate-300 tracking-wider">國小低年級人際合作 SEL 關卡</p>
+        </div>
+      </div>
+
+      <!-- 共學/自主模式與TTS開關 -->
+      <div class="flex items-center flex-wrap gap-3">
+        <!-- TTS 控制 -->
+        <button id="tts-toggle-btn" onclick="toggleAutoTTS()" class="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-extrabold bg-pink-600/20 hover:bg-pink-600/30 border-2 border-pink-500/40 text-pink-300 transition-all">
+          <span id="tts-icon">🔊</span>
+          <span id="tts-text">自動語音：開啟</span>
+        </button>
+
+        <!-- 模式切換 -->
+        <div class="flex bg-space-panel rounded-full p-1.5 border-2 border-space-border text-sm font-bold">
+          <button id="mode-btn-coop" onclick="setMode('coop')" class="px-4 py-2 rounded-full transition-all text-white bg-indigo-600 shadow-md">
+            🏫 班級共學
+          </button>
+          <button id="mode-btn-self" onclick="setMode('self')" class="px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white">
+            👦 自主挑戰
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容區 -->
+  <main class="max-w-6xl w-full mx-auto px-4 py-6 flex-grow">
+    
+    <section id="tab-home" class="space-y-10">
+      <!-- 主視覺 Banner -->
+      <div class="relative bg-gradient-to-br from-space-panel to-indigo-950/60 rounded-3xl p-8 md:p-12 border-2 border-indigo-500/30 overflow-hidden shadow-2xl flex flex-col md:flex-row items-center gap-10">
+        <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute -left-16 -top-16 w-64 h-64 bg-pink-600/10 rounded-full blur-3xl"></div>
+        
+        <!-- 左側文案 -->
+        <div class="flex-1 space-y-6 text-center md:text-left z-10">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/25 border-2 border-indigo-400/30 text-sm font-black text-indigo-300">
+            🌌 108課綱低年級生活課程 & SEL 核心素養
+          </div>
+          <h2 class="text-4xl md:text-6xl font-black leading-tight text-white drop-shadow-md">
+            準備好與外星拍檔<br>
+            一起航向太空了嗎？
+          </h2>
+          <p class="text-slate-200 text-lg md:text-xl leading-relaxed max-w-2xl font-medium">
+            「大眼怪」與「毛毛」是一對最佳星際拍檔！但是在奇幻旅程中，他們遇到了分工不均、彩色筆爭奪與不小心弄髒地圖的心情危機。快來幫他們完成挑戰，學習成為最棒的合作小隊長！
+          </p>
+          <div class="pt-4 flex flex-wrap justify-center md:justify-start gap-5">
+            <button onclick="switchTab('level1')" class="px-10 py-5 bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 font-black rounded-2xl shadow-[0_0_25px_rgba(219,39,119,0.5)] transition-all hover:-translate-y-1 text-lg md:text-xl flex items-center gap-3">
+              🚀 點擊出發任務 <span>➔</span>
+            </button>
+            <a href="#teacher-section" class="px-8 py-5 bg-space-panel hover:bg-space-panel/80 border-2 border-space-border hover:border-slate-400 rounded-2xl font-black text-slate-200 transition-all text-base md:text-lg flex items-center gap-2">
+              🎒 教師備課直達車
+            </a>
+          </div>
+        </div>
+
+        <!-- 右側可愛公仔 -->
+        <div class="w-72 h-72 flex items-center justify-center relative">
+          <!-- 大眼怪 -->
+          <div class="absolute left-4 top-4 animate-float" style="animation-delay: 0.5s;">
+            <div class="w-28 h-28 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex flex-col items-center justify-center shadow-lg border-4 border-white/20 relative">
+              <!-- 單眼 -->
+              <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center relative shadow-inner">
+                <div class="w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center">
+                  <div class="w-2.5 h-2.5 bg-white rounded-full absolute top-2 left-2"></div>
+                </div>
+              </div>
+              <!-- 嘴巴 -->
+              <div class="w-10 h-2.5 bg-indigo-950 rounded-full mt-2"></div>
+              <!-- 天線 -->
+              <div class="absolute -top-3 w-2 h-5 bg-cyan-400 rounded-full">
+                <div class="w-4 h-4 bg-yellow-300 rounded-full absolute -top-2.5 -left-1"></div>
+              </div>
+            </div>
+            <p class="text-center text-sm font-black mt-3 text-cyan-300 tracking-wider">大眼怪 👾</p>
+          </div>
+
+          <!-- 毛毛 -->
+          <div class="absolute right-4 bottom-2 animate-float" style="animation-delay: 1.5s;">
+            <div class="w-28 h-28 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex flex-col items-center justify-center shadow-lg border-4 border-white/20 relative">
+              <!-- 雙眼 -->
+              <div class="flex gap-2">
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center relative">
+                  <div class="w-3 h-3 bg-rose-950 rounded-full"></div>
+                </div>
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center relative">
+                  <div class="w-3 h-3 bg-rose-950 rounded-full"></div>
+                </div>
+              </div>
+              <!-- 腮紅 -->
+              <div class="flex justify-between w-20 px-2 mt-1">
+                <div class="w-4 h-2 bg-pink-300 rounded-full opacity-70"></div>
+                <div class="w-4 h-2 bg-pink-300 rounded-full opacity-70"></div>
+              </div>
+              <!-- 微笑 -->
+              <div class="w-8 h-4 border-b-4 border-rose-950 rounded-b-full mt-1"></div>
+              <!-- 小觸角 -->
+              <div class="absolute -top-3 left-8 w-1.5 h-4 bg-pink-400 rounded-full rotate-[-15deg]"></div>
+              <div class="absolute -top-3 right-8 w-1.5 h-4 bg-pink-400 rounded-full rotate-[15deg]"></div>
+            </div>
+            <p class="text-center text-sm font-black mt-3 text-pink-300 tracking-wider">毛毛 🧸</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 關卡導覽卡片區 -->
+      <div>
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <h3 class="text-3xl font-black text-transparent bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text tracking-wider">太空拍檔任務的三大考驗</h3>
+          <p class="text-slate-300 text-sm mt-3">點擊以下卡片直接跳轉，全站文字皆可點選發音喔！</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- 關卡一卡片 -->
+          <div onclick="switchTab('level1')" class="bg-space-panel/60 hover:bg-space-panel border-2 border-space-border hover:border-indigo-500/50 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer group text-center md:text-left">
+            <div class="w-16 h-16 bg-cyan-500/10 border-2 border-cyan-500/30 text-3xl flex items-center justify-center rounded-2xl mb-5 group-hover:scale-110 transition-all mx-auto md:mx-0">
+              🛸
+            </div>
+            <h4 class="text-xl md:text-2xl font-black text-cyan-300 flex items-center justify-center md:justify-start gap-2">
+              第一關：角色分配艙
+              <button onclick="event.stopPropagation(); speak('第一關，角色分配艙。學習簡單合作')" class="text-slate-400 hover:text-white transition-colors text-lg p-1">🔊</button>
+            </h4>
+            <p class="text-slate-300 text-base mt-3 leading-relaxed">
+              飛船準備起飛！大眼怪跟毛毛要分配燃料準備與導航，引導孩子理解「每個人負責不同的事情」，培養責任感。
+            </p>
+            <span class="inline-block mt-5 text-base font-black text-indigo-400 group-hover:text-pink-400 transition-colors">開始挑戰 ➔</span>
+          </div>
+
+          <!-- 關卡二卡片 -->
+          <div onclick="switchTab('level2')" class="bg-space-panel/60 hover:bg-space-panel border-2 border-space-border hover:border-indigo-500/50 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer group text-center md:text-left">
+            <div class="w-16 h-16 bg-pink-500/10 border-2 border-pink-500/30 text-3xl flex items-center justify-center rounded-2xl mb-5 group-hover:scale-110 transition-all mx-auto md:mx-0">
+              🎨
+            </div>
+            <h4 class="text-xl md:text-2xl font-black text-pink-300 flex items-center justify-center md:justify-start gap-2">
+              第二關：對話發射台
+              <button onclick="event.stopPropagation(); speak('第二關，魔法對話發射台。練習溝通與分享')" class="text-slate-400 hover:text-white transition-colors text-lg p-1">🔊</button>
+            </h4>
+            <p class="text-slate-300 text-base mt-3 leading-relaxed">
+              拍檔要畫星際地圖卻搶起了彩色筆！學習運用非暴力的「魔法金句」，以結構化的句型取代抱怨與告狀。
+            </p>
+            <span class="inline-block mt-5 text-base font-black text-indigo-400 group-hover:text-pink-400 transition-colors">開始挑戰 ➔</span>
+          </div>
+
+          <!-- 關卡三卡片 -->
+          <div onclick="switchTab('level3')" class="bg-space-panel/60 hover:bg-space-panel border-2 border-space-border hover:border-indigo-500/50 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer group text-center md:text-left">
+            <div class="w-16 h-16 bg-yellow-500/10 border-2 border-yellow-500/30 text-3xl flex items-center justify-center rounded-2xl mb-5 group-hover:scale-110 transition-all mx-auto md:mx-0">
+              ⚖️
+            </div>
+            <h4 class="text-xl md:text-2xl font-black text-yellow-300 flex items-center justify-center md:justify-start gap-2">
+              第三關：心情修復站
+              <button onclick="event.stopPropagation(); speak('第三關，心情修復觀測站。關係修復與反思')" class="text-slate-400 hover:text-white transition-colors text-lg p-1">🔊</button>
+            </h4>
+            <p class="text-slate-300 text-base mt-3 leading-relaxed">
+              合作時不小心潑翻了水，心情糟透了。利用天秤動畫與創意畫布，引導孩子表達內心真實話語，修補關係。
+            </p>
+            <span class="inline-block mt-5 text-base font-black text-indigo-400 group-hover:text-pink-400 transition-colors">開始挑戰 ➔</span>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <section id="tab-level1" class="hidden space-y-8">
+      
+      <!-- 關卡提示與引導 -->
+      <div class="bg-space-panel border-2 border-space-border/60 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-xl">
+        <div class="text-5xl animate-bounce-slow">🛸</div>
+        <div class="flex-grow space-y-2 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+            <span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-lg text-sm font-black border border-cyan-500/30">關卡一：簡單合作</span>
+            <button onclick="speak('任務說明：飛船要起飛了！大眼怪跟毛毛要一起準備燃料與設定導航，需要分配工作。請把任務卡分配給最適合的夥伴吧！')" class="px-3 py-1 bg-slate-800 rounded-full text-xs font-bold hover:text-pink-400 transition-colors">🔊 聽說明語音</button>
+          </div>
+          <h3 class="text-2xl font-black text-white">任務分配艙 ➔ 各就各位！</h3>
+          <p class="text-base text-slate-200 leading-relaxed">飛船要起飛了！大眼怪和毛毛需要分配工作。請點擊下方的任務卡，再選擇交給大眼怪還是毛毛喔！</p>
+        </div>
+        <!-- 老師好教心法 -->
+        <div id="teach-tip-1" class="bg-indigo-950/80 border-2 border-indigo-400/30 p-4 rounded-2xl max-w-sm text-sm text-indigo-200">
+          <p class="font-black text-yellow-300">💡 老師好教心法</p>
+          <p class="mt-1.5 leading-relaxed">引導學生：並非每人做一樣的事，而是依能力分工。每種任務都有獨特的重要價值！</p>
+        </div>
+      </div>
+
+      <!-- 遊戲互動區 -->
+      <div class="bg-gradient-to-b from-space-panel/80 to-space-dark border-2 border-space-border rounded-3xl p-8 flex flex-col items-center justify-between min-h-[500px] relative">
+        
+        <!-- 頂端大字指示 -->
+        <div class="text-center mb-6">
+          <p class="text-sm tracking-wider text-pink-300 font-black uppercase">💡 操作方法：請先點選一個下方任務卡，再點外星人將任務送給他！</p>
+          <p id="level1-guide-text" class="text-lg md:text-xl font-black text-white mt-2 bg-space-dark/80 px-4 py-2 rounded-xl border border-space-border/50">選取任務卡吧 👇</p>
+        </div>
+
+        <!-- 外星人角色呈現 -->
+        <div class="w-full flex justify-around items-center gap-6 my-6 max-w-4xl flex-wrap md:flex-nowrap">
+          
+          <!-- 大眼怪 -->
+          <button id="target-monster" onclick="assignTask('monster')" class="relative flex flex-col items-center p-8 rounded-3xl border-4 border-dashed border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/5 transition-all w-full md:w-5/12 max-w-sm cursor-pointer group">
+            <div id="monster-gfx" class="w-28 h-28 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex flex-col items-center justify-center shadow-md relative group-hover:scale-105 transition-transform">
+              <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center relative shadow-inner">
+                <div class="w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center">
+                  <div class="w-2.5 h-2.5 bg-white rounded-full absolute top-2 left-2"></div>
+                </div>
+              </div>
+              <div class="w-10 h-2.5 bg-indigo-950 rounded-full mt-2"></div>
+              <div class="absolute -top-3 w-2 h-5 bg-cyan-400 rounded-full">
+                <div class="w-4 h-4 bg-yellow-300 rounded-full absolute -top-2.5 -left-1"></div>
+              </div>
+            </div>
+            <p class="text-lg font-black mt-4 text-cyan-300 tracking-wider">大眼怪 (導航官)</p>
+            
+            <!-- 已分配到的任務展示 -->
+            <div id="monster-tasks" class="w-full mt-4 space-y-2">
+              <span class="block text-sm text-slate-400 text-center italic">尚無分工</span>
+            </div>
+          </button>
+
+          <!-- 連線動畫元件 -->
+          <div id="coop-beam" class="text-5xl opacity-40 animate-pulse-slow hidden md:block">🤝</div>
+
+          <!-- 毛毛 -->
+          <button id="target-fluffy" onclick="assignTask('fluffy')" class="relative flex flex-col items-center p-8 rounded-3xl border-4 border-dashed border-pink-500/30 hover:border-pink-400 hover:bg-pink-500/5 transition-all w-full md:w-5/12 max-w-sm cursor-pointer group">
+            <div id="fluffy-gfx" class="w-28 h-28 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex flex-col items-center justify-center shadow-md relative group-hover:scale-105 transition-transform">
+              <div class="flex gap-2">
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center relative">
+                  <div class="w-3 h-3 bg-rose-950 rounded-full"></div>
+                </div>
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center relative">
+                  <div class="w-3 h-3 bg-rose-950 rounded-full"></div>
+                </div>
+              </div>
+              <div class="flex justify-between w-20 px-2 mt-1">
+                <div class="w-4 h-2 bg-pink-300 rounded-full opacity-70"></div>
+                <div class="w-4 h-2 bg-pink-300 rounded-full opacity-70"></div>
+              </div>
+              <div class="w-8 h-4 border-b-4 border-rose-950 rounded-b-full mt-1"></div>
+              <div class="absolute -top-3 left-8 w-1.5 h-4 bg-pink-400 rounded-full rotate-[-15deg]"></div>
+              <div class="absolute -top-3 right-8 w-1.5 h-4 bg-pink-400 rounded-full rotate-[15deg]"></div>
+            </div>
+            <p class="text-lg font-black mt-4 text-pink-300 tracking-wider">毛毛 (後勤官)</p>
+            
+            <!-- 已分配到的任務展示 -->
+            <div id="fluffy-tasks" class="w-full mt-4 space-y-2">
+              <span class="block text-sm text-slate-400 text-center italic">尚無分工</span>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- 任務卡片區 -->
+        <div class="w-full max-w-3xl flex flex-col md:flex-row justify-center gap-6 mt-6">
+          
+          <button id="card-nav" onclick="selectTask('card-nav', '設定星際導航')" class="bg-indigo-950 border-2 border-indigo-500/45 p-6 rounded-2xl flex items-center gap-4 hover:border-cyan-400 hover:shadow-lg transition-all text-left flex-1 group">
+            <span class="text-4xl">🗺️</span>
+            <div>
+              <p class="text-xs text-indigo-300 font-black tracking-widest uppercase">任務卡 A</p>
+              <h5 class="font-black text-white text-lg md:text-xl">設定星際導航 🧭</h5>
+              <p class="text-sm text-slate-300 mt-1 leading-normal">需要細心與看懂地圖喔！</p>
+            </div>
+          </button>
+
+          <button id="card-food" onclick="selectTask('card-food', '發放太空糧食')" class="bg-indigo-950 border-2 border-indigo-500/45 p-6 rounded-2xl flex items-center gap-4 hover:border-pink-400 hover:shadow-lg transition-all text-left flex-1 group">
+            <span class="text-4xl">🍪</span>
+            <div>
+              <p class="text-xs text-pink-300 font-black tracking-widest uppercase">任務卡 B</p>
+              <h5 class="font-black text-white text-lg md:text-xl">發放太空糧食 🍪</h5>
+              <p class="text-sm text-slate-300 mt-1 leading-normal">需要溫柔發給每個人！</p>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- 重設按鈕 -->
+        <button onclick="resetLevel1()" class="mt-8 text-base text-slate-300 hover:text-white underline transition-all font-black">🔄 重設分工關卡</button>
+      </div>
+
+      <!-- 關卡成功 modal -->
+      <div id="success-modal-1" class="hidden fixed inset-0 bg-space-dark/95 z-50 flex flex-col items-center justify-center p-6">
+        <div class="max-w-xl w-full bg-space-panel border-4 border-yellow-300 rounded-3xl p-10 text-center space-y-8 shadow-[0_0_40px_rgba(234,179,8,0.4)] animate-float">
+          <div class="text-7xl animate-bounce-slow">✨🌟🏆🌟✨</div>
+          <h3 class="text-3xl md:text-4xl font-black text-yellow-300 tracking-wider">哇！分配工作成功了！</h3>
+          
+          <!-- 角色跳舞畫面 -->
+          <div class="flex justify-center gap-8 py-4">
+            <div class="w-20 h-20 bg-cyan-400 rounded-full flex flex-col items-center justify-center animate-bounce">
+              <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center"><div class="w-4 h-4 bg-indigo-900 rounded-full"></div></div>
+            </div>
+            <div class="w-20 h-20 bg-pink-400 rounded-2xl flex items-center justify-center animate-bounce" style="animation-delay: 0.2s">
+              <div class="text-2xl">❤️</div>
+            </div>
+          </div>
+
+          <div class="bg-indigo-950 p-6 rounded-2xl border-2 border-indigo-400/20">
+            <p class="text-xl md:text-2xl font-black text-pink-300 leading-normal">
+              「每個人都有小任務，我們都是太空小隊長！」
+            </p>
+            <p class="text-base text-slate-300 mt-3 leading-relaxed">
+              (大眼怪負責設定好地圖，毛毛細心分派點心。完美的起飛！)
+            </p>
+          </div>
+
+          <div class="flex gap-4 justify-center">
+            <button onclick="closeSuccessModal(1); speak('讓我們繼續航向第二關吧！'); switchTab('level2')" class="px-8 py-4 bg-gradient-to-r from-pink-500 to-indigo-600 rounded-2xl font-black hover:shadow-lg hover:scale-105 transition-all text-base md:text-lg">
+              前進第二關 📡
+            </button>
+            <button onclick="closeSuccessModal(1)" class="px-6 py-4 bg-slate-800 rounded-2xl font-black hover:bg-slate-700 text-sm text-slate-300">
+              留在本頁
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="tab-level2" class="hidden space-y-8">
+      
+      <!-- 關卡引導 -->
+      <div class="bg-space-panel border-2 border-space-border/60 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-xl">
+        <div class="text-5xl animate-shaking">🎨</div>
+        <div class="flex-grow space-y-2 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+            <span class="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-lg text-sm font-black border border-pink-500/30">關卡二：非暴力溝通</span>
+            <button onclick="speak('任務說明：拍檔們要一起畫一張星際地圖，但大家都搶著拿彩色筆，飛船發出了警報！快使用下方的魔法對話泡泡，選出最棒的溝通金句吧！')" class="px-3 py-1 bg-slate-800 rounded-full text-xs font-bold hover:text-pink-400 transition-colors">🔊 聽說明語音</button>
+          </div>
+          <h3 class="text-2xl font-black text-white">魔法對話發射台 ➔ 開啟和平防護罩！</h3>
+          <p class="text-base text-slate-200 leading-relaxed">大家都搶著用同一支彩色筆，兩隻外星人都生氣了！該說什麼話才能順利解決爭執呢？</p>
+        </div>
+        <!-- 老師好教心法 -->
+        <div id="teach-tip-2" class="bg-indigo-950/80 border-2 border-indigo-400/30 p-4 rounded-2xl max-w-sm text-sm text-indigo-200">
+          <p class="font-black text-yellow-300">💡 老師好教心法</p>
+          <p class="mt-1.5 leading-relaxed">引導學生在學校吵架時，通常只會告狀或強奪。讓他們認清與演練「我負責...你負責...」的對等句型，提升實踐力！</p>
+        </div>
+      </div>
+
+      <!-- 互動戰場 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- 左側：吵架情境動畫區 -->
+        <div class="bg-space-panel/50 border-2 border-space-border rounded-3xl p-8 flex flex-col items-center justify-center min-h-[380px] relative">
+          
+          <div id="angry-aliens" class="flex items-center gap-10 animate-shaking">
+            <!-- 憤怒大眼怪 -->
+            <div class="flex flex-col items-center">
+              <div class="w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex flex-col items-center justify-center border-4 border-red-500/50 relative">
+                <!-- 憤怒眼角 -->
+                <div class="absolute top-4 flex justify-center w-full">
+                  <div class="w-12 h-1 bg-red-600 rounded-full rotate-12"></div>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mt-2">
+                  <div class="w-5 h-5 bg-red-950 rounded-full"></div>
+                </div>
+                <div class="w-8 h-2 bg-red-950 rounded-full mt-2"></div>
+              </div>
+              <p class="text-sm text-cyan-400 font-black mt-3">大眼怪 😠</p>
+            </div>
+
+            <!-- 彩色筆拔河 -->
+            <div class="flex flex-col items-center">
+              <span class="text-5xl animate-bounce">🖍️</span>
+              <span class="text-xs text-red-400 font-black tracking-widest mt-2">搶奪中！</span>
+            </div>
+
+            <!-- 憤怒毛毛 -->
+            <div class="flex flex-col items-center">
+              <div class="w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex flex-col items-center justify-center border-4 border-red-500/50 relative">
+                <div class="flex gap-2 mt-3">
+                  <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-red-900 rounded-full"></div></div>
+                  <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-red-900 rounded-full"></div></div>
+                </div>
+                <div class="w-6 h-2.5 bg-red-950 rounded-t-full mt-3"></div>
+              </div>
+              <p class="text-sm text-pink-400 font-black mt-3">毛毛 😡</p>
+            </div>
+          </div>
+
+          <!-- 對話情境警報 -->
+          <div id="alarm-box" class="mt-8 w-full max-w-md p-4 rounded-2xl bg-red-600/20 border-2 border-red-500/40 text-center">
+            <p class="text-sm md:text-base font-black text-red-300 animate-pulse">🚨 警報響起：星際地圖搶筆大戰！</p>
+          </div>
+
+        </div>
+
+        <!-- 右側：選擇題與點擊發音 -->
+        <div class="bg-space-panel border-2 border-space-border rounded-3xl p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-2">
+            <h4 class="text-xl font-black text-slate-100">🔮 挑選一句最棒的「魔法能量對話」：</h4>
+            <p class="text-sm text-slate-300">點擊右側的喇叭按鈕，可以先聽聽看對話語氣喔！</p>
+          </div>
+
+          <div class="space-y-4 flex-grow justify-center flex flex-col">
+            
+            <!-- 選項 1 -->
+            <button onclick="checkLevel2Answer(1)" class="w-full bg-space-dark hover:bg-space-panel border-2 border-space-border/80 hover:border-red-400 rounded-2xl p-4.5 flex items-center justify-between text-left group transition-all">
+              <div class="flex items-center gap-4">
+                <span class="w-9 h-9 flex items-center justify-center bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-full font-black text-sm shrink-0">A</span>
+                <span class="text-base md:text-lg text-slate-200 font-black group-hover:text-white leading-normal">「這支筆是我的，你不要拿！」</span>
+              </div>
+              <div onclick="event.stopPropagation(); speak('這支筆是我的，你不要拿！')" class="p-3 bg-slate-800 rounded-xl text-sm hover:bg-pink-600/30 transition-colors shrink-0">🔊</div>
+            </button>
+
+            <!-- 選項 2 -->
+            <button onclick="checkLevel2Answer(2)" class="w-full bg-space-dark hover:bg-space-panel border-2 border-space-border/80 hover:border-red-400 rounded-2xl p-4.5 flex items-center justify-between text-left group transition-all">
+              <div class="flex items-center gap-4">
+                <span class="w-9 h-9 flex items-center justify-center bg-red-500/10 text-red-400 border-2 border-red-500/20 rounded-full font-black text-sm shrink-0">B</span>
+                <span class="text-base md:text-lg text-slate-200 font-black group-hover:text-white leading-normal">「老師！他搶我的筆！」</span>
+              </div>
+              <div onclick="event.stopPropagation(); speak('老師！他搶我的筆！')" class="p-3 bg-slate-800 rounded-xl text-sm hover:bg-pink-600/30 transition-colors shrink-0">🔊</div>
+            </button>
+
+            <!-- 正確選項 -->
+            <button onclick="checkLevel2Answer(3)" id="correct-choice" class="w-full bg-space-dark hover:bg-space-panel border-2 border-space-border/80 hover:border-emerald-400 rounded-2xl p-4.5 flex items-center justify-between text-left group transition-all">
+              <div class="flex items-center gap-4">
+                <span class="w-9 h-9 flex items-center justify-center bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/20 rounded-full font-black text-sm shrink-0">C</span>
+                <span class="text-base md:text-lg text-emerald-300 font-black group-hover:text-emerald-200 leading-normal">「我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。」</span>
+              </div>
+              <div onclick="event.stopPropagation(); speak('我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。')" class="p-3 bg-slate-800 rounded-xl text-sm hover:bg-emerald-600/30 transition-colors shrink-0">🔊</div>
+            </button>
+
+          </div>
+
+          <!-- 說明教材提示 -->
+          <div class="bg-indigo-950/60 border-2 border-indigo-400/20 p-4 rounded-2xl flex items-center justify-between gap-4">
+            <p class="text-xs md:text-sm text-slate-200 leading-normal">
+              💡 <strong>魔法金句大挑戰</strong>：找到雙贏的句式（你負責、我負責）能夠避免衝突、快樂合作！
+            </p>
+            <a href="#card-resource-1" class="text-xs md:text-sm font-black text-yellow-300 underline shrink-0 hover:text-white p-1">列印卡片 ➔</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 關卡二成功Modal -->
+      <div id="success-modal-2" class="hidden fixed inset-0 bg-space-dark/95 z-50 flex flex-col items-center justify-center p-6">
+        <div class="max-w-xl w-full bg-space-panel border-4 border-emerald-400 rounded-3xl p-10 text-center space-y-8 shadow-[0_0_40px_rgba(52,211,153,0.4)] animate-float">
+          <div class="text-6xl">✨🤝🕊️🤝✨</div>
+          <h3 class="text-3xl font-black text-emerald-300 tracking-wider">警報解除！最佳魔法溝通！</h3>
+          
+          <!-- 擁抱與握手畫面 -->
+          <div class="flex justify-center gap-8 py-4">
+            <div class="w-20 h-20 bg-cyan-400 rounded-full flex flex-col items-center justify-center animate-pulse">
+              <div class="text-2xl">😊</div>
+            </div>
+            <div class="text-5xl animate-bounce">💖</div>
+            <div class="w-20 h-20 bg-pink-400 rounded-2xl flex items-center justify-center animate-pulse">
+              <div class="text-2xl">😊</div>
+            </div>
+          </div>
+
+          <div class="bg-emerald-950 border-2 border-emerald-500/30 p-6 rounded-2xl text-left space-y-3">
+            <p class="text-sm md:text-base text-emerald-300 font-black">📢 魔法帶讀三遍練習（點選可重聽）：</p>
+            <button onclick="speakCorrectThreeTimes()" class="w-full text-left bg-emerald-900/30 hover:bg-emerald-900/50 p-4 rounded-xl border border-emerald-500/20 text-sm md:text-base text-white leading-relaxed font-black">
+              🔊 「我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。」（連讀三次）
+            </button>
+          </div>
+
+          <div class="flex gap-4 justify-center">
+            <button onclick="closeSuccessModal(2); speak('最後一關，讓我們來修復心情。'); switchTab('level3')" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-indigo-600 rounded-2xl font-black hover:shadow-lg hover:scale-105 transition-all text-base md:text-lg">
+              最後一關：心情修復 ⚖️
+            </button>
+            <button onclick="closeSuccessModal(2)" class="px-6 py-4 bg-slate-800 rounded-2xl font-black hover:bg-slate-700 text-sm text-slate-300">
+              留在本頁
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="tab-level3" class="hidden space-y-8">
+      
+      <!-- 關卡引導 -->
+      <div class="bg-space-panel border-2 border-space-border/60 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-xl">
+        <div class="text-5xl animate-bounce-slow">⚖️</div>
+        <div class="flex-grow space-y-2 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+            <span class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-lg text-sm font-black border border-yellow-500/30">關卡三：修復與反思</span>
+            <button onclick="speak('任務說明：任務結束了，剛剛合作時，毛毛不小心把太空果汁水潑到大眼怪的地圖上，兩個人心情都怪怪的……一起用真心把它修復吧！')" class="p-1 text-xs font-bold hover:text-pink-400 transition-colors">🔊 聽說明語音</button>
+          </div>
+          <h3 class="text-2xl font-black text-white">心情修復觀測站 ➔ 真心修補點</h3>
+          <p class="text-base text-slate-200 leading-relaxed">剛剛分組合作時，雖然有點小吵架 or 失誤，但我願意說出真心話、感謝對方的付出，讓天秤恢復平衡！</p>
+        </div>
+        <!-- 老師好教心法 -->
+        <div id="teach-tip-3" class="bg-indigo-950/80 border-2 border-indigo-400/30 p-4 rounded-2xl max-w-sm text-sm text-indigo-200">
+          <p class="font-black text-yellow-300">💡 老師好教心法</p>
+          <p class="mt-1.5 leading-relaxed">引導學生：合作過程中有摩擦很正常，重要的是誠實面對自己的情緒，並學會感恩與修復關係。</p>
+        </div>
+      </div>
+
+      <!-- Step A & B & C 複合操作版 -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- 左側：步驟 A (心情覺察) -->
+        <div class="bg-space-panel border-2 border-space-border rounded-3xl p-6 flex flex-col justify-between space-y-5">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 bg-yellow-500 text-space-dark rounded-full font-black text-sm flex items-center justify-center shrink-0">A</span>
+              <h4 class="font-black text-white text-base md:text-lg">剛剛合作時，我的心情是？</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-300">點選最像你剛剛的心情臉譜：</p>
+          </div>
+
+          <!-- 四個臉譜 -->
+          <div class="grid grid-cols-2 gap-4">
+            <button id="mood-happy" onclick="selectMood('happy')" class="p-4 bg-space-dark hover:bg-emerald-500/10 border-2 border-space-border rounded-2xl text-center transition-all group flex flex-col items-center">
+              <span class="text-4xl group-hover:scale-110 transition-transform">😆</span>
+              <span class="text-sm font-black text-emerald-400 mt-2">開心滿意</span>
+              <span class="text-xs text-slate-400 mt-1">合作很順利</span>
+            </button>
+            <button id="mood-hurt" onclick="selectMood('hurt')" class="p-4 bg-space-dark hover:bg-blue-500/10 border-2 border-space-border rounded-2xl text-center transition-all group flex flex-col items-center">
+              <span class="text-4xl group-hover:scale-110 transition-transform">🥺</span>
+              <span class="text-sm font-black text-blue-400 mt-2">有點受傷</span>
+              <span class="text-xs text-slate-400 mt-1">我覺得被冷落</span>
+            </button>
+            <button id="mood-angry" onclick="selectMood('angry')" class="p-4 bg-space-dark hover:bg-rose-500/10 border-2 border-space-border rounded-2xl text-center transition-all group flex flex-col items-center">
+              <span class="text-4xl group-hover:scale-110 transition-transform">😡</span>
+              <span class="text-sm font-black text-rose-400 mt-2">有點生氣</span>
+              <span class="text-xs text-slate-400 mt-1">意見不一樣</span>
+            </button>
+            <button id="mood-satisfied" onclick="selectMood('satisfied')" class="p-4 bg-space-dark hover:bg-yellow-500/10 border-2 border-space-border rounded-2xl text-center transition-all group flex flex-col items-center">
+              <span class="text-4xl group-hover:scale-110 transition-transform">🥰</span>
+              <span class="text-sm font-black text-yellow-400 mt-2">感到滿足</span>
+              <span class="text-xs text-slate-400 mt-1">學到好多喔</span>
+            </button>
+          </div>
+
+          <div id="mood-display" class="bg-indigo-950 p-4 rounded-xl text-sm md:text-base text-center border-2 border-indigo-400/10 italic text-slate-300">
+            請點選上述心情臉譜 ☝️
+          </div>
+        </div>
+
+        <!-- 中間：步驟 B (互動天秤) -->
+        <div class="bg-space-panel border-2 border-space-border rounded-3xl p-6 flex flex-col justify-between space-y-5">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 bg-yellow-500 text-space-dark rounded-full font-black text-sm flex items-center justify-center shrink-0">B</span>
+              <h4 class="font-black text-white text-base md:text-lg">付出與感謝天秤</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-300">點選以下兩種行為，看看人際天秤會發生什麼變化：</p>
+          </div>
+
+          <!-- 天秤動畫 SVG -->
+          <div class="relative w-full h-36 flex justify-center items-end bg-space-dark/60 rounded-2xl border border-space-border/50 p-3 overflow-hidden">
+            <!-- 天秤中央底座 -->
+            <div class="absolute bottom-0 w-10 h-12 bg-slate-600 rounded-t-lg"></div>
+            <!-- 天秤中央軸 -->
+            <div class="absolute bottom-12 w-3 h-14 bg-slate-500"></div>
+            <!-- 秤桿 -->
+            <div id="balance-beam" class="absolute bottom-24 w-56 h-3 bg-slate-400 origin-center transition-transform duration-700 ease-out" style="transform: rotate(0deg);">
+              <!-- 左秤盤 -->
+              <div class="absolute left-0 -top-1.5 w-1 h-10 bg-slate-400"></div>
+              <div id="left-pan" class="absolute left-[-24px] top-8 w-12 h-4 bg-indigo-500 rounded-b-md transition-all"></div>
+              <!-- 右秤盤 -->
+              <div class="absolute right-0 -top-1.5 w-1 h-10 bg-slate-400"></div>
+              <div id="right-pan" class="absolute right-[-24px] top-8 w-12 h-4 bg-pink-500 rounded-b-md transition-all"></div>
+            </div>
+
+            <!-- 浮動愛心與禮物提示 -->
+            <div id="left-weight-icon" class="absolute left-4 bottom-16 text-sm font-black text-cyan-300 transition-opacity opacity-0">🌟 我有付出</div>
+            <div id="right-weight-icon" class="absolute right-4 bottom-16 text-sm font-black text-pink-300 transition-opacity opacity-0">💖 謝謝拍檔</div>
+          </div>
+
+          <!-- 付出與回報按鈕 -->
+          <div class="grid grid-cols-1 gap-3">
+            <button id="btn-give" onclick="addWeight('give')" class="p-3 bg-indigo-900/60 hover:bg-indigo-800 border-2 border-indigo-400/30 rounded-2xl text-center text-sm transition-all font-black leading-snug">
+              👈 我為拍檔做了什麼？<br><span class="text-xs font-normal text-indigo-300">(例：我有認真聽他說話)</span>
+            </button>
+            <button id="btn-receive" onclick="addWeight('receive')" class="p-3 bg-pink-900/60 hover:bg-pink-800 border-2 border-pink-400/30 rounded-2xl text-center text-sm transition-all font-black leading-snug">
+              👉 拍檔為我做了什麼？<br><span class="text-xs font-normal text-pink-300">(例：他分我用彩色筆)</span>
+            </button>
+          </div>
+
+          <!-- 真心話與天秤記錄 -->
+          <div id="balance-msg" class="bg-indigo-950 p-4 rounded-xl text-xs md:text-sm text-center border-2 border-indigo-400/10 text-slate-300 leading-relaxed">
+            請點擊上述雙方按鈕來平衡天秤！
+          </div>
+        </div>
+
+        <!-- 右側：數位畫布功能 (創意真心話) -->
+        <div class="bg-space-panel border-2 border-space-border rounded-3xl p-6 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 bg-yellow-500 text-space-dark rounded-full font-black text-sm flex items-center justify-center shrink-0">C</span>
+              <h4 class="font-black text-white text-base md:text-lg">手繪真心話畫布</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-300">用手指或滑鼠，畫個愛心或星星送給拍檔！</p>
+          </div>
+
+          <!-- 線上小畫布 -->
+          <div class="relative bg-white rounded-2xl overflow-hidden border-2 border-indigo-500/50">
+            <canvas id="love-canvas" class="w-full h-44 block cursor-crosshair bg-white"></canvas>
+            
+            <!-- 畫布控制條 -->
+            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center bg-slate-900/95 px-3 py-2 rounded-xl border border-slate-700">
+              <!-- 顏色選擇器 -->
+              <div class="flex gap-2">
+                <button onclick="setCanvasColor('#ec4899')" class="w-6 h-6 rounded-full bg-pink-500 border-2 border-white/60 hover:scale-110 transition-transform"></button>
+                <button onclick="setCanvasColor('#eab308')" class="w-6 h-6 rounded-full bg-yellow-500 border-2 border-white/60 hover:scale-110 transition-transform"></button>
+                <button onclick="setCanvasColor('#10b981')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white/60 hover:scale-110 transition-transform"></button>
+                <button onclick="setCanvasColor('#3b82f6')" class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white/60 hover:scale-110 transition-transform"></button>
+                <button onclick="setCanvasColor('#1e293b')" class="w-6 h-6 rounded-full bg-slate-800 border-2 border-white/60 hover:scale-110 transition-transform"></button>
+              </div>
+              <!-- 清除按鈕 -->
+              <button onclick="clearCanvas()" class="text-xs px-3 py-1.5 bg-red-600/30 hover:bg-red-600/50 border border-red-500/30 rounded-lg text-red-200 font-black">
+                🗑️ 清除
+              </button>
+            </div>
+          </div>
+
+          <!-- 保存與展示虛擬心意 -->
+          <button onclick="sendLoveToPartner()" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600 rounded-2xl text-sm md:text-base font-black shadow-md transition-all hover:scale-102">
+            🎁 將這份真心送給拍檔！
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 自訂彈出的太空真心話傳送提示 (取代 alert) -->
+    <div id="toast-love" class="hidden fixed inset-0 bg-space-dark/80 z-50 flex items-center justify-center p-4">
+      <div class="bg-space-panel border-4 border-pink-500 p-8 rounded-3xl max-w-md w-full text-center space-y-6 animate-bounce-slow">
+        <div class="text-6xl">🎁📡🌟</div>
+        <h4 class="text-2xl font-black text-pink-300">太空真心話發射成功！</h4>
+        <p class="text-base text-slate-200 leading-relaxed">
+          太空電波已將您的彩繪卡片與滿滿的心意送給拍檔囉！大眼怪與毛毛為你的體貼與和善擊掌慶祝！✋
+        </p>
+        <button onclick="closeToastLove()" class="w-full py-3 bg-pink-600 hover:bg-pink-700 font-black rounded-xl text-base transition-all">
+          太棒了！
+        </button>
+      </div>
+    </div>
+
+    <!-- 教學資源下載專區 (老師專屬後台) -->
+    <section id="teacher-section" class="pt-10 border-t border-space-border/50 mt-16 space-y-8">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <span class="px-4 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-full text-sm font-black border border-indigo-400/20">🎒 教師資源直達車</span>
+        <h3 class="text-3xl md:text-4xl font-black text-transparent bg-gradient-to-r from-yellow-300 via-pink-400 to-indigo-400 bg-clip-text tracking-wider">備課大補帖 ➔ 一鍵列印教學資源</h3>
+        <p class="text-sm md:text-base text-slate-300 leading-relaxed">專為低年級生活課老師設計的班級教材，可在下方點擊產生並模擬 A4 尺寸直接列印！</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- 資源一：拍檔魔法手環 -->
+        <div id="card-resource-1" class="bg-space-panel/60 border-2 border-space-border rounded-3xl p-6 hover:border-indigo-500 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <span class="text-4xl">✂️</span>
+            <h4 class="text-lg md:text-xl font-black text-indigo-300">1. 拍檔魔法手環 (教具PDF)</h4>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              可列印剪貼的紙手環，讓學生在上課分組前，寫上自己的「分組角色」（如：材料發放者、導航指揮官），戴在手上提升合作使命感。
+            </p>
+          </div>
+          <button onclick="openResourceModal('bracelet')" class="w-full mt-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-sm font-black text-white transition-all">
+            👁️ 預覽與下載列印 ➔
+          </button>
+        </div>
+
+        <!-- 資源二：SEL觀察評量表 -->
+        <div class="bg-space-panel/60 border-2 border-space-border rounded-3xl p-6 hover:border-pink-500 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <span class="text-4xl">📋</span>
+            <h4 class="text-lg md:text-xl font-black text-pink-300">2. 低年級 SEL 觀察評量表</h4>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              結構化的表現評量檢核表。勾選記錄孩子在合作中是否能使用「你負責…我負責…」雙贏句型、有無適時安慰夥伴等，利於期末輔導與量化評估。
+            </p>
+          </div>
+          <button onclick="openResourceModal('assessment')" class="w-full mt-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-xl text-sm font-black text-white transition-all">
+            👁️ 預覽與下載列印 ➔
+          </button>
+        </div>
+
+        <!-- 資源三：聯絡簿貼紙 -->
+        <div class="bg-space-panel/60 border-2 border-space-border rounded-3xl p-6 hover:border-yellow-500 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <span class="text-4xl">💌</span>
+            <h4 class="text-lg md:text-xl font-black text-yellow-300">3. 聯絡簿導師的話 (小貼紙)</h4>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              結合家庭教育的聯絡簿小語，印成貼紙貼在聯絡簿，讓家長知道本週孩子在學校練習了「人際修復」與「合作分工」，搭起親師共育的橋梁。
+            </p>
+          </div>
+          <button onclick="openResourceModal('stickers')" class="w-full mt-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-xl text-sm font-black text-slate-900 transition-all">
+            👁️ 預覽與下載列印 ➔
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 老師專屬資源 Modal (列印預覽用) -->
+  <div id="resource-modal" class="hidden fixed inset-0 bg-space-dark/95 z-50 overflow-y-auto p-4 md:p-8 flex items-center justify-center">
+    <div class="max-w-4xl w-full bg-white text-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl space-y-6 relative border-4 border-indigo-500">
+      
+      <!-- Modal 關閉按鈕 -->
+      <button onclick="closeResourceModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 font-bold transition-all">
+        ✕
+      </button>
+
+      <!-- 預覽列印標題區 (不列印此區) -->
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b pb-4 gap-3 print:hidden">
+        <div>
+          <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-bold">PDF 文件預覽 / 可直接列印</span>
+          <h4 id="resource-title" class="text-xl md:text-2xl font-black text-slate-900">資源預覽</h4>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+            🖨️ 送出列印 / 存為PDF
+          </button>
+          <button onclick="closeResourceModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">
+            關閉預覽
+          </button>
+        </div>
+      </div>
+
+      <!-- 可列印核心內容區 (套用白底黑字利於黑白列印) -->
+      <div id="print-area" class="border border-slate-200 p-6 md:p-10 rounded-2xl bg-white text-slate-900 print:border-0 print:p-0">
+        <!-- JS 動態插入內容 -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 頁尾 -->
+  <footer class="border-t border-space-border/50 bg-space-dark/60 py-6 mt-12">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+      <div class="space-y-1">
+        <p class="text-xs md:text-sm text-slate-400 font-medium">星際拍檔任務任務互動網 © 2026 SEL教育專門教室 & 108課綱生活課程工作坊</p>
+        <p class="text-[10px] md:text-xs text-slate-500">本網站為輔助低年級小學教師設計之互動網，語音模組與數位畫布完全免登入、免存取權限，保障隱私。</p>
+      </div>
+      <div class="flex gap-4 text-xs md:text-sm text-slate-400 font-semibold">
+        <button onclick="switchTab('home')" class="hover:text-white transition-colors">首頁</button>
+        <button onclick="window.scrollTo({top: document.getElementById('teacher-section').offsetTop, behavior: 'smooth'})" class="hover:text-white transition-colors">備課資源區</button>
+        <span class="text-slate-600">|</span>
+        <span class="text-indigo-400 flex items-center gap-1">✨ 伴你航向快樂人際</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript 與互動邏輯 -->
+  <script>
+    // -------------------------------------------------------------
+    // 全局狀態變數
+    // -------------------------------------------------------------
+    let currentMode = 'coop'; // coop: 班級共學, self: 學生自主挑戰
+    let isTTSActive = true;   // 預設開啟語音TTS
+
+    // 關卡一變數
+    let selectedLevel1CardId = null;
+    let selectedLevel1CardText = "";
+    let monsterTasksArr = [];
+    let fluffyTasksArr = [];
+
+    // 關卡三變數
+    let scaleLeftWeight = 0;
+    let scaleRightWeight = 0;
+
+    // -------------------------------------------------------------
+    // 語音朗讀模組 (Speech Synthesis TTS)
+    // -------------------------------------------------------------
+    window.addEventListener('load', () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+      }
+      initCanvas();
+      
+      setTimeout(() => {
+        if (isTTSActive) {
+          speak("歡迎來到星際拍檔任務！請點擊下方的太空任務卡，一起和外星拍檔學習分工與和好喔！");
+        }
+      }, 800);
+    });
+
+    function speak(text, callback) {
+      if (!isTTSActive) return;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-TW';
+        
+        const voices = window.speechSynthesis.getVoices();
+        const localVoice = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh-HK') || v.lang.includes('zh-CN'));
+        if (localVoice) {
+          utterance.voice = localVoice;
+        }
+        
+        utterance.rate = 0.85; // 專為國小二年級設計更緩慢、更清楚的講話速度
+        utterance.pitch = 1.1; // 稍微拉高音調增加親和力
+
+        if (callback) {
+          utterance.onend = callback;
+        }
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleAutoTTS() {
+      isTTSActive = !isTTSActive;
+      const btn = document.getElementById('tts-toggle-btn');
+      const text = document.getElementById('tts-text');
+      const icon = document.getElementById('tts-icon');
+
+      if (isTTSActive) {
+        text.innerText = "自動語音：開啟";
+        icon.innerText = "🔊";
+        btn.classList.add('bg-pink-600/20', 'text-pink-300');
+        btn.classList.remove('bg-slate-800', 'text-slate-400');
+        speak("已開啟自動朗讀功能。");
+      } else {
+        text.innerText = "自動語音：關閉";
+        icon.innerText = "🔇";
+        btn.classList.remove('bg-pink-600/20', 'text-pink-300');
+        btn.classList.add('bg-slate-800', 'text-slate-400');
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 教學模式與標籤頁切換
+    // -------------------------------------------------------------
+    function setMode(mode) {
+      currentMode = mode;
+      const coopBtn = document.getElementById('mode-btn-coop');
+      const selfBtn = document.getElementById('mode-btn-self');
+
+      const tip1 = document.getElementById('teach-tip-1');
+      const tip2 = document.getElementById('teach-tip-2');
+      const tip3 = document.getElementById('teach-tip-3');
+
+      if (mode === 'coop') {
+        coopBtn.className = "px-4 py-2 rounded-full transition-all text-white bg-indigo-600 shadow-md";
+        selfBtn.className = "px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white";
+        if (tip1) tip1.classList.remove('hidden');
+        if (tip2) tip2.classList.remove('hidden');
+        if (tip3) tip3.classList.remove('hidden');
+        speak("切換為班級共學模式。適合搭配電子白板。");
+      } else {
+        selfBtn.className = "px-4 py-2 rounded-full transition-all text-white bg-indigo-600 shadow-md";
+        coopBtn.className = "px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white";
+        if (tip1) tip1.classList.add('hidden');
+        if (tip2) tip2.classList.add('hidden');
+        if (tip3) tip3.classList.add('hidden');
+        speak("切換為自主挑戰模式。自己來試試看吧！");
+      }
+    }
+
+    function switchTab(tabId) {
+      document.getElementById('tab-home').classList.add('hidden');
+      document.getElementById('tab-level1').classList.add('hidden');
+      document.getElementById('tab-level2').classList.add('hidden');
+      document.getElementById('tab-level3').classList.add('hidden');
+
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (tabId === 'level1') {
+        speak("進入第一關：角色分配艙。請為大眼怪和毛毛安排最棒的太空工作！");
+      } else if (tabId === 'level2') {
+        speak("進入第二關：魔法對話發射台。彩色筆搶不過來了！快幫他們挑選最對等、最溫和的魔法對話吧！");
+      } else if (tabId === 'level3') {
+        speak("進入第三關：心情修復觀測站。合作的天秤傾斜了，讓我們透過感受覺察與手繪心意，把壞掉的心情拼起來！");
+        setTimeout(initCanvas, 200);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 關卡一：角色分配艙 邏輯
+    // -------------------------------------------------------------
+    function selectTask(cardId, cardText) {
+      document.getElementById('card-nav').classList.remove('ring-4', 'ring-cyan-400');
+      document.getElementById('card-food').classList.remove('ring-4', 'ring-pink-400');
+
+      selectedLevel1CardId = cardId;
+      selectedLevel1CardText = cardText;
+
+      const colorRing = cardId === 'card-nav' ? 'ring-cyan-400' : 'ring-pink-400';
+      document.getElementById(cardId).classList.add('ring-4', colorRing);
+
+      document.getElementById('level1-guide-text').innerText = `已選擇「${cardText}」！請接著點擊上方的外星人，把任務送給他吧 🌌`;
+      speak(`已選擇：${cardText}。請點選大眼怪或毛毛。`);
+    }
+
+    function assignTask(alien) {
+      if (!selectedLevel1CardId) {
+        speak("請先點選下方的任務卡片唷！");
+        document.getElementById('level1-guide-text').innerText = "⚠️ 請先點選一張任務卡片！";
+        return;
+      }
+
+      const assignedTaskDiv = document.createElement('div');
+      assignedTaskDiv.className = "px-4 py-2 bg-space-dark border border-indigo-500/40 rounded-xl text-sm font-black text-center animate-bounce text-slate-100 flex justify-between items-center";
+      assignedTaskDiv.innerHTML = `<span>✨ ${selectedLevel1CardText}</span> <button class='text-red-400 hover:text-red-600 font-extrabold ml-2 text-base px-1.5' onclick="event.stopPropagation(); removeTask('${alien}', '${selectedLevel1CardText}')">✕</button>`;
+
+      if (alien === 'monster') {
+        if (monsterTasksArr.includes(selectedLevel1CardText)) {
+          speak("大眼怪已經擁有這個任務囉，分點工作給毛毛吧！");
+          return;
+        }
+        
+        const container = document.getElementById('monster-tasks');
+        if (monsterTasksArr.length === 0) container.innerHTML = '';
+        
+        monsterTasksArr.push(selectedLevel1CardText);
+        container.appendChild(assignedTaskDiv);
+        speak(`把 ${selectedLevel1CardText} 交給大眼怪！`);
+      } else {
+        if (fluffyTasksArr.includes(selectedLevel1CardText)) {
+          speak("毛毛已經擁有這個任務囉，分工作給大眼怪才好玩！");
+          return;
+        }
+
+        const container = document.getElementById('fluffy-tasks');
+        if (fluffyTasksArr.length === 0) container.innerHTML = '';
+
+        fluffyTasksArr.push(selectedLevel1CardText);
+        container.appendChild(assignedTaskDiv);
+        speak(`把 ${selectedLevel1CardText} 交給毛毛！`);
+      }
+
+      document.getElementById(selectedLevel1CardId).classList.add('opacity-40', 'pointer-events-none');
+      document.getElementById(selectedLevel1CardId).classList.remove('ring-4', 'ring-cyan-400', 'ring-pink-400');
+      
+      selectedLevel1CardId = null;
+      selectedLevel1CardText = "";
+      document.getElementById('level1-guide-text').innerText = "分配好囉！請繼續分配別的卡片。";
+
+      checkLevel1Success();
+    }
+
+    function removeTask(alien, taskText) {
+      if (taskText === '設定星際導航') {
+        document.getElementById('card-nav').classList.remove('opacity-40', 'pointer-events-none');
+      } else if (taskText === '發放太空糧食') {
+        document.getElementById('card-food').classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      if (alien === 'monster') {
+        monsterTasksArr = monsterTasksArr.filter(t => t !== taskText);
+        rebuildTasksUI('monster');
+      } else {
+        fluffyTasksArr = fluffyTasksArr.filter(t => t !== taskText);
+        rebuildTasksUI('fluffy');
+      }
+      speak(`收回了${taskText}的工作。`);
+    }
+
+    function rebuildTasksUI(alien) {
+      const container = document.getElementById(alien === 'monster' ? 'monster-tasks' : 'fluffy-tasks');
+      const arr = alien === 'monster' ? monsterTasksArr : fluffyTasksArr;
+      
+      container.innerHTML = '';
+      if (arr.length === 0) {
+        container.innerHTML = `<span class="block text-sm text-slate-400 text-center italic">尚無分工</span>`;
+      } else {
+        arr.forEach(t => {
+          const div = document.createElement('div');
+          div.className = "px-4 py-2 bg-space-dark border border-indigo-500/40 rounded-xl text-sm font-black text-center text-slate-100 flex justify-between items-center";
+          div.innerHTML = `<span>✨ ${t}</span> <button class='text-red-400 hover:text-red-600 font-extrabold ml-2 text-base px-1.5' onclick="event.stopPropagation(); removeTask('${alien}', '${t}')">✕</button>`;
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function checkLevel1Success() {
+      const isNavAssigned = monsterTasksArr.includes('設定星際導航') || fluffyTasksArr.includes('設定星際導航');
+      const isFoodAssigned = monsterTasksArr.includes('發放太空糧食') || fluffyTasksArr.includes('發放太空糧食');
+
+      if (isNavAssigned && isFoodAssigned) {
+        setTimeout(() => {
+          document.getElementById('success-modal-1').classList.remove('hidden');
+          speak("太厲害了！你完成了合作分工！大眼怪跟毛毛各自擁有了任務，現在飛船可以平安起飛囉！「每個人都有小任務，我們都是太空小隊長！」");
+        }, 800);
+      }
+    }
+
+    function resetLevel1() {
+      monsterTasksArr = [];
+      fluffyTasksArr = [];
+      selectedLevel1CardId = null;
+      selectedLevel1CardText = "";
+      
+      document.getElementById('card-nav').classList.remove('opacity-40', 'pointer-events-none', 'ring-4', 'ring-cyan-400');
+      document.getElementById('card-food').classList.remove('opacity-40', 'pointer-events-none', 'ring-4', 'ring-pink-400');
+      
+      rebuildTasksUI('monster');
+      rebuildTasksUI('fluffy');
+      
+      document.getElementById('level1-guide-text').innerText = "選取任務卡吧 👇";
+      speak("關卡一已重設，請重新分工合作。");
+    }
+
+    function closeSuccessModal(level) {
+      document.getElementById(`success-modal-${level}`).classList.add('hidden');
+    }
+
+    // -------------------------------------------------------------
+    // 關卡二：魔法對話發發射台 邏輯
+    // -------------------------------------------------------------
+    function checkLevel2Answer(choice) {
+      if (choice === 1) {
+        speak("「這支筆是我的，你不要拿！」這句話聽起來有一點大聲和不客氣，拍檔聽了容易更生氣唷。再試著找找雙贏的說法吧！");
+        const container = document.getElementById('angry-aliens');
+        container.classList.add('animate-shaking');
+        setTimeout(() => container.classList.remove('animate-shaking'), 800);
+      } else if (choice === 2) {
+        speak("「老師！他搶我的筆！」雖然很想請老師幫忙，但我們是高年級太空人囉，試試跟夥伴面對面和善討論、解決問題吧！");
+        const container = document.getElementById('angry-aliens');
+        container.classList.add('animate-shaking');
+        setTimeout(() => container.classList.remove('animate-shaking'), 800);
+      } else if (choice === 3) {
+        const correctBtn = document.getElementById('correct-choice');
+        correctBtn.classList.add('ring-4', 'ring-emerald-400', 'shadow-[0_0_20px_rgba(52,211,153,0.5)]');
+        
+        speak("超級棒！「我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。」這句是神奇的對等分工金句！拍檔聽了高興得拍拍手！", () => {
+          document.getElementById('success-modal-2').classList.remove('hidden');
+          speakCorrectThreeTimes();
+        });
+      }
+    }
+
+    function speakCorrectThreeTimes() {
+      speak("魔法帶帶帶帶帶讀三遍練習，預備，起：第一遍：我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。第二遍：我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。第三遍：我們是最佳拍檔！你負責畫畫，我負責塗顏色，我們一起完成它。太棒了，把這句話牢牢記在心裡喔！");
+    }
+
+    // -------------------------------------------------------------
+    // 關卡三：心情修復觀測站 邏輯 (包含具體行為點選與累加重力)
+    // -------------------------------------------------------------
+    function selectMood(mood) {
+      ['mood-happy', 'mood-hurt', 'mood-angry', 'mood-satisfied'].forEach(id => {
+        document.getElementById(id).classList.remove('border-yellow-400', 'bg-slate-800');
+      });
+
+      const display = document.getElementById('mood-display');
+      let moodText = "";
+
+      if (mood === 'happy') {
+        document.getElementById('mood-happy').classList.add('border-yellow-400', 'bg-slate-800');
+        moodText = "😀 開心滿意：我覺得跟拍檔一起合作非常有趣！";
+      } else if (mood === 'hurt') {
+        document.getElementById('mood-hurt').classList.add('border-yellow-400', 'bg-slate-800');
+        moodText = "🥺 有點受傷：剛才我覺得意見沒有被聽進去，心裡有點難過。";
+      } else if (mood === 'satisfied') {
+        document.getElementById('mood-satisfied').classList.add('border-yellow-400', 'bg-slate-800');
+        moodText = "🥰 感到滿足：雖然有點難，但我們互相幫忙，學到了很多！";
+      } else if (mood === 'angry') {
+        document.getElementById('mood-angry').classList.add('border-yellow-400', 'bg-slate-800');
+        moodText = "😡 有點生氣：剛剛彩色筆被搶走的時候，我有一點不高興。";
+      }
+
+      display.innerText = moodText;
+      display.classList.add('text-yellow-300', 'font-black');
+      speak(`你選的心情是：${moodText}`);
+    }
+
+    // 天秤控制
+    function addWeight(type) {
+      const beam = document.getElementById('balance-beam');
+      const msg = document.getElementById('balance-msg');
+      
+      if (type === 'give') {
+        scaleLeftWeight += 1;
+        document.getElementById('left-weight-icon').classList.remove('opacity-0');
+        document.getElementById('left-weight-icon').classList.add('opacity-100');
+        speak("謝謝你！「你有認真傾聽拍檔的話」，這是一份溫暖的付出！");
+      } else {
+        scaleRightWeight += 1;
+        document.getElementById('right-weight-icon').classList.remove('opacity-0');
+        document.getElementById('right-weight-icon').classList.add('opacity-100');
+        speak("謝謝你！「拍檔分你彩色筆、送你微笑」，這是他對你的友善與包容！");
+      }
+
+      const diff = scaleLeftWeight - scaleRightWeight;
+      let angle = diff * 8;
+      if (angle > 12) angle = 12;
+      if (angle < -12) angle = -12;
+
+      beam.style.transform = `rotate(${angle}deg)`;
+
+      if (scaleLeftWeight > 0 && scaleRightWeight > 0 && scaleLeftWeight === scaleRightWeight) {
+        msg.innerHTML = "🌟 <strong>天秤重歸平衡！</strong><br>「人際關係就像翹翹板，有付出、有回報，不小心弄壞了，我們可以用真心補起來。」";
+        msg.className = "bg-emerald-950 p-4 rounded-2xl text-base text-center border-2 border-emerald-400 text-emerald-300 font-extrabold animate-bounce leading-relaxed";
+        speak("哇！天秤完美的平衡了！人際關係就像翹翹板，有付出、有回報，不小心弄壞了，我們可以用真心補起來。");
+      } else {
+        msg.innerText = `天秤還差一點點喔！左邊付出：${scaleLeftWeight}，右邊回報：${scaleRightWeight}。請點點看，讓兩邊一樣多吧！`;
+        msg.className = "bg-indigo-950 p-3 rounded-xl text-sm text-center border border-indigo-400/10 text-slate-200 leading-normal";
+      }
+    }
+
+    // 數位畫布模組
+    let canvas, ctx, isDrawing = false;
+    let currentColor = '#ec4899';
+
+    function initCanvas() {
+      canvas = document.getElementById('love-canvas');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = 176; 
+
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 5; 
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      canvas.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', () => {
+        const mouseEvent = new MouseEvent('mouseup', {});
+        canvas.dispatchEvent(mouseEvent);
+      });
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.strokeStyle = currentColor;
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    function setCanvasColor(color) {
+      currentColor = color;
+      speak("換個彩色筆顏色！");
+    }
+
+    function clearCanvas() {
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        speak("畫布已經擦乾淨囉，重新畫一顆愛心給拍檔吧！");
+      }
+    }
+
+    function sendLoveToPartner() {
+      speak("太空電波發射成功！你真是一個懂得分擔與體貼他人的星際太空人！大眼怪和毛毛收到了你的彩繪真心，跟你大力擊掌！✋");
+      document.getElementById('toast-love').classList.remove('hidden');
+    }
+
+    function closeToastLove() {
+      document.getElementById('toast-love').classList.add('hidden');
+    }
+
+    // -------------------------------------------------------------
+    // 教師教學資源生成器 (免載、一鍵列印 A4 設計)
+    // -------------------------------------------------------------
+    function openResourceModal(type) {
+      const modal = document.getElementById('resource-modal');
+      const title = document.getElementById('resource-title');
+      const printArea = document.getElementById('print-area');
+
+      let htmlContent = "";
+
+      if (type === 'bracelet') {
+        title.innerText = "🏫 教具下載 ➔ 拍檔魔法手環剪貼紙手環 (108生活課綱專用)";
+        htmlContent = `
+          <div class="space-y-6">
+            <div class="text-center border-b-2 border-dashed border-indigo-200 pb-4">
+              <h1 class="text-2xl font-black text-slate-800">🚀「星際拍檔」任務角色手環 ✂️</h1>
+              <p class="text-sm text-slate-500 mt-1">【使用說明】印出後請沿虛線剪下，套在孩子手腕上以膠帶固定。引導孩子寫下今日在太空小隊中的任務。</p>
+            </div>
+
+            <!-- 手環 A -->
+            <div class="border-2 border-indigo-500/30 p-4 rounded-xl relative space-y-4 my-8">
+              <div class="absolute -top-3 left-6 bg-indigo-600 text-white text-[12px] px-2 py-0.5 rounded-full font-bold">手環 A 導航指揮官</div>
+              <div class="flex items-center justify-between border-b border-dashed pb-2">
+                <span class="text-base font-bold text-indigo-700">👦 我是太空人：_______________</span>
+                <span class="text-xs text-slate-400">✂| 沿虛線剪下</span>
+              </div>
+              <div class="h-10 bg-slate-100 flex items-center justify-between px-4 border border-dashed border-slate-300 text-xs font-bold text-slate-600">
+                <span>🛸 星際航行中... 導航官任務：【看懂地圖與分配任務】</span>
+                <span>⭐ 最佳拍檔魔法！</span>
+              </div>
+            </div>
+
+            <!-- 手環 B -->
+            <div class="border-2 border-pink-500/30 p-4 rounded-xl relative space-y-4 my-8">
+              <div class="absolute -top-3 left-6 bg-pink-600 text-white text-[12px] px-2 py-0.5 rounded-full font-bold">手環 B 太空後勤官</div>
+              <div class="flex items-center justify-between border-b border-dashed pb-2">
+                <span class="text-base font-bold text-pink-700">👧 我是太空人：_______________</span>
+                <span class="text-xs text-slate-400">✂| 沿虛線剪下</span>
+              </div>
+              <div class="h-10 bg-slate-100 flex items-center justify-between px-4 border border-dashed border-slate-300 text-xs font-bold text-slate-600">
+                <span>🍪 太空補給中... 後勤官任務：【發放點心與照顧安全】</span>
+                <span>💖 快樂安全第一！</span>
+              </div>
+            </div>
+
+            <div class="bg-indigo-50 p-3 rounded-lg text-xs text-slate-600 border border-indigo-100">
+              📌 <strong>課堂反思活動建議</strong>：分組前，讓兩個小朋友交換戴手環，並對彼此大聲唸出：「我是你的神拍檔，今天有任何困難我們一起想辦法！」
+            </div>
+          </div>
+        `;
+      } else if (type === 'assessment') {
+        title.innerText = "📋 教學量表 ➔ 低年級 SEL 人際互動檢核評量表";
+        htmlContent = `
+          <div class="space-y-6">
+            <div class="text-center pb-4 border-b">
+              <h1 class="text-xl md:text-2xl font-black text-slate-800">📊 國小生活課程：低年級人際合作與 SEL 觀察紀錄表</h1>
+              <p class="text-xs text-slate-500 mt-1">符合 108 課綱生活課程核心素養「人際與社會覺察」之質性表現評量</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-xs">
+              <p><strong>教學單元：</strong>星際拍檔任務</p>
+              <p><strong>評量教師：</strong>_______________ 老師</p>
+              <p><strong>班級/組別：</strong>_________ 年 _________ 班第 _______ 組</p>
+              <p><strong>評量日期：</strong>2026 / ____ / ____</p>
+            </div>
+
+            <table class="w-full border-collapse border border-slate-300 text-xs text-left">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700">
+                  <th class="border border-slate-300 p-2 w-1/12">座號</th>
+                  <th class="border border-slate-300 p-2 w-2/12">學生姓名</th>
+                  <th class="border border-slate-300 p-2 w-3/12">指標一：能主動與夥伴分工並承擔責任 (關卡1)</th>
+                  <th class="border border-slate-300 p-2 w-3/12">指標二：衝突時能說出「我負責…你負責」金句 (關卡2)</th>
+                  <th class="border border-slate-300 p-2 w-3/12">指標三：願意表達感謝並與對手修復感情 (關卡3)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="h-10">
+                  <td class="border border-slate-300 p-2">例</td>
+                  <td class="border border-slate-300 p-2">大眼怪 (範例)</td>
+                  <td class="border border-slate-300 p-2">✔ 能與毛毛順利分配發放粮食</td>
+                  <td class="border border-slate-300 p-2">✔ 能說出「我負責畫你負責塗」</td>
+                  <td class="border border-slate-300 p-2">✔ 能手繪笑臉並為對方加油</td>
+                </tr>
+                <tr class="h-12">
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                </tr>
+                <tr class="h-12">
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                </tr>
+                <tr class="h-12">
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2"></td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                  <td class="border border-slate-300 p-2">□ 優良 □ 通過 □ 待引導</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="text-[10px] text-slate-500 italic">
+              * 註：生活課程著重實踐，建議老師利用分組繪製星際地圖活動時，走動巡視並在表格中快速打勾評鑑。
+            </div>
+          </div>
+        `;
+      } else if (type === 'stickers') {
+        title.innerText = "💌 聯絡簿導師的話 ➔ 貼紙剪貼小語 (親師共育聯絡簿貼)";
+        htmlContent = `
+          <div class="space-y-6">
+            <div class="text-center pb-4 border-b">
+              <h1 class="text-2xl font-black text-slate-800">🎯 低年級 SEL 人際合作：家庭共學聯絡簿貼</h1>
+              <p class="text-xs text-slate-500 mt-1">【親師共育小語】可複印裁剪並直接粘貼在學生的聯絡簿中，讓家長參與孩子的進步。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <!-- 貼紙一 -->
+              <div class="border-2 border-dashed border-slate-300 p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-700">🚀 本週生活課堂亮點</span>
+                  <span class="text-slate-400">貼紙 1-1</span>
+                </div>
+                <h5 class="font-black text-slate-800 text-sm">【我們是太空小隊長！】</h5>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  親愛的家長：本週我們在學校完成了「星際拍檔任務」人際合作學習。孩子練習了「你負責...我負責...」的分工模式，了解了每個人在團體中都很重要。回家後，不妨邀請孩子和您一起分擔簡單的家務（如：媽媽負責洗菜、我負責端盤子），建立孩子的自律與合作心喔！
+                </p>
+              </div>
+
+              <!-- 貼紙二 -->
+              <div class="border-2 border-dashed border-slate-300 p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-700">🩹 本週生活課堂亮點</span>
+                  <span class="text-slate-400">貼紙 1-2</span>
+                </div>
+                <h5 class="font-black text-slate-800 text-sm">【神奇的心情修補站】</h5>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  親愛的家長：今天孩子在人際關係課堂上，學會了「關係修復」的重要。當夥伴不小心弄髒物品時，我們用「真心話、感謝對方的努力」來讓心情天秤重歸平衡。人際合作中有爭吵與碰撞是健康的，讓我們一起陪伴孩子，用真心與善意擁抱每一位朋友！
+                </p>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      printArea.innerHTML = htmlContent;
+      modal.classList.remove('hidden');
+      speak("為您開啟了教具的列印預覽，您可以一鍵列印或存為PDF帶去學校唷！");
+    }
+
+    function closeResourceModal() {
+      document.getElementById('resource-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

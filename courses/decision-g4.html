@@ -1,0 +1,1307 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決策思考大挑戰 - 4年級價值觀與決策評估</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        fun: ['Fredoka One', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf8f2',
+                            100: '#fbeee0',
+                            200: '#f7ddc3',
+                            300: '#f0c29a',
+                            400: '#e69f6d',
+                            500: '#dd7a42',
+                            600: '#cf5e29',
+                            700: '#ac4920',
+                            800: '#8a3c1e',
+                            900: '#70331c',
+                        },
+                        value: '#4f46e5',
+                        priority: '#f97316',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfaf6;
+        }
+        .monster-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        .scale-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        .animate-spin-slow {
+            animation: spin-slow 12s linear infinite;
+        }
+        .animate-bounce-short {
+            animation: bounce-short 0.6s ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-1.5deg); }
+            75% { transform: translateX(5px) rotate(1.5deg); }
+        }
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .scale-transition {
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        /* 隱藏原生滾動條，保持整潔 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b-4 border-amber-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 p-2.5 rounded-2xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-compass text-2xl text-white animate-spin-slow"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-wider">決策思考大挑戰</h1>
+                    <p class="text-xs text-amber-600 font-bold">四年級：價值觀辨識與評估選擇</p>
+                </div>
+            </div>
+            <!-- 模組快速切換按鈕 -->
+            <nav class="flex flex-wrap gap-2">
+                <button id="btn-module1" class="tab-btn active px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-amber-400 border-amber-600 text-white shadow-md">
+                    <i class="fa-solid fa-scale-balanced mr-1"></i> 1.天平對對碰
+                </button>
+                <button id="btn-module2" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-calculator mr-1"></i> 2.決策評估器
+                </button>
+                <button id="btn-module3" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-comments mr-1"></i> 3.對話交流站
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主內容容器 -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 md:py-8">
+
+        <!-- ==================== 模組一：天平對對碰 ==================== -->
+        <section id="module1" class="tab-content block">
+            <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border-4 border-indigo-200 rounded-3xl p-6 md:p-8 shadow-lg relative overflow-hidden">
+                <div class="absolute top-2 right-2 opacity-10">
+                    <i class="fa-solid fa-shapes text-9xl text-indigo-900"></i>
+                </div>
+                
+                <div class="text-center max-w-2xl mx-auto mb-8 relative z-10">
+                    <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">核心概念</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-indigo-900 mt-2 mb-3">價值觀 vs 優先考慮</h2>
+                    <p class="text-slate-600 text-sm md:text-base">
+                        <b>價值觀：</b>心中永遠的指南針，指引我們是非對錯的信念。<br>
+                        <b>優先考慮：</b>現在最想做、最需要完成的事，會隨時間與心情改變。
+                    </p>
+                </div>
+
+                <!-- 拖曳或點擊遊戲區域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    
+                    <!-- 左邊：指南針怪獸與卡片 -->
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-indigo-100 shadow-sm min-h-[320px]">
+                        <div id="monster-container" class="monster-float text-center mb-4">
+                            <!-- 可愛指南針怪獸 -->
+                            <svg class="w-28 h-28 mx-auto" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="#eef2ff" stroke="#4f46e5" stroke-width="4"/>
+                                <circle cx="50" cy="50" r="35" fill="#4f46e5" />
+                                <path d="M50 22 L58 50 L50 58 Z" fill="#ef4444" />
+                                <path d="M50 78 L58 50 L50 50 Z" fill="#e2e8f0" />
+                                <path d="M50 78 L42 50 L50 50 Z" fill="#cbd5e1" />
+                                <path d="M50 22 L42 50 L50 58 Z" fill="#f87171" />
+                                <circle cx="50" cy="50" r="5" fill="#ffffff" />
+                                <!-- 可愛眼睛與表情 -->
+                                <circle cx="35" cy="45" r="5" fill="#1e1b4b" />
+                                <circle cx="65" cy="45" r="5" fill="#1e1b4b" />
+                                <circle cx="37" cy="43" r="1.5" fill="#ffffff" />
+                                <circle cx="67" cy="43" r="1.5" fill="#ffffff" />
+                                <path d="M45 60 Q50 65 55 60" stroke="#1e1b4b" stroke-width="3" stroke-linecap="round" fill="none"/>
+                            </svg>
+                            <p class="font-black text-indigo-900 mt-2" id="monster-bubble">我是怪獸「拉拉」！請幫我分類卡片！</p>
+                        </div>
+                        
+                        <!-- 待分類卡片 -->
+                        <div id="card-stage" class="w-full flex justify-center items-center py-4 min-h-[100px]">
+                            <!-- 卡片會被 JavaScript 動態插入 -->
+                        </div>
+                    </div>
+
+                    <!-- 右邊：兩個收納箱 -->
+                    <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- 價值觀分類箱 -->
+                        <div id="box-value" class="bg-indigo-50 hover:bg-indigo-100 border-4 border-dashed border-indigo-400 rounded-2xl p-6 flex flex-col items-center justify-between min-h-[250px] transition-all duration-200">
+                            <div class="text-center">
+                                <span class="bg-indigo-200 text-indigo-800 p-3 rounded-full inline-block mb-3">
+                                    <i class="fa-solid fa-star-and-crescent text-2xl animate-pulse"></i>
+                                </span>
+                                <h3 class="text-xl font-bold text-indigo-900">價值觀</h3>
+                                <p class="text-xs text-indigo-600 mt-1">心中不變的北極星（是非對錯）</p>
+                            </div>
+                            <div id="list-value" class="w-full mt-4 space-y-2 max-h-36 overflow-y-auto">
+                                <!-- 拖入的卡片清單 -->
+                            </div>
+                            <!-- 點擊快速投放按鈕 (手勢與小螢幕特化) -->
+                            <button id="btn-quick-value" class="mt-4 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl text-sm font-bold shadow-md w-full transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-arrow-down-long"></i> 投進「價值觀」箱子
+                            </button>
+                        </div>
+
+                        <!-- 優先考慮分類箱 -->
+                        <div id="box-priority" class="bg-amber-50 hover:bg-amber-100 border-4 border-dashed border-amber-400 rounded-2xl p-6 flex flex-col items-center justify-between min-h-[250px] transition-all duration-200">
+                            <div class="text-center">
+                                <span class="bg-amber-200 text-amber-800 p-3 rounded-full inline-block mb-3">
+                                    <i class="fa-solid fa-cloud-sun text-2xl"></i>
+                                </span>
+                                <h3 class="text-xl font-bold text-amber-900">優先考慮的事</h3>
+                                <p class="text-xs text-amber-600 mt-1">現在最想做的事（隨時會變）</p>
+                            </div>
+                            <div id="list-priority" class="w-full mt-4 space-y-2 max-h-36 overflow-y-auto">
+                                <!-- 拖入的卡片清單 -->
+                            </div>
+                            <!-- 點擊快速投放按鈕 -->
+                            <button id="btn-quick-priority" class="mt-4 px-4 py-3 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white rounded-xl text-sm font-bold shadow-md w-full transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-arrow-down-long"></i> 投進「優先考慮」箱子
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 遊戲控制與重玩 -->
+                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl border-2 border-indigo-100 gap-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-bold text-indigo-900 bg-indigo-100 px-3 py-1.5 rounded-lg">
+                            得分：<span id="score-val" class="text-lg font-black text-indigo-700">0</span> / 6
+                        </span>
+                        <div class="w-32 bg-slate-100 rounded-full h-3">
+                            <div id="game-progress-bar" class="bg-indigo-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <button id="btn-reset-module1" class="px-5 py-2.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 rounded-xl font-bold text-sm transition-colors shadow-sm">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> 重新開始
+                    </button>
+                </div>
+
+                <!-- 老師引導小撇步 -->
+                <div class="mt-6 border-t border-indigo-100 pt-4">
+                    <details class="bg-white rounded-2xl border-2 border-amber-300 overflow-hidden shadow-sm transition-all duration-200 group">
+                        <summary class="font-bold text-amber-800 p-4 cursor-pointer flex justify-between items-center hover:bg-amber-50 select-none list-none">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-chalkboard-user text-lg text-amber-500"></i>
+                                <span class="text-base">👩‍🏫 老師引導小撇步（課堂提問技巧）</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-sm transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 bg-amber-50/50 border-t border-amber-200 text-sm leading-relaxed text-slate-700 space-y-2">
+                            <p><strong>引導語提示：</strong>「價值觀就像不變的北極星（是非對錯），而優先考慮就像今天的天氣變化（卡片會變）。當兩者衝突時，我們會怎麼選擇？」</p>
+                            <p><strong>課堂延伸思考：</strong></p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>「誠實」會因為今天放學了、下雨了、心情不好就改變它重要的本質嗎？</li>
+                                <li>「看漫畫」這件事，如果放到明天或下星期，它還是同樣的第一優先嗎？</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==================== 模組二：決策評估器 ==================== -->
+        <section id="module2" class="tab-content hidden">
+            <div class="bg-gradient-to-br from-orange-50 to-amber-50 border-4 border-orange-200 rounded-3xl p-6 md:p-8 shadow-lg relative">
+                <div class="absolute top-2 right-2 opacity-10">
+                    <i class="fa-solid fa-calculator text-9xl text-orange-900"></i>
+                </div>
+
+                <div class="text-center max-w-2xl mx-auto mb-6">
+                    <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">步驟 4：評估與決策</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-orange-900 mt-2 mb-2">決策天平計算機</h2>
+                    <p class="text-slate-600 text-sm">幫助你衡量不同選擇背後的優缺點，做出最聰明的決定！</p>
+                </div>
+
+                <!-- 主要區塊：選擇情境 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-orange-800 mb-2"><i class="fa-solid fa-lightbulb mr-1"></i> 請選擇生活中的人際衝突情境：</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button id="dilemma-btn-1" class="dilemma-btn p-4 rounded-2xl text-left bg-white border-4 border-orange-500 text-orange-900 font-bold shadow-md transition-all">
+                            情境一：好朋友忘記寫功課，求你直接借他抄作業。
+                        </button>
+                        <button id="dilemma-btn-2" class="dilemma-btn p-4 rounded-2xl text-left bg-white border-2 border-orange-200 text-slate-700 hover:bg-orange-50 transition-all">
+                            情境二：分組報告時，你想得第一名，但組員一直想玩橡皮筋。
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 決策三步驟進程 -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    
+                    <!-- 左欄：學生提案 -->
+                    <div class="lg:col-span-4 flex flex-col justify-between bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm">
+                        <div>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">第一步</span>
+                            <h3 class="font-black text-slate-800 mt-2 mb-3">你打算怎麼解決？</h3>
+                            
+                            <div class="space-y-3" id="options-container">
+                                <!-- 方案按鈕會隨情境動態插入 -->
+                            </div>
+                        </div>
+
+                        <!-- 小諮詢師回饋圈 -->
+                        <div id="advisor-bubble-box" class="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl relative hidden">
+                            <div class="flex items-start space-x-3">
+                                <span class="text-3xl">🦉</span>
+                                <div>
+                                    <h4 class="font-bold text-amber-800 text-xs">貓頭鷹小諮詢師挑戰你：</h4>
+                                    <ul id="advisor-questions" class="list-disc pl-4 text-xs text-slate-700 space-y-1 mt-1">
+                                        <!-- 動態挑戰問題 -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右欄：天平視覺化與評估調整 -->
+                    <div class="lg:col-span-8 bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded">第二、三步</span>
+                                    <h3 class="font-black text-slate-800 mt-1">決策天平與加減分評估</h3>
+                                </div>
+                                <span id="scale-status" class="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">尚未評估</span>
+                            </div>
+
+                            <!-- 天平視覺 -->
+                            <div class="relative w-full h-40 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex items-center justify-center">
+                                <div id="scale-axis" class="relative w-72 h-32 scale-transition origin-center flex flex-col justify-end pb-4" style="transform: rotate(0deg);">
+                                    <!-- 橫桿 -->
+                                    <div class="w-full h-2 bg-slate-400 rounded-full relative">
+                                        <!-- 左秤盤 -->
+                                        <div class="absolute left-0 -top-1 w-10 h-10 -ml-5 flex flex-col items-center">
+                                            <div class="w-1 h-8 bg-slate-400"></div>
+                                            <div class="w-12 h-4 bg-emerald-500 rounded-b-xl border border-emerald-600 flex items-center justify-center text-[10px] text-white font-bold">加分</div>
+                                            <div id="pro-badge" class="absolute -top-6 bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">0</div>
+                                        </div>
+                                        <!-- 右秤盤 -->
+                                        <div class="absolute right-0 -top-1 w-10 h-10 -mr-5 flex flex-col items-center">
+                                            <div class="w-1 h-8 bg-slate-400"></div>
+                                            <div class="w-12 h-4 bg-rose-500 rounded-b-xl border border-rose-600 flex items-center justify-center text-[10px] text-white font-bold">減分</div>
+                                            <div id="con-badge" class="absolute -top-6 bg-rose-100 text-rose-800 text-xs font-bold px-2 py-0.5 rounded-full">0</div>
+                                        </div>
+                                    </div>
+                                    <!-- 底座 -->
+                                    <div class="absolute bottom-0 left-1/2 -ml-4 w-8 h-12 bg-slate-500 rounded-t-lg z-0"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 優缺點加減分控制器 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                            <!-- 加分項 -->
+                            <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                                <h4 class="font-bold text-emerald-800 text-sm mb-2"><i class="fa-solid fa-plus-circle mr-1"></i> 優點與價值觀契合度</h4>
+                                <div class="space-y-2 text-xs">
+                                    <label class="flex items-center justify-between p-2 bg-white rounded border border-emerald-100">
+                                        <span>符合「誠實」或「尊重」</span>
+                                        <div class="flex items-center space-x-1">
+                                            <button id="btn-proValue-minus" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-lg font-bold text-base flex items-center justify-center">-</button>
+                                            <span id="factor-proValue" class="w-6 text-center font-bold text-sm">0</span>
+                                            <button id="btn-proValue-plus" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 rounded-lg font-bold text-base flex items-center justify-center">+</button>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-2 bg-white rounded border border-emerald-100">
+                                        <span>帶來正面好處 (友情/安心)</span>
+                                        <div class="flex items-center space-x-1">
+                                            <button id="btn-proBenefit-minus" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-lg font-bold text-base flex items-center justify-center">-</button>
+                                            <span id="factor-proBenefit" class="w-6 text-center font-bold text-sm">0</span>
+                                            <button id="btn-proBenefit-plus" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 rounded-lg font-bold text-base flex items-center justify-center">+</button>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 減分項 -->
+                            <div class="bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                                <h4 class="font-bold text-rose-800 text-sm mb-2"><i class="fa-solid fa-minus-circle mr-1"></i> 後果與潛在傷害</h4>
+                                <div class="space-y-2 text-xs">
+                                    <label class="flex items-center justify-between p-2 bg-white rounded border border-rose-100">
+                                        <span>傷害友情或使人不舒服</span>
+                                        <div class="flex items-center space-x-1">
+                                            <button id="btn-conHarm-minus" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-lg font-bold text-base flex items-center justify-center">-</button>
+                                            <span id="factor-conHarm" class="w-6 text-center font-bold text-sm">0</span>
+                                            <button id="btn-conHarm-plus" class="w-8 h-8 bg-rose-100 hover:bg-rose-200 active:scale-95 text-rose-800 rounded-lg font-bold text-base flex items-center justify-center">+</button>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-2 bg-white rounded border border-rose-100">
+                                        <span>違反規範、被師長責罰</span>
+                                        <div class="flex items-center space-x-1">
+                                            <button id="btn-conRule-minus" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-lg font-bold text-base flex items-center justify-center">-</button>
+                                            <span id="factor-conRule" class="w-6 text-center font-bold text-sm">0</span>
+                                            <button id="btn-conRule-plus" class="w-8 h-8 bg-rose-100 hover:bg-rose-200 active:scale-95 text-rose-800 rounded-lg font-bold text-base flex items-center justify-center">+</button>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- 老師引導小撇步 -->
+                <div class="mt-6 border-t border-orange-100 pt-4">
+                    <details class="bg-white rounded-2xl border-2 border-orange-200 overflow-hidden shadow-sm transition-all duration-200 group">
+                        <summary class="font-bold text-orange-800 p-4 cursor-pointer flex justify-between items-center hover:bg-orange-50 select-none list-none">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-chalkboard-user text-lg text-orange-500"></i>
+                                <span class="text-base">👩‍🏫 老師引導小撇步（諮詢與修正引導）</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-sm transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 bg-orange-50/50 border-t border-orange-200 text-sm leading-relaxed text-slate-700 space-y-2">
+                            <p><strong>教學策略（諮詢師回饋圈）：</strong></p>
+                            <p>本模組旨在訓練學生的「決策評估能力（步驟四）」。在進行此活動時，建議採「雙人配對」模式：</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>學生A（提案者）：</strong> 選擇原始直覺方案，並在天平輸入分數。</li>
+                                <li><strong>學生B（諮詢師）：</strong> 依據網頁提示的「貓頭鷹三大問題」大聲提問，讓提案者反思。</li>
+                                <li>兩者共同調整「加減分」，當天平傾斜向負面（右側），促成學生修改為「更符合價值觀之修正方案」，完成決策修正。</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==================== 模組三：對話交流站 ==================== -->
+        <section id="module3" class="tab-content hidden">
+            <div class="bg-gradient-to-br from-teal-50 to-emerald-50 border-4 border-teal-200 rounded-3xl p-6 md:p-8 shadow-lg">
+                <div class="text-center max-w-2xl mx-auto mb-6">
+                    <span class="bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">觀點採擇</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-teal-900 mt-2 mb-2">對話交流站（分鏡劇本產生器）</h2>
+                    <p class="text-slate-600 text-sm">學習從別人的眼睛看世界，透過共識解決分組爭執！</p>
+                </div>
+
+                <!-- 衝突背景情境介紹 -->
+                <div class="bg-emerald-800/95 text-white p-4 rounded-2xl mb-6 shadow-md border-b-4 border-emerald-900">
+                    <div class="flex items-center space-x-3 mb-1">
+                        <i class="fa-solid fa-users-rectangle text-xl text-yellow-300"></i>
+                        <h4 class="font-black text-lg text-yellow-300">分組衝突情境：我們這組的海報怎麼辦？</h4>
+                    </div>
+                    <p class="text-sm text-emerald-50 leading-relaxed">
+                        下星期要在班上發表「海洋保護」海報，三位同組的小朋友各有不同的想法，大家卡在一塊，開始吵架了。點擊下面的角色，看穿他們心中的真心話！
+                    </p>
+                </div>
+
+                <!-- 角色視角與心聲 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 角色 A：小美 (認真組長) -->
+                    <button id="char-leader" class="char-card p-4 rounded-2xl border-4 bg-white border-slate-200 hover:border-teal-400 transition-all text-left flex flex-col justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-4xl">👧</span>
+                            <div>
+                                <h4 class="font-extrabold text-slate-800">組長 小美</h4>
+                                <p class="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded inline-block mt-1">完美主義者</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3 italic line-clamp-2">「我一定要拿到全班第一名！」</p>
+                    </button>
+
+                    <!-- 角色 B：小強 (排球隊員) -->
+                    <button id="char-athlete" class="char-card p-4 rounded-2xl border-4 bg-white border-slate-200 hover:border-teal-400 transition-all text-left flex flex-col justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-4xl">👦</span>
+                            <div>
+                                <h4 class="font-extrabold text-slate-800">球員 小強</h4>
+                                <p class="text-[10px] bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded inline-block mt-1">熱血運動咖</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3 italic line-clamp-2">「教練說今天沒去球隊就會被退隊...」</p>
+                    </button>
+
+                    <!-- 角色 C：阿明 (和事佬) -->
+                    <button id="char-pleaser" class="char-card p-4 rounded-2xl border-4 bg-white border-slate-200 hover:border-teal-400 transition-all text-left flex flex-col justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-4xl">👶</span>
+                            <div>
+                                <h4 class="font-extrabold text-slate-800">和事佬 阿明</h4>
+                                <p class="text-[10px] bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded inline-block mt-1">怕吵架大王</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3 italic line-clamp-2">「不要再吵了，我都配合大家...」</p>
+                    </button>
+                </div>
+
+                <!-- 潛台詞對話框與心聲顯示 -->
+                <div id="mind-voice-box" class="bg-white p-5 rounded-2xl border-2 border-teal-100 shadow-sm mb-8 hidden">
+                    <div class="flex items-start space-x-3">
+                        <span id="mind-avatar" class="text-4xl">💭</span>
+                        <div class="w-full">
+                            <h4 id="mind-title" class="font-black text-teal-900">小美的潛台詞（心聲）</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                                    <span class="text-xs font-bold text-indigo-700"><i class="fa-solid fa-compass"></i> 背後重要的價值觀：</span>
+                                    <p id="mind-val-text" class="text-xs text-indigo-950 mt-1"></p>
+                                </div>
+                                <div class="bg-orange-50 p-3 rounded-xl border border-orange-100">
+                                    <span class="text-xs font-bold text-orange-700"><i class="fa-solid fa-cloud-sun"></i> 現在的優先考慮：</span>
+                                    <p id="mind-prio-text" class="text-xs text-orange-950 mt-1"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 三格分鏡創作區 -->
+                <div class="bg-slate-100 p-4 md:p-6 rounded-2xl border-2 border-slate-300">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                        <h3 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-image-portrait text-teal-600"></i> 三格分鏡劇本產生器</h3>
+                        <div class="flex items-center space-x-2">
+                            <label class="text-xs font-bold text-slate-600">小組代碼/姓名：</label>
+                            <input type="text" id="comic-author" placeholder="填入座號或姓名" class="px-2 py-1 rounded border text-xs w-32 focus:outline-teal-500">
+                        </div>
+                    </div>
+
+                    <!-- 漫畫 3 格 -->
+                    <div id="comic-export-area" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        
+                        <!-- 第一格 -->
+                        <div class="bg-white rounded-xl p-4 border-2 border-slate-300 flex flex-col justify-between shadow-sm">
+                            <div>
+                                <span class="bg-red-500 text-white text-xs font-extrabold px-2 py-0.5 rounded-full">第 1 格：發生衝突</span>
+                                <div class="my-3 flex justify-around py-2 bg-slate-50 rounded-lg">
+                                    <div class="text-center">
+                                        <div class="text-3xl">👧</div>
+                                        <span class="text-[10px] text-slate-500">小美</span>
+                                    </div>
+                                    <div class="text-xl flex items-center">⚡</div>
+                                    <div class="text-center">
+                                        <div class="text-3xl">👦</div>
+                                        <span class="text-[10px] text-slate-500">小強</span>
+                                    </div>
+                                </div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">小強因練球急著離開，小美生氣地說：</label>
+                                <textarea id="comic-text-1" class="w-full text-xs p-2 border rounded-lg h-16 focus:outline-teal-500" placeholder="例如：你每次分組都想偷溜，只顧打球不負責任！"></textarea>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">氣氛表情：</span>
+                                <select id="comic-emo-1" class="text-xs p-1 rounded border">
+                                    <option value="😡 生氣不滿">😡 生氣不滿</option>
+                                    <option value="😣 無奈焦慮">😣 無奈焦慮</option>
+                                    <option value="😭 覺得委屈">😭 覺得委屈</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 第二格 -->
+                        <div class="bg-white rounded-xl p-4 border-2 border-slate-300 flex flex-col justify-between shadow-sm">
+                            <div>
+                                <span class="bg-orange-500 text-white text-xs font-extrabold px-2 py-0.5 rounded-full">第 2 格：傾聽真心話</span>
+                                <div class="my-3 flex justify-around py-2 bg-slate-50 rounded-lg">
+                                    <div class="text-center">
+                                        <div class="text-3xl">👶</div>
+                                        <span class="text-[10px] text-slate-500">阿明</span>
+                                    </div>
+                                    <div class="text-xl flex items-center">👂</div>
+                                    <div class="text-center">
+                                        <div class="text-3xl">👦</div>
+                                        <span class="text-[10px] text-slate-500">小強</span>
+                                    </div>
+                                </div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">阿明做調解，小強說出自己的困難：</label>
+                                <textarea id="comic-text-2" class="w-full text-xs p-2 border rounded-lg h-16 focus:outline-teal-500" placeholder="例如：對不起，但我答應了教練準時到。我也想幫忙海報..."></textarea>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">氣氛表情：</span>
+                                <select id="comic-emo-2" class="text-xs p-1 rounded border">
+                                    <option value="🥺 傾聽理解">🥺 傾聽理解</option>
+                                    <option value="💡 想到點子">💡 想到點子</option>
+                                    <option value="🤝 互相配合">🤝 互相配合</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 第三格 -->
+                        <div class="bg-white rounded-xl p-4 border-2 border-slate-300 flex flex-col justify-between shadow-sm">
+                            <div>
+                                <span class="bg-emerald-500 text-white text-xs font-extrabold px-2 py-0.5 rounded-full">第 3 格：達成共識</span>
+                                <div class="my-3 flex justify-around py-2 bg-slate-50 rounded-lg">
+                                    <div class="text-center">
+                                        <div class="text-3xl">👧</div>
+                                        <span class="text-[10px] text-slate-500">小美</span>
+                                    </div>
+                                    <div class="text-xl flex items-center">🎉</div>
+                                    <div class="text-center">
+                                        <div class="text-3xl">👦</div>
+                                        <span class="text-[10px] text-slate-500">小強</span>
+                                    </div>
+                                </div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">大家重新分配任務，開心的共識是：</label>
+                                <textarea id="comic-text-3" class="w-full text-xs p-2 border rounded-lg h-16 focus:outline-teal-500" placeholder="例如：小強先把海報底色塗好再去練球，剩下的我和阿明分工。"></textarea>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">氣氛表情：</span>
+                                <select id="comic-emo-3" class="text-xs p-1 rounded border">
+                                    <option value="🥳 擊掌高興">🥳 擊掌高興</option>
+                                    <option value="😊 彼此尊重">😊 彼此尊重</option>
+                                    <option value="🏆 合作無間">🏆 合作無間</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 匯出與重置 -->
+                    <div class="mt-6 flex flex-wrap gap-3 justify-end">
+                        <button id="btn-reset-comic" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-sm">
+                            <i class="fa-solid fa-trash-can mr-1"></i> 清空重寫
+                        </button>
+                        <button id="btn-export-comic" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md">
+                            <i class="fa-solid fa-file-export mr-1"></i> 生成分享卡
+                        </button>
+                    </div>
+
+                    <!-- 匯出結果卡片 (點擊生成後顯示) -->
+                    <div id="export-result" class="mt-6 p-6 bg-white border-4 border-double border-teal-500 rounded-2xl shadow-xl max-w-2xl mx-auto hidden">
+                        <div class="flex justify-between items-center border-b border-teal-100 pb-3 mb-4">
+                            <div>
+                                <h4 class="font-black text-teal-900 text-base">🌱 SEL 觀點採擇劇場作品</h4>
+                                <p class="text-[10px] text-slate-500">我們學會了理解不同角色的心聲，找出共識解方！</p>
+                            </div>
+                            <span id="author-badge" class="bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full"></span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="export-grid">
+                            <!-- JS 動態寫入內容 -->
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
+                            <span>探索項目：四年級觀點採擇</span>
+                            <span class="font-bold text-teal-600">★ 最佳溝通大使證書 ★</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 老師引導小撇步 -->
+                <div class="mt-6 border-t border-teal-100 pt-4">
+                    <details class="bg-white rounded-2xl border-2 border-teal-200 overflow-hidden shadow-sm transition-all duration-200 group">
+                        <summary class="font-bold text-teal-800 p-4 cursor-pointer flex justify-between items-center hover:bg-amber-50 select-none list-none">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-chalkboard-user text-lg text-teal-500"></i>
+                                <span class="text-base">👩‍🏫 老師引導小撇步（角色分配與分鏡發表）</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-sm transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 bg-teal-50/50 border-t border-teal-200 text-sm leading-relaxed text-slate-700 space-y-2">
+                            <p><strong>教學策略（觀點採擇演練）：</strong></p>
+                            <p>這個活動專門針對108課綱「溝通互動」核心素養，旨在落實學生對人際「潛在衝突點」的探討：</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>第一階段（理解動機）：</strong> 讓孩子點擊各角色心聲。請向全班提問：「小美很急、小強也很急，兩個人背後在乎的事情（價值觀與優先考慮）是錯的嗎？」引導學生明白「彼此沒有是非對錯，只是優先考慮不同」。</li>
+                                <li><strong>第二階段（劇本創作）：</strong> 讓學生思考如何在第三格分鏡取得「平衡點」（折衷/分工）。完成後點擊「生成分享卡」，便能直接將卡片投影在教室大螢幕，進行成果分享與角色扮演。</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== 教師/家長專區 (Support Zone) ==================== -->
+    <section class="max-w-7xl mx-auto px-4 mb-8">
+        <details class="bg-gradient-to-r from-violet-50 to-indigo-50 border-4 border-indigo-200 rounded-3xl p-6 md:p-8 shadow-md overflow-hidden transition-all duration-200 group">
+            <summary class="font-black text-indigo-900 text-lg md:text-xl cursor-pointer flex justify-between items-center hover:text-indigo-700 select-none list-none">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </span>
+                    <div>
+                        <span>🍎 教師與家長專區 (Support Zone)</span>
+                        <p class="text-xs text-indigo-500 font-bold mt-0.5">SEL 課程實施與設計指南（點擊展開 / 收合）</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-circle-chevron-down text-2xl text-indigo-500 transition-transform group-open:rotate-180"></i>
+            </summary>
+
+            <!-- 專區詳細內容 -->
+            <div class="mt-8 border-t-2 border-indigo-100 pt-6 space-y-8 text-slate-700 text-sm leading-relaxed">
+                
+                <!-- 核心素養與設計理念 -->
+                <div class="bg-white p-5 rounded-2xl border-2 border-indigo-100 shadow-sm">
+                    <h3 class="font-extrabold text-indigo-950 text-base mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-indigo-600"></i> 四年級人際互動核心目標：價值觀辨識與評估選擇
+                    </h3>
+                    <p class="mb-3">
+                        四年級學生正處於從<b>「他律」走向「自律」</b>的關鍵過渡期。他們開始理解社會規範，但在面臨人際衝突時，常流於直覺式反應或同儕壓力。本網站依據 <b>SEL（社會情緒學習）</b> 的「自我覺察、負責任的決策、社會覺察與人際技巧」四大核心能力設計，旨在幫助孩子建立以下能力：
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50">
+                            <span class="font-bold text-indigo-900 block mb-1">🧭 1. 分辨永恆與變動</span>
+                            <p class="text-xs text-slate-600">區分「價值觀」與「優先考慮」，學習在變動的生活情境中，堅守心中不變的北極星信念。</p>
+                        </div>
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50">
+                            <span class="font-bold text-indigo-900 block mb-1">⚖️ 2. 量化決策後果</span>
+                            <p class="text-xs text-slate-600">聚焦決策步驟4，學會衡量替代方案的優缺點與影響，不因一時便利做出傷害性的選擇。</p>
+                        </div>
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50">
+                            <span class="font-bold text-indigo-900 block mb-1">👁️ 3. 觀點採擇與共識</span>
+                            <p class="text-xs text-slate-600">透過「潛台詞揭密」，看見衝突對立面背後的真正需求，共同商討出「第三條路」的雙贏解法。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模組實施策略 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- 模組一指南 -->
+                    <div class="bg-white p-5 rounded-2xl border-2 border-blue-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full"><i class="fa-solid fa-compass mr-1"></i> 模組一實施</span>
+                            <h4 class="font-black text-slate-900 mt-2 mb-3">天平對對碰：釐清心中指南針</h4>
+                            <p class="text-xs text-slate-600 mb-4">
+                                <b>教育意義：</b>許多孩子分不清「我覺得重要（優先考慮）」與「這是非做不可的對錯原則（價值觀）」。當與他人發生衝突，孩子容易指責對方「不講理」，實則是兩者的優先順序不同。
+                            </p>
+                            <div class="bg-blue-50/50 p-3 rounded-xl text-xs space-y-1">
+                                <span class="font-bold text-blue-900">💡 課堂引導指引：</span>
+                                <p>1. 請學生在分類時大聲唸出卡片：「這件事如果等我老了、換了學校，還是同樣重要嗎？」</p>
+                                <p>2. 引導討論：「如果你的優先考慮是『今天想看漫畫』，而媽媽的價值觀是『對承諾負責（先寫完作業）』，這時該怎麼辦？」</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模組二指南 -->
+                    <div class="bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full"><i class="fa-solid fa-calculator mr-1"></i> 模組二實施</span>
+                            <h4 class="font-black text-slate-900 mt-2 mb-3">決策天平：學生/諮詢師回饋圈</h4>
+                            <p class="text-xs text-slate-600 mb-4">
+                                <b>教育意義：</b>訓練學生進行「步驟 4：評估」時，透過具體化的天平傾斜，讓他們親眼看見「投機或傷害友情」的決定會導致天平失衡。
+                            </p>
+                            <div class="bg-orange-50/50 p-3 rounded-xl text-xs space-y-1">
+                                <span class="font-bold text-orange-900">💡 課堂引導指引：</span>
+                                <p>1. <b>「雙人配對法」：</b>一個孩子扮演決定者，在網站上點擊初步決策；另一個孩子扮演「貓頭鷹諮詢師」，對著夥伴朗讀並追問網站給出的三個問題。</p>
+                                <p>2. 引導學生去調整優缺點滑桿，體驗「原本覺得不錯的壞主意，在認真分析後，缺點天平會重重沉下去」的思考過程，進而促成自我修正。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模組三指南 -->
+                    <div class="bg-white p-5 rounded-2xl border-2 border-emerald-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full"><i class="fa-solid fa-comments mr-1"></i> 模組三實施</span>
+                            <h4 class="font-black text-slate-900 mt-2 mb-3">對話交流站：觀點採擇劇場</h4>
+                            <p class="text-xs text-slate-600 mb-4">
+                                <b>教育意義：</b>108課綱極度強調「溝通互動」素養。小組海報吵架是每個四年級教室的日常。本模組強迫孩子站在對立角色的角度看待問題，明白「沒有絕對的壞人，只有不同的苦衷」。
+                            </p>
+                            <div class="bg-emerald-50/50 p-3 rounded-xl text-xs space-y-1">
+                                <span class="font-bold text-emerald-900">💡 課堂引導指引：</span>
+                                <p>1. 點擊不同角色的心聲後，請全班思考：「組長小美的急迫與練球員小強的急迫，哪一個不對嗎？」引導出『兩者皆合理，只是需要協調時間與工作分配』的共識。</p>
+                                <p>2. <b>發表展示：</b>鼓勵學生產出三格分鏡劇本並一鍵匯出，投影在電子白板，邀請寫出最經典「雙贏結局」的小組上台進行 1 分鐘情境演練。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 🏠 家長共學小叮嚀 -->
+                <div class="bg-amber-50 border-2 border-amber-200 p-5 rounded-2xl shadow-sm">
+                    <h3 class="font-extrabold text-amber-900 text-base mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-house-chimney-user text-amber-600"></i> 🏠 家長溫馨共學：如何在家中延伸應用？
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">
+                        SEL 社會情緒學習的成效有賴於「親師生共學」的日常落實。當孩子回到家，您可以用這套思維方式陪伴孩子：
+                    </p>
+                    <ul class="list-disc pl-5 text-xs text-slate-700 space-y-1.5">
+                        <li><b>1. 在家常問「北極星與天氣」：</b>當孩子因為想吃零食或玩遊戲與您爭執時，溫柔地問他：「你現在想玩是『優先考慮』的天氣，那我們的家庭公約（寫完功課、守信用）是哪顆不變的北極星呢？」</li>
+                        <li><b>2. 啟動家庭決策天平：</b>遇到全家旅遊、家事分配或買玩具的抉擇時，別直接說不。與孩子一起拿張白紙，畫出像網頁上那樣的「加分／減分」天平，邀請孩子自己寫下各項利弊，練習對自己的選擇負責。</li>
+                        <li><b>3. 情緒衝突時「讀真心話」：</b>與兄弟姊妹或同儕吵架回家告狀時，先別急著幫他出頭，引導他：「如果此時你是那個同學，你覺得他點開他的『潛台詞對話框』，裡面會寫著什麼心聲或困難？」培養對他人的同理心。</li>
+                    </ul>
+                </div>
+
+            </div>
+        </details>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs mt-12 border-t-4 border-amber-400">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-bold text-slate-300">💡 課堂學習小語：價值觀是心中不變的北極星，決策前先傾聽，天平更平衡！</p>
+            <p>&copy; 2026 決策思考大挑戰 - 108課綱四年級情緒教育專用互動教材</p>
+        </div>
+    </footer>
+
+    <!-- 自訂兒童風格對話 Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl border-4 border-amber-400 p-6 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center">
+            <span class="text-5xl block mb-2">💡</span>
+            <h3 class="text-xl font-black text-slate-800 mb-2">溫馨小提示</h3>
+            <p id="modal-message" class="text-slate-600 text-sm mb-6 leading-relaxed"></p>
+            <button id="btn-close-modal" class="w-full py-3 bg-amber-400 hover:bg-amber-500 active:scale-95 text-white font-bold rounded-2xl border-b-4 border-amber-600 shadow-md transition-all">
+                好，我知道了！
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全域狀態管理 ====================
+        const state = {
+            module1: {
+                score: 0,
+                cards: [
+                    { id: 'c1', text: '誠實不說謊', type: 'value' },
+                    { id: 'c2', text: '尊重班上每個人', type: 'value' },
+                    { id: 'c3', text: '對自己負責', type: 'value' },
+                    { id: 'c4', text: '現在好想看漫畫', type: 'priority' },
+                    { id: 'c5', text: '放學想吃草莓冰', type: 'priority' },
+                    { id: 'c6', text: '趕快把功課寫完', type: 'priority' }
+                ],
+                shuffled: [],
+                currentCardIndex: 0
+            },
+            module2: {
+                currentDilemma: 1,
+                selectedOption: null,
+                dilemmas: {
+                    1: {
+                        options: [
+                            { id: '1-a', text: '直接把功課借他抄（友情萬歲！）' },
+                            { id: '1-b', text: '直接拒絕，叫他自己想辦法（公事公辦！）' },
+                            { id: '1-c', text: '中午花10分鐘教他，剩下的請他自己寫（折衷教他！）' }
+                        ],
+                        questions: [
+                            "直接借他抄：這真的能讓他學會，還是害了他？",
+                            "這符合你們「誠實」的心中指南針嗎？",
+                            "如果被老師發現，兩人的友情是會變更好還是變差？"
+                        ]
+                    },
+                    2: {
+                        options: [
+                            { id: '2-a', text: '我自己做完全部，拿到第一最重要（拼命三郎！）' },
+                            { id: '2-b', text: '跟他們大吵架，跟老師告狀（生氣告狀！）' },
+                            { id: '2-c', text: '分配超簡單任務給組員，重要由我來（互相折衷！）' }
+                        ],
+                        questions: [
+                            "全部自己做：大家都不會學到合作，這叫『團隊組別』嗎？",
+                            "這符合「尊重每個人想法」的價值觀嗎？",
+                            "他們如果被冷落，下次分組還會想跟你一組嗎？"
+                        ]
+                    }
+                },
+                factors: {
+                    proValue: 0,
+                    proBenefit: 0,
+                    conHarm: 0,
+                    conRule: 0
+                }
+            },
+            module3: {
+                perspectives: {
+                    leader: {
+                        name: '組長 小美',
+                        val: '負責任、追求完美。希望全組可以得到老師的表揚，獲得榮譽感。',
+                        prio: '今天一定要把「海報大綱」畫出來，不然下星期發表絕對完蛋。'
+                    },
+                    athlete: {
+                        name: '球員 小強',
+                        val: '團隊忠誠。不想拖累辛勤練習的排球隊，想遵守和教練的承諾。',
+                        prio: '三點半前一定要準時抵達體育館練球，不然會被教練記警告或禁賽。'
+                    },
+                    pleaser: {
+                        name: '和事佬 阿明',
+                        val: '和諧相處。覺得好朋友吵架，心裡很難受，討厭衝突。',
+                        prio: '趕快找一個大家都不要吵架的折衷方法，隨便交出去也可以。'
+                    }
+                }
+            }
+        };
+
+        // ==================== 自訂彈窗邏輯 ====================
+        function showModal(msg) {
+            const modal = document.getElementById('custom-modal');
+            const msgEl = document.getElementById('modal-message');
+            msgEl.innerText = msg;
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+                modal.firstElementChild.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.remove('scale-100');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==================== 模組切換與 Deep Link 邏輯 ====================
+        function switchTab(tabId) {
+            // 隱藏所有內容
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+            // 顯示對應內容
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200";
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (tabId === 'module1') {
+                activeBtn.className = "tab-btn active px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-indigo-600 border-indigo-800 text-white shadow-md";
+            } else if (tabId === 'module2') {
+                activeBtn.className = "tab-btn active px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-orange-500 border-orange-700 text-white shadow-md";
+            } else {
+                activeBtn.className = "tab-btn active px-4 py-2 rounded-xl text-sm font-bold border-b-4 transition-all duration-150 bg-teal-600 border-teal-800 text-white shadow-md";
+            }
+
+            // 更新網址錨點 (Hash)，這樣分享出去的網址就能精準指定到對應的內容！
+            if (window.location.hash !== '#' + tabId) {
+                history.pushState(null, null, '#' + tabId);
+            }
+        }
+
+        // 監聽 Hash 錨點變化
+        function handleHashChange() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'module1' || hash === 'module2' || hash === 'module3') {
+                switchTab(hash);
+            }
+        }
+
+        // ==================== 模組一：天平對對碰邏輯 ====================
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function resetModule1() {
+            state.module1.score = 0;
+            state.module1.currentCardIndex = 0;
+            state.module1.shuffled = shuffle([...state.module1.cards]);
+            
+            document.getElementById('score-val').innerText = '0';
+            document.getElementById('game-progress-bar').style.width = '0%';
+            document.getElementById('list-value').innerHTML = '';
+            document.getElementById('list-priority').innerHTML = '';
+            
+            document.getElementById('monster-bubble').innerText = "我是怪獸「拉拉」！請幫我分類卡片！";
+            
+            renderNextCard();
+        }
+
+        function renderNextCard() {
+            const cardStage = document.getElementById('card-stage');
+            cardStage.innerHTML = '';
+
+            if (state.module1.currentCardIndex < state.module1.shuffled.length) {
+                const card = state.module1.shuffled[state.module1.currentCardIndex];
+                
+                const cardElement = document.createElement('div');
+                cardElement.id = card.id;
+                cardElement.draggable = true;
+                cardElement.addEventListener('dragstart', dragCard);
+                cardElement.className = "bg-white border-4 border-indigo-600 rounded-2xl px-6 py-4 font-black text-indigo-950 text-base shadow-lg cursor-grab active:cursor-grabbing hover:scale-105 transition-all text-center select-none w-56 transform duration-150 animate-bounce-short";
+                cardElement.innerText = card.text;
+                
+                cardStage.appendChild(cardElement);
+            } else {
+                cardStage.innerHTML = `<div class="text-center font-bold text-indigo-600 text-lg">🎉 太棒了！卡片都分類完囉！</div>`;
+                document.getElementById('monster-bubble').innerText = "哇！你成功的指引我方向了！你對價值觀和優先考慮有了深刻的理解喔！";
+            }
+        }
+
+        function dragCard(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function dropCard(ev, category) {
+            ev.preventDefault();
+            const cardId = ev.dataTransfer.getData("text");
+            processSort(cardId, category);
+        }
+
+        function handleQuickSort(category) {
+            const currentCard = state.module1.shuffled[state.module1.currentCardIndex];
+            if (currentCard) {
+                processSort(currentCard.id, category);
+            } else {
+                showModal('全部卡片都已經分類完畢囉！');
+            }
+        }
+
+        function processSort(cardId, targetCategory) {
+            const currentCard = state.module1.shuffled.find(c => c.id === cardId);
+            if (!currentCard) return;
+
+            const listEl = document.getElementById(`list-${targetCategory}`);
+            const monsterBubble = document.getElementById('monster-bubble');
+
+            if (currentCard.type === targetCategory) {
+                // 分類正確
+                state.module1.score++;
+                document.getElementById('score-val').innerText = state.module1.score;
+                
+                // 動態在箱子加入紀錄
+                const item = document.createElement('div');
+                item.className = `p-2 rounded-xl text-xs font-bold ${targetCategory === 'value' ? 'bg-indigo-100 text-indigo-950 border-indigo-200' : 'bg-amber-100 text-amber-950 border-amber-200'} border shadow-sm animate-bounce-short`;
+                item.innerText = `✓ ${currentCard.text}`;
+                listEl.appendChild(item);
+
+                monsterBubble.innerText = "答對了！你太理智、太聰明了！";
+                
+                state.module1.currentCardIndex++;
+                const progress = (state.module1.currentCardIndex / state.module1.shuffled.length) * 100;
+                document.getElementById('game-progress-bar').style.width = `${progress}%`;
+                
+                setTimeout(renderNextCard, 600);
+            } else {
+                // 分類錯誤
+                monsterBubble.innerText = "哎呀！想一想，這真的會因為明天換個心情就改變嗎？再試一次！";
+                const activeCard = document.getElementById(cardId);
+                if (activeCard) {
+                    activeCard.classList.add('scale-shake');
+                    setTimeout(() => activeCard.classList.remove('scale-shake'), 500);
+                }
+            }
+        }
+
+
+        // ==================== 模組二：決策天平計算機邏輯 ====================
+        function selectDilemma(id) {
+            state.module2.currentDilemma = id;
+            state.module2.selectedOption = null;
+            
+            // 重置按鈕樣式
+            document.querySelectorAll('.dilemma-btn').forEach((btn, idx) => {
+                if (idx + 1 === id) {
+                    btn.className = "dilemma-btn p-4 rounded-2xl text-left bg-white border-4 border-orange-500 text-orange-900 font-bold shadow-md transition-all";
+                } else {
+                    btn.className = "dilemma-btn p-4 rounded-2xl text-left bg-white border-2 border-orange-200 text-slate-700 hover:bg-orange-50 transition-all";
+                }
+            });
+
+            // 重置因子與天平
+            resetFactors();
+            renderOptions(id);
+            document.getElementById('advisor-bubble-box').classList.add('hidden');
+        }
+
+        function renderOptions(dilemmaId) {
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            const d = state.module2.dilemmas[dilemmaId];
+
+            d.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:bg-slate-50 text-xs font-semibold transition-all shadow-sm flex items-center justify-between";
+                btn.innerHTML = `<span>${opt.text}</span> <i class="fa-regular fa-circle text-slate-400"></i>`;
+                btn.addEventListener('click', () => selectOption(opt.id, btn));
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(optId, clickedBtn) {
+            state.module2.selectedOption = optId;
+
+            // 調整選定按鈕視覺
+            const parent = clickedBtn.parentElement;
+            parent.querySelectorAll('button').forEach(btn => {
+                btn.className = "w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:bg-slate-50 text-xs font-semibold transition-all shadow-sm flex items-center justify-between";
+                btn.querySelector('i').className = "fa-regular fa-circle text-slate-400";
+            });
+            clickedBtn.className = "w-full text-left p-3 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-950 text-xs font-bold transition-all shadow-sm flex items-center justify-between";
+            clickedBtn.querySelector('i').className = "fa-solid fa-circle-check text-orange-600";
+
+            // 觸發貓頭鷹諮詢師氣泡
+            const d = state.module2.dilemmas[state.module2.currentDilemma];
+            const questionsContainer = document.getElementById('advisor-questions');
+            questionsContainer.innerHTML = '';
+            
+            d.questions.forEach(q => {
+                const li = document.createElement('li');
+                li.innerText = q;
+                questionsContainer.appendChild(li);
+            });
+
+            document.getElementById('advisor-bubble-box').classList.remove('hidden');
+            
+            // 自動計算該方案預設分數
+            autoPresetFactors(optId);
+        }
+
+        function resetFactors() {
+            state.module2.factors = { proValue: 0, proBenefit: 0, conHarm: 0, conRule: 0 };
+            updateScaleUI();
+        }
+
+        function autoPresetFactors(optId) {
+            if (optId === '1-a') { // 借他抄
+                state.module2.factors = { proValue: 0, proBenefit: 1, conHarm: 3, conRule: 4 };
+            } else if (optId === '1-b') { // 斷然拒絕
+                state.module2.factors = { proValue: 2, proBenefit: 0, conHarm: 3, conRule: 0 };
+            } else if (optId === '1-c') { // 教他寫
+                state.module2.factors = { proValue: 4, proBenefit: 3, conHarm: 0, conRule: 0 };
+            } else if (optId === '2-a') { // 自己做完
+                state.module2.factors = { proValue: 1, proBenefit: 1, conHarm: 4, conRule: 0 };
+            } else if (optId === '2-b') { // 告狀
+                state.module2.factors = { proValue: 0, proBenefit: 0, conHarm: 4, conRule: 2 };
+            } else if (optId === '2-c') { // 折衷
+                state.module2.factors = { proValue: 4, proBenefit: 4, conHarm: 0, conRule: 0 };
+            }
+            updateScaleUI();
+        }
+
+        function adjustFactor(key, delta) {
+            if (state.module2.selectedOption === null) {
+                showModal('請先在第一步選擇一個你的方案喔！');
+                return;
+            }
+            const val = state.module2.factors[key];
+            const newVal = Math.max(0, Math.min(5, val + delta)); // 分數在0-5之間
+            state.module2.factors[key] = newVal;
+            updateScaleUI();
+        }
+
+        function updateScaleUI() {
+            const pros = state.module2.factors.proValue + state.module2.factors.proBenefit;
+            const cons = state.module2.factors.conHarm + state.module2.factors.conRule;
+
+            document.getElementById('factor-proValue').innerText = state.module2.factors.proValue;
+            document.getElementById('factor-proBenefit').innerText = state.module2.factors.proBenefit;
+            document.getElementById('factor-conHarm').innerText = state.module2.factors.conHarm;
+            document.getElementById('factor-conRule').innerText = state.module2.factors.conRule;
+
+            document.getElementById('pro-badge').innerText = pros;
+            document.getElementById('con-badge').innerText = cons;
+
+            // 計算旋轉角度
+            const diff = cons - pros; 
+            let angle = diff * 4; 
+            angle = Math.max(-20, Math.min(20, angle)); 
+
+            const scaleAxis = document.getElementById('scale-axis');
+            scaleAxis.style.transform = `rotate(${angle}deg)`;
+
+            const statusEl = document.getElementById('scale-status');
+            if (pros === 0 && cons === 0) {
+                statusEl.innerText = "尚未評估";
+                statusEl.className = "text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600";
+            } else if (Math.abs(pros - cons) <= 1) {
+                statusEl.innerText = "⚖ 達成完美平衡或優質方案！";
+                statusEl.className = "text-xs font-bold bg-emerald-100 px-2 py-1 rounded text-emerald-800";
+            } else if (pros > cons) {
+                statusEl.innerText = "🌟 優點多！這方案利大於弊喔！";
+                statusEl.className = "text-xs font-bold bg-blue-100 px-2 py-1 rounded text-blue-800";
+            } else {
+                statusEl.innerText = "⚠️ 警訊！這方案產生的缺點太重了！";
+                statusEl.className = "text-xs font-bold bg-rose-100 px-2 py-1 rounded text-rose-800";
+            }
+        }
+
+
+        // ==================== 模組三：對話交流站與觀點採擇邏輯 ====================
+        function showPerspective(charKey) {
+            // 重置卡片視覺
+            document.querySelectorAll('.char-card').forEach(card => {
+                card.className = "char-card p-4 rounded-2xl border-4 bg-white border-slate-200 hover:border-teal-400 transition-all text-left flex flex-col justify-between";
+            });
+
+            // 啟用點擊效果
+            const activeCard = document.getElementById(`char-${charKey}`);
+            activeCard.className = "char-card p-4 rounded-2xl border-4 bg-white border-teal-500 shadow-md transition-all text-left flex flex-col justify-between";
+
+            const data = state.module3.perspectives[charKey];
+            document.getElementById('mind-title').innerText = `${data.name} 的真實心聲`;
+            document.getElementById('mind-val-text').innerText = data.val;
+            document.getElementById('mind-prio-text').innerText = data.prio;
+
+            let avatar = '💭';
+            if (charKey === 'leader') avatar = '👧';
+            if (charKey === 'athlete') avatar = '👦';
+            if (charKey === 'pleaser') avatar = '👶';
+            document.getElementById('mind-avatar').innerText = avatar;
+
+            document.getElementById('mind-voice-box').classList.remove('hidden');
+        }
+
+        function resetComic() {
+            document.getElementById('comic-text-1').value = '';
+            document.getElementById('comic-text-2').value = '';
+            document.getElementById('comic-text-3').value = '';
+            document.getElementById('comic-emo-1').value = '😡 生氣不滿';
+            document.getElementById('comic-emo-2').value = '🥺 傾聽理解';
+            document.getElementById('comic-emo-3').value = '🥳 擊掌高興';
+            document.getElementById('comic-author').value = '';
+            document.getElementById('export-result').classList.add('hidden');
+        }
+
+        function exportComic() {
+            const author = document.getElementById('comic-author').value.trim() || "匿名探險家";
+            const text1 = document.getElementById('comic-text-1').value.trim() || "（未填寫）";
+            const text2 = document.getElementById('comic-text-2').value.trim() || "（未填寫）";
+            const text3 = document.getElementById('comic-text-3').value.trim() || "（未填寫）";
+            
+            const emo1 = document.getElementById('comic-emo-1').value;
+            const emo2 = document.getElementById('comic-emo-2').value;
+            const emo3 = document.getElementById('comic-emo-3').value;
+
+            document.getElementById('author-badge').innerText = `創作者：${author}`;
+
+            const exportGrid = document.getElementById('export-grid');
+            exportGrid.innerHTML = `
+                <!-- 分鏡 1 -->
+                <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">1. 發生衝突</span>
+                        <p class="text-xs text-slate-700 mt-2 min-h-[60px] leading-relaxed italic">"${text1}"</p>
+                    </div>
+                    <div class="mt-3 border-t border-indigo-100 pt-2 flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>氣氛表情：</span>
+                        <span>${emo1}</span>
+                    </div>
+                </div>
+                <!-- 分鏡 2 -->
+                <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2. 傾聽心聲</span>
+                        <p class="text-xs text-slate-700 mt-2 min-h-[60px] leading-relaxed italic">"${text2}"</p>
+                    </div>
+                    <div class="mt-3 border-t border-orange-100 pt-2 flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>氣氛表情：</span>
+                        <span>${emo2}</span>
+                    </div>
+                </div>
+                <!-- 分鏡 3 -->
+                <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3. 達成共識</span>
+                        <p class="text-xs text-slate-700 mt-2 min-h-[60px] leading-relaxed italic">"${text3}"</p>
+                    </div>
+                    <div class="mt-3 border-t border-emerald-100 pt-2 flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>氣氛表情：</span>
+                        <span>${emo3}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('export-result').classList.remove('hidden');
+            
+            // 平滑滾動到成果展示區域
+            document.getElementById('export-result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==================== 頁面初始化與程式化事件綁定 ====================
+        window.onload = function() {
+            // A. 初始化單元數據與畫面
+            resetModule1();
+            selectDilemma(1);
+
+            // B. 程式化綁定所有事件（不採用行內 onclick，防範所有安全屏蔽與 CSP 阻擋）
+            
+            // 1. 導航標籤按鈕
+            document.getElementById('btn-module1').addEventListener('click', () => switchTab('module1'));
+            document.getElementById('btn-module2').addEventListener('click', () => switchTab('module2'));
+            document.getElementById('btn-module3').addEventListener('click', () => switchTab('module3'));
+
+            // 2. 模組一：拖曳與投放事件
+            const boxValue = document.getElementById('box-value');
+            boxValue.addEventListener('dragover', allowDrop);
+            boxValue.addEventListener('drop', (e) => dropCard(e, 'value'));
+
+            const boxPriority = document.getElementById('box-priority');
+            boxPriority.addEventListener('dragover', allowDrop);
+            boxPriority.addEventListener('drop', (e) => dropCard(e, 'priority'));
+
+            document.getElementById('btn-quick-value').addEventListener('click', () => handleQuickSort('value'));
+            document.getElementById('btn-quick-priority').addEventListener('click', () => handleQuickSort('priority'));
+            document.getElementById('btn-reset-module1').addEventListener('click', resetModule1);
+
+            // 3. 模組二：情境與加減分事件
+            document.getElementById('dilemma-btn-1').addEventListener('click', () => selectDilemma(1));
+            document.getElementById('dilemma-btn-2').addEventListener('click', () => selectDilemma(2));
+
+            document.getElementById('btn-proValue-minus').addEventListener('click', () => adjustFactor('proValue', -1));
+            document.getElementById('btn-proValue-plus').addEventListener('click', () => adjustFactor('proValue', 1));
+            document.getElementById('btn-proBenefit-minus').addEventListener('click', () => adjustFactor('proBenefit', -1));
+            document.getElementById('btn-proBenefit-plus').addEventListener('click', () => adjustFactor('proBenefit', 1));
+            document.getElementById('btn-conHarm-minus').addEventListener('click', () => adjustFactor('conHarm', -1));
+            document.getElementById('btn-conHarm-plus').addEventListener('click', () => adjustFactor('conHarm', 1));
+            document.getElementById('btn-conRule-minus').addEventListener('click', () => adjustFactor('conRule', -1));
+            document.getElementById('btn-conRule-plus').addEventListener('click', () => adjustFactor('conRule', 1));
+
+            // 4. 模組三：真心話與分鏡劇本事件
+            document.getElementById('char-leader').addEventListener('click', () => showPerspective('leader'));
+            document.getElementById('char-athlete').addEventListener('click', () => showPerspective('athlete'));
+            document.getElementById('char-pleaser').addEventListener('click', () => showPerspective('pleaser'));
+
+            document.getElementById('btn-reset-comic').addEventListener('click', resetComic);
+            document.getElementById('btn-export-comic').addEventListener('click', exportComic);
+
+            // 5. 提示視窗關閉按鈕
+            document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+
+            // C. 深度路由：初次載入或網址錨點 (Hash) 改變時自動切換單元
+            window.addEventListener('hashchange', handleHashChange);
+            if (window.location.hash) {
+                handleHashChange();
+            } else {
+                switchTab('module1'); // 預設顯示單元一
+            }
+        };
+    </script>
+</body>
+</html>

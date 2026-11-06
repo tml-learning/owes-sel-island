@@ -1,0 +1,1166 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人際衝突時空實驗室 - 三年級 SEL 多巴胺互動教學系統</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Slackey (Dopamine retro) & Fredoka (Friendly round) & Noto Sans TC -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Slackey&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Confetti Effect -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+    }
+    .retro-font {
+      font-family: 'Slackey', 'Fredoka', 'Noto Sans TC', sans-serif;
+    }
+    /* Neubrutalism design style with heavy flat shadow and thick border */
+    .brutal-card {
+      background-color: #ffffff;
+      border: 4px solid #0f172a;
+      box-shadow: 6px 6px 0px 0px #0f172a;
+      border-radius: 20px;
+      transition: all 0.2s ease-in-out;
+    }
+    .brutal-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0px 0px #0f172a;
+    }
+    .brutal-btn {
+      border: 3px solid #0f172a;
+      box-shadow: 4px 4px 0px 0px #0f172a;
+      transition: all 0.15s ease-in-out;
+    }
+    .brutal-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px 0px #0f172a;
+    }
+    .brutal-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px 0px #0f172a;
+    }
+    .brutal-btn-disabled {
+      border: 3px solid #64748b;
+      box-shadow: 2px 2px 0px 0px #64748b;
+      cursor: not-allowed;
+    }
+    /* Dynamic bouncing and floating animations for dopamine vibe */
+    .dopamine-bounce {
+      animation: retroBounce 3s ease-in-out infinite;
+    }
+    @keyframes retroBounce {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .microscope-pulse {
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.4); }
+      100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.8); }
+    }
+  </style>
+</head>
+<body class="bg-[#FFFDF0] min-h-screen text-slate-900 flex flex-col justify-between selection:bg-pink-300">
+
+  <header class="bg-[#FF99C8] border-b-4 border-slate-900 sticky top-0 z-40 px-4 py-4 shadow-[0_4px_0_0_#0f172a]">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <span class="text-4xl dopamine-bounce inline-block">🧪</span>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-wide retro-font">人際衝突時空實驗室</h1>
+          <p class="text-xs text-slate-800 font-bold bg-[#FFD124] px-2 py-0.5 rounded-full border-2 border-slate-900 inline-block mt-1">
+            ⚡ 三年級 SEL 系統化決策課堂 ⚡
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <!-- Teacher Drawer Button -->
+        <button onclick="toggleTeacherPanel()" class="brutal-btn bg-[#FFD124] text-slate-900 px-4 py-2 rounded-full text-xs sm:text-sm font-black flex items-center gap-1.5 transition-all">
+          <span>👩‍🏫</span> 課堂引導錦囊
+        </button>
+        <button onclick="resetLab()" class="brutal-btn bg-[#9BE2F7] text-slate-900 px-4 py-2 rounded-full text-xs sm:text-sm font-black transition-all">
+          🔄 重置實驗
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+    
+    <!-- 歡迎與情境選擇畫面 (Welcoming Hero Screen) -->
+    <section id="welcome-screen" class="block brutal-card bg-[#EFFFDA] p-6 md:p-10 text-center max-w-3xl mx-auto my-4">
+      <span class="text-7xl dopamine-bounce inline-block mb-4">🧙‍♂️</span>
+      <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-4 retro-font">歡迎來到大腦實驗室！</h2>
+      <p class="text-slate-800 mb-8 text-base md:text-lg font-bold leading-relaxed max-w-2xl mx-auto">
+        嘿！我是時空研究員小哈！當我們跟同學吵架或發生意外時，別急著生氣！<br>
+        只要啟動你大腦的<span class="bg-[#FF99C8] border-2 border-slate-900 px-1.5 py-0.5 mx-1 rounded font-black text-slate-900">三大隱藏超能力</span>，你就能一秒化身為理智的人際科學家！
+      </p>
+
+      <div class="bg-[#FFD124]/30 border-4 border-dashed border-slate-900 rounded-2xl p-6 mb-8 text-left">
+        <h3 class="font-black text-slate-900 text-lg mb-4 flex items-center gap-2">
+          <span>🎯</span> 第一步：請選擇一個你想要挑戰的「校園衝突事件」：
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- 情境 1 (盪秋千大卡關 - 可深思熟慮) -->
+          <button onclick="selectScenario('s1')" class="group text-left p-4 bg-white hover:bg-[#FFF0F5] border-4 border-slate-900 rounded-xl transition-all shadow-[4px_4px_0_0_#0f172a] hover:shadow-[6px_6px_0_0_#0f172a] hover:-translate-y-1 flex flex-col justify-between min-h-[160px]">
+            <div>
+              <span class="text-4xl group-hover:scale-110 transition-transform inline-block mb-2">🎠</span>
+              <h4 class="font-black text-slate-900 text-base mb-1">盪秋千大卡關</h4>
+              <p class="text-xs text-slate-600 line-clamp-3">下課鐘響了，小明想玩盪秋千，但小華一直坐在上面不下來...</p>
+            </div>
+            <span class="text-xs font-black text-pink-600 mt-3 flex items-center gap-1">啟動實驗 ➔</span>
+          </button>
+          
+          <!-- 情境 2 (分組大分歧 - 可深思熟慮) -->
+          <button onclick="selectScenario('s2')" class="group text-left p-4 bg-white hover:bg-[#E8F8FF] border-4 border-slate-900 rounded-xl transition-all shadow-[4px_4px_0_0_#0f172a] hover:shadow-[6px_6px_0_0_#0f172a] hover:-translate-y-1 flex flex-col justify-between min-h-[160px]">
+            <div>
+              <span class="text-4xl group-hover:scale-110 transition-transform inline-block mb-2">🚀</span>
+              <h4 class="font-black text-slate-900 text-base mb-1">分組討論大吵架</h4>
+              <p class="text-xs text-slate-600 line-clamp-3">小組討論時，你想報告貓咪，但其他組員都想報告太空火箭...</p>
+            </div>
+            <span class="text-xs font-black text-cyan-600 mt-3 flex items-center gap-1">啟動實驗 ➔</span>
+          </button>
+          
+          <!-- 情境 3 (滾燙熱湯灑手事件 - 緊急危險需要快速決定) -->
+          <button onclick="selectScenario('s3')" class="group text-left p-4 bg-white hover:bg-[#FFF3E0] border-4 border-slate-900 rounded-xl transition-all shadow-[4px_4px_0_0_#0f172a] hover:shadow-[6px_6px_0_0_#0f172a] hover:-translate-y-1 flex flex-col justify-between min-h-[160px]">
+            <div>
+              <span class="text-4xl group-hover:scale-110 transition-transform inline-block mb-2">🍲🚨</span>
+              <h4 class="font-black text-slate-900 text-base mb-1">熱湯灑手臂事件</h4>
+              <p class="text-xs text-slate-600 line-clamp-3">午餐時間，後面的同學起立舀湯時不小心手滑，滾燙的湯淋在你的手臂上！</p>
+            </div>
+            <span class="text-xs font-black text-orange-600 mt-3 flex items-center gap-1">安全防護急救 ➔</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-4 text-xs font-bold text-slate-500">
+        <span class="bg-white px-3 py-1 rounded-full border-2 border-slate-900">⏱️ 預估：10分鐘</span>
+        <span class="bg-white px-3 py-1 rounded-full border-2 border-slate-900">🎓 級別：國小三年級適用</span>
+      </div>
+    </section>
+
+    <!-- 核心實驗平台面板 -->
+    <section id="lab-board" class="hidden brutal-card bg-white overflow-hidden transition-all duration-500">
+      
+      <!-- 情境摘要橫幅 -->
+      <div id="scenario-banner" class="bg-[#FF99C8] text-slate-900 p-5 flex items-center gap-4 border-b-4 border-slate-900">
+        <div id="scenario-emoji" class="text-5xl bg-white border-4 border-slate-900 p-2 rounded-2xl shadow-[3px_3px_0_0_#0f172a]">🎠</div>
+        <div>
+          <span class="text-xs font-black bg-[#FFD124] border-2 border-slate-900 px-2.5 py-0.5 rounded-full mb-1 inline-block">當前時空挑戰</span>
+          <h3 id="scenario-title" class="text-2xl font-black retro-font">盪秋千大卡關</h3>
+        </div>
+      </div>
+
+      <!-- 實驗進度指示條 (三大超能力) -->
+      <div class="bg-[#FFFDF0] border-b-4 border-slate-900 px-6 py-4 flex justify-between items-center overflow-x-auto gap-4">
+        <div class="flex items-center gap-2 flex-1 min-w-[140px] justify-center" id="nav-step-1">
+          <span class="w-10 h-10 rounded-full bg-[#FFD124] text-slate-900 font-black text-lg flex items-center justify-center border-4 border-slate-900 shadow-[2px_2px_0_0_#0f172a]">1</span>
+          <span class="text-sm font-black text-slate-900">時空暫停術</span>
+        </div>
+        <div class="h-1 w-12 bg-slate-900 shrink-0" id="line-step-1"></div>
+        <div class="flex items-center gap-2 flex-1 min-w-[140px] justify-center opacity-40" id="nav-step-2">
+          <span class="w-10 h-10 rounded-full bg-slate-300 text-white font-black text-lg flex items-center justify-center border-4 border-slate-400">2</span>
+          <span class="text-sm font-black text-slate-500">衝突顯微鏡</span>
+        </div>
+        <div class="h-1 w-12 bg-slate-900 shrink-0" id="line-step-2"></div>
+        <div class="flex items-center gap-2 flex-1 min-w-[140px] justify-center opacity-40" id="nav-step-3">
+          <span class="w-10 h-10 rounded-full bg-slate-300 text-white font-black text-lg flex items-center justify-center border-4 border-slate-400">3</span>
+          <span class="text-sm font-black text-slate-500">點子魔法陣</span>
+        </div>
+      </div>
+
+      <!-- 關卡主要容器 -->
+      <div class="p-6 md:p-8 bg-white">
+        
+        <!-- 【關卡一：時空暫停術】 -->
+        <div id="panel-step-1" class="block space-y-6">
+          <div class="max-w-2xl mx-auto space-y-6">
+            <div class="bg-[#FFF9C4] border-4 border-slate-900 p-5 rounded-2xl shadow-[4px_4px_0_0_#0f172a]">
+              <h4 class="font-black text-slate-900 text-lg mb-2 flex items-center gap-1">🧪 事件還原：</h4>
+              <p id="scenario-description" class="text-slate-800 text-sm md:text-base leading-relaxed font-bold"></p>
+            </div>
+
+            <div class="text-center space-y-2 py-2">
+              <span class="text-6xl inline-block dopamine-bounce">⏱️⚡</span>
+              <h3 class="text-2xl md:text-3xl font-black text-slate-900 retro-font">超能力 1：啟動【時空暫停術】！</h3>
+              <p class="text-slate-600 text-sm font-bold">當前局勢不妙！請用科學家腦袋判斷，這個衝突狀況屬於哪一種「時間時效」？</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <!-- 快速決定按鈕 -->
+              <button onclick="checkTimeDecision('quick')" class="group p-5 bg-[#FFE5EC] hover:bg-[#FFC2D1] border-4 border-slate-900 rounded-2xl text-left flex items-start gap-4 shadow-[4px_4px_0_0_#0f172a] hover:shadow-[6px_6px_0_0_#0f172a] transition-all">
+                <span class="text-4xl bg-[#FF85A1] p-3 rounded-xl border-2 border-slate-900 group-hover:scale-110 transition-transform shadow-[2px_2px_0_0_#0f172a]">🚨</span>
+                <div>
+                  <h4 class="font-black text-slate-900 text-lg mb-1">需要「快速決定」！</h4>
+                  <p class="text-xs text-slate-700 leading-relaxed font-bold">有受傷、燙傷、失火或流血等生命安全與身體威脅，必須立刻做出自救或急救處理！</p>
+                </div>
+              </button>
+              <!-- 深思熟慮按鈕 -->
+              <button onclick="checkTimeDecision('think')" class="group p-5 bg-[#E2F9FF] hover:bg-[#B3F0FF] border-4 border-slate-900 rounded-2xl text-left flex items-start gap-4 shadow-[4px_4px_0_0_#0f172a] hover:shadow-[6px_6px_0_0_#0f172a] transition-all">
+                <span class="text-4xl bg-[#64DFDF] p-3 rounded-xl border-2 border-slate-900 group-hover:scale-110 transition-transform shadow-[2px_2px_0_0_#0f172a]">⏳</span>
+                <div>
+                  <h4 class="font-black text-slate-900 text-lg mb-1">可以「深思熟慮」！</h4>
+                  <p class="text-xs text-slate-700 leading-relaxed font-bold">雖然很不爽、很生氣，但並沒有身體或生命危險。我們可以先深呼吸 5 秒，停下來思考。</p>
+                </div>
+              </button>
+            </div>
+
+            <!-- 反饋提示區 -->
+            <div id="step-1-feedback" class="hidden p-5 rounded-2xl border-4 border-slate-900 font-bold text-sm transition-all duration-300 shadow-[4px_4px_0_0_#0f172a]"></div>
+
+            <div class="flex justify-end pt-4 border-t-2 border-slate-100">
+              <button id="btn-next-to-2" disabled onclick="goToStep(2)" class="px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3">
+                進入第二關 ➔
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 【關卡二：衝突顯微鏡】 -->
+        <div id="panel-step-2" class="hidden space-y-6">
+          <div class="max-w-3xl mx-auto space-y-6">
+            <div class="text-center space-y-2">
+              <span class="text-6xl inline-block dopamine-bounce">🔍🔬</span>
+              <h3 class="text-2xl md:text-3xl font-black text-slate-900 retro-font">超能力 2：啟動【衝突顯微鏡】！</h3>
+              <p class="text-slate-600 text-sm font-bold">就像拆解一道複雜的數學多解題，我們要把巨大的衝突「切碎成三塊小算式」來研究：</p>
+            </div>
+
+            <!-- 數學加法模擬器 (以新復古多巴胺風格呈現) -->
+            <div class="bg-[#EFFFDA] border-4 border-slate-900 rounded-2xl p-5 md:p-6 shadow-[6px_6px_0_0_#0f172a] text-center font-bold">
+              <p class="text-xs text-slate-700 font-black tracking-widest uppercase mb-4 bg-white border-2 border-slate-900 py-1 px-4 inline-block rounded-full">🔬 時空顯微鏡調焦公式 🔬</p>
+              
+              <div class="flex flex-col lg:flex-row items-center justify-center gap-4 font-bold text-sm">
+                
+                <!-- 事實 Lens -->
+                <div id="lens-fact" class="w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all">
+                  <span class="text-slate-500 text-xs block mb-1 font-black">🔍 調焦一：客觀事實</span>
+                  <span id="fact-content" class="text-slate-400 text-xs font-bold">尚未看清事實...</span>
+                </div>
+                
+                <span class="text-2xl text-slate-900 font-black">+</span>
+
+                <!-- 感受 Lens -->
+                <div id="lens-feeling" class="w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all">
+                  <span class="text-slate-500 text-xs block mb-1 font-black">❤️ 調焦二：我的心情</span>
+                  <span id="feeling-content" class="text-pink-600 text-xs font-bold">選擇你的心情...</span>
+                </div>
+
+                <span class="text-2xl text-slate-900 font-black">+</span>
+
+                <!-- 猜測 Lens -->
+                <div id="lens-guess" class="w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all">
+                  <span class="text-slate-500 text-xs block mb-1 font-black">🧠 調焦三：大腦猜測</span>
+                  <span id="guess-content" class="text-slate-400 text-xs font-bold">分析對方的想法...</span>
+                </div>
+              </div>
+
+              <!-- 顯微鏡下的合成真面目 -->
+              <div id="lens-result" class="mt-6 p-5 bg-white border-4 border-slate-900 rounded-xl text-slate-900 text-sm leading-relaxed hidden text-left shadow-[4px_4px_0_0_#0f172a]">
+                <!-- 動態注入拼接句與大腦分析 -->
+              </div>
+            </div>
+
+            <!-- 分析操作按鈕區 -->
+            <div class="space-y-4">
+              <!-- 第一步：客觀事實按鈕 -->
+              <div class="border-4 border-slate-900 rounded-2xl p-4 bg-[#FFE8D6] shadow-[4px_4px_0_0_#0f172a] space-y-2">
+                <span class="text-xs font-black text-slate-900 bg-[#FF9F1C] border-2 border-slate-900 px-3 py-0.5 rounded-full">步驟 2.1</span>
+                <p class="font-black text-sm text-slate-800">按下旋鈕：看清楚鏡片下「不帶偏見、只說事實」的真面目是什麼？</p>
+                <button onclick="clickFactLens()" id="btn-reveal-fact" class="w-full bg-white hover:bg-[#FFF3E0] border-3 border-dashed border-slate-400 hover:border-slate-900 py-3 rounded-xl text-slate-700 text-sm font-black transition-all shadow-[2px_2px_0_0_#0f172a] active:translate-y-0.5">
+                  👁️ 點選顯微鏡對焦，看清「事實」
+                </button>
+              </div>
+
+              <!-- 第二步：心情選擇 -->
+              <div class="border-4 border-slate-900 rounded-2xl p-4 bg-[#FFE5EC] shadow-[4px_4px_0_0_#0f172a] space-y-2">
+                <span class="text-xs font-black text-slate-900 bg-[#FF6B9D] border-2 border-slate-900 px-3 py-0.5 rounded-full">步驟 2.2</span>
+                <p class="font-black text-sm text-slate-800">老實說：這時候你內心的感受是什麼？（點選最符合的一個）</p>
+                <div id="feeling-options-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <!-- JS 動態注入情緒按鈕 -->
+                </div>
+              </div>
+
+              <!-- 第三步：猜猜看原因 -->
+              <div class="border-4 border-slate-900 rounded-2xl p-4 bg-[#E2F9FF] shadow-[4px_4px_0_0_#0f172a] space-y-2">
+                <span class="text-xs font-black text-slate-900 bg-[#4EA8DE] border-2 border-slate-900 px-3 py-0.5 rounded-full">步驟 2.3</span>
+                <p class="font-black text-sm text-slate-800">調焦旋鈕：你覺得對方為什麼會這麼做呢？（點選一個猜測並看大腦分析）</p>
+                <div id="guess-options-container" class="space-y-2 pt-1">
+                  <!-- JS 動態注入猜想按鈕 -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 前進下一關 -->
+            <div class="flex justify-between pt-4 border-t-2 border-slate-100">
+              <button onclick="goToStep(1)" class="px-5 py-2.5 bg-white text-slate-700 font-black rounded-full brutal-btn text-sm">
+                ⬅ 上一步
+              </button>
+              <button id="btn-next-to-3" disabled onclick="goToStep(3)" class="px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3">
+                進入第三關 ➔
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 【關卡三：點子魔法陣】 -->
+        <div id="panel-step-3" class="hidden space-y-6">
+          <div class="max-w-3xl mx-auto space-y-6">
+            <div class="text-center space-y-2">
+              <span class="text-6xl inline-block dopamine-bounce">🔮🧪</span>
+              <h3 class="text-2xl md:text-3xl font-black text-slate-900 retro-font">超能力 3：調配【點子魔法陣】！</h3>
+              <p class="text-slate-600 text-sm font-bold">像數學應用題有不同解法，請在下方藥水櫃中，<span class="bg-[#FFD124] border-2 border-slate-900 px-1.5 py-0.5 rounded font-black text-slate-900">選擇至少 2 瓶「正向方案藥水」</span>倒入魔法大釜！</p>
+            </div>
+
+            <!-- 魔法大釜 & 已倒入藥水展示 (多巴胺風格) -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-[#E8F8FF] border-4 border-slate-900 rounded-2xl p-6 shadow-[6px_6px_0_0_#0f172a]">
+              
+              <!-- 左側：魔法大釜動畫效果 -->
+              <div class="md:col-span-5 flex flex-col items-center justify-center space-y-3">
+                <div class="relative w-44 h-44 flex items-center justify-center">
+                  <!-- 大釜 SVG -->
+                  <svg class="w-40 h-40 text-[#9D4EDD] filter drop-shadow-md" viewBox="0 0 24 24" fill="currentColor" style="stroke: #0f172a; stroke-width: 0.8px;">
+                    <path d="M4 19c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-6H4v6zM19 6h-2V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v2h18V8c0-1.1-.9-2-2-2zm-4 0H9V4h6v2z"/>
+                  </svg>
+                  <!-- 氣泡動畫 -->
+                  <div id="pot-liquid" class="absolute bottom-10 left-12 right-12 h-12 bg-[#FFD124]/40 rounded-full blur-xs transition-all duration-500 flex justify-around items-center">
+                    <span class="text-sm animate-bounce delay-100">🫧</span>
+                    <span class="text-sm animate-bounce">🫧</span>
+                    <span class="text-sm animate-bounce delay-300">🫧</span>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <span class="text-xs font-black text-slate-900 bg-[#FFD124] border-2 border-slate-900 px-4 py-1.5 rounded-full shadow-[2px_2px_0_0_#0f172a]">
+                    已倒入藥水：<span id="mixed-potions-count">0</span> / 4 瓶
+                  </span>
+                </div>
+              </div>
+
+              <!-- 右側：魔法陣調配列表 -->
+              <div class="md:col-span-7 space-y-3">
+                <h4 class="font-black text-sm text-slate-800">🔬 當前調配混合配方：</h4>
+                <div id="mixed-potions-list" class="space-y-2 text-xs text-slate-500 min-h-[120px] flex flex-col justify-center bg-white p-3 border-4 border-slate-900 rounded-xl shadow-inner">
+                  <p class="text-center text-slate-400 py-4 font-bold">魔法大釜目前還是空的唷，請在下方選取健康藥水！</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 藥水選取櫃 -->
+            <div class="space-y-3">
+              <h4 class="font-black text-sm text-slate-800">🛒 實驗室藥水櫃：</h4>
+              <div id="potion-cabinet" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- JS 動態注入情境對應的藥水瓶 -->
+              </div>
+            </div>
+
+            <!-- 提示危險藥水 -->
+            <div id="potion-warning-tip" class="hidden bg-[#FFE5EC] border-4 border-[#FF85A1] rounded-2xl p-4 text-xs md:text-sm text-rose-900 leading-relaxed font-bold shadow-[4px_4px_0_0_#FF85A1]">
+              <!-- 動態注入負面藥水警告 -->
+            </div>
+
+            <!-- 完成實驗與上一步 -->
+            <div class="flex justify-between pt-4 border-t-2 border-slate-100">
+              <button onclick="goToStep(2)" class="px-5 py-2.5 bg-white text-slate-700 font-black rounded-full brutal-btn text-sm">
+                ⬅ 上一步
+              </button>
+              <button id="btn-submit-lab" disabled onclick="submitLabExperiment()" class="px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3">
+                🧙‍♂️ 施展大腦魔法（生成時空證書）
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 終點：實驗證書與報告面板 -->
+    <section id="report-screen" class="hidden brutal-card bg-[#FFFDF0] p-6 md:p-10 max-w-3xl mx-auto my-4 border-4 border-slate-900 shadow-[8px_8px_0_0_#0f172a]">
+      <div class="relative py-4 border-4 border-dashed border-slate-400 rounded-2xl p-6 md:p-8 space-y-6 bg-white">
+        
+        <!-- 蓋章勳章 -->
+        <div class="absolute -top-4 -right-4 w-28 h-28 bg-[#FFD124] rounded-full flex items-center justify-center text-slate-900 border-4 border-slate-900 shadow-[4px_4px_0_0_#0f172a] rotate-12 select-none">
+          <div class="text-center font-black">
+            <span class="text-xs block tracking-widest">時空認證</span>
+            <span class="text-xl retro-font">VIP</span>
+            <span class="text-xs block">大腦科學家</span>
+          </div>
+        </div>
+
+        <span class="text-8xl block dopamine-bounce">🎓✨</span>
+        <h2 class="text-3xl md:text-4xl font-black text-slate-900 tracking-wider retro-font">大腦時空實驗認證書</h2>
+        <p class="text-sm md:text-base text-slate-700 max-w-md mx-auto font-bold leading-relaxed">
+          超級恭喜你！成功在校園日常與突發意外中啟動了「大腦超能力」，成功解決了人際難題！
+        </p>
+
+        <!-- 證書報告內容明細 -->
+        <div class="bg-[#EFFFDA] border-4 border-slate-900 rounded-2xl p-5 text-left text-sm space-y-4 shadow-[4px_4px_0_0_#0f172a]">
+          <div>
+            <span class="text-xs text-slate-500 font-black block tracking-widest">實驗分析主體：</span>
+            <span id="cert-scenario-name" class="font-black text-slate-950 text-lg"></span>
+          </div>
+          <hr class="border-t-2 border-slate-900/10">
+          <div>
+            <span class="text-xs text-slate-500 font-black block tracking-widest">時空顯微鏡報告（拆解公式）：</span>
+            <p id="cert-micro-formula" class="text-slate-800 font-bold mt-1.5 leading-relaxed text-xs md:text-sm"></p>
+          </div>
+          <hr class="border-t-2 border-slate-900/10">
+          <div>
+            <span class="text-xs text-slate-500 font-black block tracking-widest">你調配出的正向魔法方案藥水：</span>
+            <ul id="cert-potions-list" class="list-disc pl-5 mt-2 space-y-1.5 text-slate-800 font-bold">
+              <!-- 動態載入已選配方 -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="pt-4 flex flex-col sm:flex-row justify-center gap-3">
+          <button onclick="window.print()" class="px-6 py-3 bg-[#FF99C8] hover:bg-[#FF6B9D] text-slate-900 font-black rounded-full brutal-btn text-sm flex items-center justify-center gap-1.5">
+            🖨️ 列印 / 儲存實驗證書
+          </button>
+          <button onclick="resetLab()" class="px-6 py-3 bg-[#9BE2F7] hover:bg-[#64DFDF] text-slate-900 font-black rounded-full brutal-btn text-sm">
+            🧪 挑戰下一個衝突事件
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部教師與家長專區 (給大人的話 / Support Zone) -->
+  <section class="max-w-5xl mx-auto px-4 pb-12 w-full">
+    <div class="brutal-card bg-white p-6 border-4 border-slate-900 shadow-[6px_6px_0_0_#0f172a]">
+      <div class="flex items-center gap-3 mb-6 bg-[#FF99C8] border-3 border-slate-900 p-3 rounded-xl shadow-[3px_3px_0_0_#0f172a]">
+        <span class="text-4xl">👨‍👩‍👧‍👦</span>
+        <div>
+          <h2 class="text-xl md:text-2xl font-black text-slate-900">給大人的話：SEL 教學與陪伴指南</h2>
+          <p class="text-xs text-slate-800 font-bold">專門為老師與家長設計的網頁內容解析，讓學習不流於遊戲！</p>
+        </div>
+      </div>
+
+      <!-- Tabs or Accordion Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
+        
+        <!-- 教育設計意圖 -->
+        <div class="border-3 border-slate-900 rounded-xl p-4 bg-[#FFE5EC] flex flex-col justify-between">
+          <div>
+            <h3 class="font-black text-slate-900 text-base mb-3 flex items-center gap-1.5">
+              <span class="text-xl">🎯</span> 核心教育設計意圖
+            </h3>
+            <ul class="space-y-3 font-bold text-slate-700 text-xs md:text-sm">
+              <li>
+                <span class="text-rose-500">▶</span> <strong class="text-slate-900">時間時效訓練</strong>：孩子在情緒衝動時，大腦中的「杏仁核」會先接收到信號。此關卡訓練學生分辨「生理威脅（熱湯燙傷，需秒決定）」與「社交衝突（搶玩具，可先深呼吸停5秒）」，在關鍵时刻建立時間煞車器。
+              </li>
+              <li>
+                <span class="text-rose-500">▶</span> <strong class="text-slate-900">人際衝突拆解（顯微鏡）</strong>：三年級學生容易陷入「敵意意圖歸因偏誤」（認為同學一定是故意的）。透過拆解，引導他們把「事實」與「大腦的壞意圖猜測」剝離開來，降低心理防衛。
+              </li>
+              <li>
+                <span class="text-rose-500">▶</span> <strong class="text-slate-900">多解題思維（魔法陣）</strong>：多種正向方法能培養孩子的「大腦彈性」。學習人際解決方案就像解數學多解題，沒有唯一解，但需要正向的備案。
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 雙效引導指南 -->
+        <div class="border-3 border-slate-900 rounded-xl p-4 bg-[#EFFFDA] flex flex-col justify-between">
+          <div>
+            <h3 class="font-black text-slate-900 text-base mb-3 flex items-center gap-1.5">
+              <span class="text-xl">🗣️</span> 課堂與家庭雙效引導
+            </h3>
+            <div class="space-y-4 font-bold text-slate-700 text-xs md:text-sm">
+              <div>
+                <span class="bg-[#FFD124] border-2 border-slate-900 px-2 py-0.5 rounded text-[10px] text-slate-900 block w-max mb-1">學校老師您可以：</span>
+                <p class="leading-relaxed">利用電子白板投影「關卡二」的公式。讓台下孩子進行角色扮演（Roleplay）。當孩子選「對方是故意的」時，跟全班探討：『大腦這時候是否戴上了生氣的近視眼？』</p>
+              </div>
+              <div>
+                <span class="bg-[#9BE2F7] border-2 border-slate-900 px-2 py-0.5 rounded text-[10px] text-slate-900 block w-max mb-1">家長在家您可以：</span>
+                <p class="leading-relaxed">跟孩子在家一起點選。如果孩子日常跟手足或安親班同學吵架，拿這個網頁當媒介：『寶貝，剛才你跟弟弟的事情，我們要不要套入大腦顯微鏡看看，什麼是事實，什麼是你生氣時大腦的猜測？』</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 108課綱對照 -->
+        <div class="border-3 border-slate-900 rounded-xl p-4 bg-[#E2F9FF] flex flex-col justify-between">
+          <div>
+            <h3 class="font-black text-slate-900 text-base mb-3 flex items-center gap-1.5">
+              <span class="text-xl">📋</span> SEL 對照表
+            </h3>
+            <div class="space-y-3 font-bold text-slate-700 text-xs">
+              <div class="bg-white border-2 border-slate-900 p-2.5 rounded-lg">
+                <span class="font-black text-slate-900 block mb-0.5">自我覺察 (Self-Awareness)</span>
+                辨識因人際威脅產生生理警示（手心出汗、心跳變快），學習按下情緒暫停鍵。
+              </div>
+              <div class="bg-white border-2 border-slate-900 p-2.5 rounded-lg">
+                <span class="font-black text-slate-900 block mb-0.5">負責任的決策 (Responsible Decision-Making)</span>
+                在衝突情境下，思考其決策時效（快速自救 / 緩慢討論），並依據安全與健康原則解決。
+              </div>
+              <div class="bg-white border-2 border-slate-900 p-2.5 rounded-lg">
+                <span class="font-black text-slate-900 block mb-0.5">學科整合（三年級數學/自然）</span>
+                學習將「複雜人際」像解數理題目一般拆解。透過混合方案，發現一題多解的人際魔法。
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 浮動式：教師導學專用抽屜 (Teacher's Guide Drawer) -->
+  <div id="teacher-drawer" class="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 border-l-4 border-slate-900 flex flex-col">
+    <div class="bg-[#FFD124] text-slate-900 p-4 border-b-4 border-slate-900 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">👩‍🏫</span>
+        <div>
+          <h3 class="font-black text-base">課堂極速引導指南</h3>
+        </div>
+      </div>
+      <button onclick="toggleTeacherPanel()" class="text-slate-950 hover:text-red-500 font-black text-2xl">✕</button>
+    </div>
+
+    <!-- 導學內容區 -->
+    <div class="p-6 overflow-y-auto flex-grow space-y-6 text-sm leading-relaxed text-slate-800 font-bold">
+      
+      <div class="bg-[#EFFFDA] border-3 border-slate-900 rounded-xl p-4 shadow-[3px_3px_0_0_#0f172a]">
+        <h4 class="font-black text-slate-900 mb-1 text-sm">🎯 本網頁核心技能培養指標：</h4>
+        <p class="text-xs text-slate-700 leading-normal">
+          <strong>社會適應與自我決策：</strong> 透過「時間區分（急迫安全 vs 日常摩擦）」建立情緒冷卻緩衝，掌握 <strong>停（暫停發現）➔ 想（顯微分析）➔ 做（多元魔法）</strong> 三大核心人際步驟。
+        </p>
+      </div>
+
+      <!-- 關卡1 引導話術 -->
+      <div class="space-y-2">
+        <span class="bg-[#FF99C8] border-2 border-slate-900 text-slate-900 text-xs font-black px-2 py-0.5 rounded-full">關卡一：時空暫停術</span>
+        <h4 class="font-black text-slate-900 text-xs md:text-sm">🗣️ 老師課堂互動提問金句：</h4>
+        <p class="text-slate-600 italic text-xs leading-relaxed">
+          「各位大腦科學家，如果我們被滾燙貢丸湯淋到手（情境三），能不能像排隊盪秋千被卡關（情境一）一樣在那邊閉眼睛深呼吸5秒鐘？不可以！受傷要救，我們的手指黃金急救是『快速決定』。日常吵架則要『深思熟慮』！大腦科學家一定要分清楚！」
+        </p>
+      </div>
+
+      <hr class="border-t-2 border-slate-900/10">
+
+      <!-- 關卡2 引導話術 -->
+      <div class="space-y-2">
+        <span class="bg-[#64DFDF] border-2 border-slate-900 text-slate-900 text-xs font-black px-2 py-0.5 rounded-full">關卡二：衝突顯微鏡</span>
+        <h4 class="font-black text-slate-900 text-xs md:text-sm">🗣️ 老師課堂互動提問金句：</h4>
+        <p class="text-slate-600 italic text-xs leading-relaxed">
+          「在憤怒時，大腦警報器（杏仁核）會讓我們覺得對方一定是『故意的』，這叫『大腦生氣近視眼』。我們要用衝突顯微鏡拆開它！只要看清楚真正的事實，就不會老是覺得全班都在針對你囉！」
+        </p>
+      </div>
+
+      <hr class="border-t-2 border-slate-900/10">
+
+      <!-- 關卡3 引導話術 -->
+      <div class="space-y-2">
+        <span class="bg-[#9D4EDD] border-2 border-slate-900 text-white text-xs font-black px-2 py-0.5 rounded-full">關卡三：點子魔法陣</span>
+        <h4 class="font-black text-slate-900 text-xs md:text-sm">🗣️ 老師課堂互動提問金句：</h4>
+        <p class="text-slate-600 italic text-xs leading-relaxed">
+          「如果我們只想用『吵回去』或『動武』，魔法釜會冒黑煙警告爆炸！科學家要混製 2 瓶以上正向藥水。一邊說明你的心情，一邊提出輪流，我們不只有一個方法，隨時啟動第二點子藥水！」
+        </p>
+      </div>
+
+      <div class="bg-amber-50 rounded-xl p-4 border-2 border-slate-900">
+        <h4 class="font-black text-slate-900 text-xs mb-1">💡 跨科理念連結（數學解題）：</h4>
+        <p class="text-xs text-slate-600 leading-normal">
+          提醒孩子，生活中跟同學摩擦就像數學多解題。多準備幾個正向解法，A計劃不通時，孩子就能靈巧啟動B計劃。
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 頁尾 -->
+  <footer class="bg-slate-900 text-slate-400 py-6 text-xs text-center border-t-4 border-slate-950 w-full font-bold">
+    <div class="max-w-6xl mx-auto px-4 space-y-1">
+      <p class="text-[#FFD124] retro-font text-sm">🧠 大腦時空研製中心 🧠</p>
+      <p>© 2026 人際衝突時空實驗室. 專為國小三年級設計之社會情緒學習 (SEL) 輔助互動教材</p>
+    </div>
+  </footer>
+
+  <!-- 系統核心邏輯 JavaScript -->
+  <script>
+    // 預設三大情境資料庫 (包含修正後的時間時效指標與大腦真相)
+    const SCENARIOS = {
+      s1: {
+        title: "盪秋千大卡關",
+        emoji: "🎠",
+        timeDecision: "think", // 日常人際：深思熟慮
+        description: "下課鐘聲響了，你興衝衝跑到操場想玩盪秋千，但是小華已經坐在上面玩了很久，而且看起來完全沒有想要下來的意思。你在旁邊等得很急，感覺整節下課快沒了，拳頭漸漸變硬了...",
+        fact: "小華坐在秋千上玩，而我也非常想玩秋千。",
+        feelingOptions: [
+          { emoji: "😡", text: "憤怒生氣" },
+          { emoji: "🥺", text: "焦急慌張" },
+          { emoji: "😔", text: "委屈難過" },
+          { emoji: "😮‍💨", text: "心累無奈" }
+        ],
+        guesses: [
+          { text: "他根本是故意的，看我好欺負，想一直霸佔不讓我玩！", type: "bad", badge: "壞意圖猜測" },
+          { text: "他也太專心在玩了，根本不知道我也想玩，也忘記注意時間了。", type: "neutral", badge: "客觀現實" },
+          { text: "他可能難得排到秋千，很想把握時間多盪一下下。", type: "good", badge: "同理心大腦" }
+        ],
+        potions: [
+          { id: "p1", text: "💬 溝通配方：走過去溫和且有精神地對小華說：「小華，這節下課剩下一半，可以換我玩玩看嗎？」", safe: true },
+          { id: "p2", text: "🤝 協議配方：跟小華約定：「那我們用猜拳決定，或者你再盪 10 下，接著就換我好嗎？」", safe: true },
+          { id: "p3", text: "🎨 備案配方：先去溜滑梯或玩別的，等上課前或下一節下課再提早來排隊。", safe: true },
+          { id: "p4", text: "💣 衝突配方：衝上去用力拉住吊繩，對小華大吼：「霸王喔！你是要坐在上面多久啦！」", safe: false }
+        ]
+      },
+      s2: {
+        title: "分組討論大分歧",
+        emoji: "🚀",
+        timeDecision: "think", // 日常討論：可深思熟慮
+        description: "自然課分組報告，你想做「可愛的貓咪」主題，可是同組的其他三個同學都舉手說要做「帥氣的太空火箭」，大家都僵持不下，討論時間只剩 5 分鐘，你覺得被世界拋棄了...",
+        fact: "小組討論時，我與其他組員想做的報告題目意見不一樣。",
+        feelingOptions: [
+          { emoji: "😞", text: "失望沮喪" },
+          { emoji: "😡", text: "生氣不平" },
+          { emoji: "😣", text: "挫折失敗" },
+          { emoji: "💔", text: "孤單排擠" }
+        ],
+        guesses: [
+          { text: "他們故意聯合起來排擠我的點子，討厭我、針對我！", type: "bad", badge: "壞意圖猜測" },
+          { text: "大家都對太空主題非常有興趣，所以才會想選它。", type: "neutral", badge: "客觀現實" },
+          { text: "大家都想拿高分，所以選了感覺很厲害的主題。", type: "good", badge: "同理心大腦" }
+        ],
+        potions: [
+          { id: "p1", text: "🧪 融合配方：提案說：「不然我們把兩個題目合起來，做『上太空的貓咪太空港』好嗎？」", safe: true },
+          { id: "p2", text: "🎲 民主配方：提議猜拳或舉手表決，輸的人服從多數，但約定下次分組要優先選輸家的主題。", safe: true },
+          { id: "p3", text: "✍️ 分工配方：跟同學說：「這次我可以配合做太空火箭，但我負責畫最帥的外殼跟上台發表喔！」", safe: true },
+          { id: "p4", text: "💣 衝突配方：生氣地把原子筆摔在桌上大叫：「那我都不要做報告了，隨便你們啦！」", safe: false }
+        ]
+      },
+      s3: {
+        title: "熱湯灑手臂事件",
+        emoji: "🍲🚨",
+        timeDecision: "quick", // 燙傷身體危險：必須快速決定！
+        description: "美味的午餐時間，後面的同學起立舀湯時不小心手滑，一整碗剛舀好、冒著白煙的滾燙貢丸湯，直接澆淋在你裸露的手臂上！你的皮膚立刻紅了一大片，感到一陣劇烈的灼熱刺痛...",
+        fact: "同學端湯不小心手滑，將滾燙的湯汁淋在我的手臂上。",
+        feelingOptions: [
+          { emoji: "😱", text: "驚慌害怕" },
+          { emoji: "😭", text: "極度疼痛" },
+          { emoji: "😡", text: "憤怒不平" },
+          { emoji: "🥺", text: "不知所措" }
+        ],
+        guesses: [
+          { text: "他絕對是故意的！他是看我不順眼，才拿滾熱的湯故意燙我、教訓我！", type: "bad", badge: "壞意圖猜測" },
+          { text: "他只是端湯時一時手滑、沒拿穩，這是一場不小心發生的意外。", type: "neutral", badge: "客觀現實" },
+          { text: "他也嚇一大跳，現在一定感到非常驚慌和內疚自責。", type: "good", badge: "同理心大腦" }
+        ],
+        potions: [
+          { id: "p1", text: "🩹 醫務配方（安全優先）：立刻進行沖、脫、泡、蓋、送等燙傷急救處理，並前往保健室擦藥治療。", safe: true },
+          { id: "p2", text: "🧼 合作配方（危機後）：手臂處理好後，告訴同學：「我知道你是不小心的，我們一起把地板弄乾淨吧。」", safe: true },
+          { id: "p3", text: "🤝 溝通配方（危機後）：告訴同學：「剛剛被燙到真的非常痛。下次舀湯時一定要拿穩一點喔。」", safe: true },
+          { id: "p4", text: "💣 報復配方：氣得抓起手邊抹布，甩在對方身上怒罵：「你也給我嚐嚐看被燙的滋味！」", safe: false }
+        ]
+      }
+    };
+
+    // 實驗當前狀態
+    let currentScenarioId = 's1';
+    let currentStep = 1;
+    let selectedFactRevealed = false;
+    let selectedFeeling = null;
+    let selectedGuess = null;
+    let mixedPotions = [];
+
+    // 初始化/重置實驗室
+    function resetLab() {
+      currentStep = 1;
+      selectedFactRevealed = false;
+      selectedFeeling = null;
+      selectedGuess = null;
+      mixedPotions = [];
+
+      document.getElementById('welcome-screen').classList.remove('hidden');
+      document.getElementById('welcome-screen').classList.add('block');
+      document.getElementById('lab-board').classList.add('hidden');
+      document.getElementById('lab-board').classList.remove('block');
+      document.getElementById('report-screen').classList.add('hidden');
+      document.getElementById('report-screen').classList.remove('block');
+
+      // 重置關卡1
+      document.getElementById('step-1-feedback').classList.add('hidden');
+      document.getElementById('btn-next-to-2').disabled = true;
+      document.getElementById('btn-next-to-2').className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+
+      // 重置關卡2
+      document.getElementById('fact-content').innerHTML = "尚未看清事實...";
+      document.getElementById('fact-content').className = "text-slate-400 text-xs font-bold";
+      document.getElementById('feeling-content').innerHTML = "選擇你的心情...";
+      document.getElementById('feeling-content').className = "text-pink-600 text-xs font-bold";
+      document.getElementById('guess-content').innerHTML = "分析對方的想法...";
+      document.getElementById('guess-content').className = "text-slate-400 text-xs font-bold";
+      
+      const lensFact = document.getElementById('lens-fact');
+      lensFact.className = "w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all";
+      const lensFeeling = document.getElementById('lens-feeling');
+      lensFeeling.className = "w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all";
+      const lensGuess = document.getElementById('lens-guess');
+      lensGuess.className = "w-full lg:w-1/3 px-4 py-4 bg-white border-4 border-dashed border-slate-400 rounded-xl transition-all";
+
+      document.getElementById('lens-result').classList.add('hidden');
+      document.getElementById('btn-next-to-3').disabled = true;
+      document.getElementById('btn-next-to-3').className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+
+      // 重置關卡3
+      document.getElementById('btn-submit-lab').disabled = true;
+      document.getElementById('btn-submit-lab').className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+      document.getElementById('potion-warning-tip').classList.add('hidden');
+    }
+
+    // 選取實驗情境
+    function selectScenario(sid) {
+      currentScenarioId = sid;
+      const data = SCENARIOS[sid];
+
+      // 填充情境橫幅
+      document.getElementById('scenario-emoji').innerHTML = data.emoji;
+      document.getElementById('scenario-title').innerHTML = data.title;
+      document.getElementById('scenario-description').innerHTML = data.description;
+
+      // 切換視圖
+      document.getElementById('welcome-screen').classList.add('hidden');
+      document.getElementById('lab-board').classList.remove('hidden');
+
+      // 跳轉至步驟 1
+      goToStep(1);
+
+      // 動態渲染步驟 2 的選項
+      renderStep2Options(data);
+      // 動態渲染步驟 3 的藥水櫃
+      renderStep3Options(data);
+    }
+
+    // 切換關卡視圖
+    function goToStep(step) {
+      currentStep = step;
+      // 隱藏所有關卡
+      document.getElementById('panel-step-1').classList.add('hidden');
+      document.getElementById('panel-step-2').classList.add('hidden');
+      document.getElementById('panel-step-3').classList.add('hidden');
+
+      // 顯示目標關卡
+      document.getElementById(`panel-step-${step}`).classList.remove('hidden');
+
+      // 更新頂部導覽條狀態 (多巴胺霓虹對焦效果)
+      for (let i = 1; i <= 3; i++) {
+        const nav = document.getElementById(`nav-step-${i}`);
+        const circle = nav.querySelector('span');
+        const label = nav.querySelector('span:last-child');
+        
+        if (i < step) {
+          // 已完成的步驟
+          nav.classList.remove('opacity-40');
+          circle.className = "w-10 h-10 rounded-full bg-[#EFFFDA] text-slate-900 font-black text-lg flex items-center justify-center border-4 border-slate-900 shadow-[2px_2px_0_0_#0f172a]";
+          circle.innerHTML = "✓";
+          label.className = "text-sm font-black text-slate-900";
+        } else if (i === step) {
+          // 當前步驟
+          nav.classList.remove('opacity-40');
+          circle.className = "w-10 h-10 rounded-full bg-[#FFD124] text-slate-900 font-black text-lg flex items-center justify-center border-4 border-slate-900 shadow-[3px_3px_0_0_#0f172a] microscope-pulse";
+          circle.innerHTML = i;
+          label.className = "text-sm font-black text-slate-950";
+        } else {
+          // 尚未到達
+          nav.classList.add('opacity-40');
+          circle.className = "w-10 h-10 rounded-full bg-slate-200 text-slate-500 font-black text-lg flex items-center justify-center border-4 border-slate-400";
+          circle.innerHTML = i;
+          label.className = "text-sm font-black text-slate-500";
+        }
+      }
+    }
+
+    // 關卡一：時間決策判斷
+    function checkTimeDecision(chosenType) {
+      const data = SCENARIOS[currentScenarioId];
+      const correctType = data.timeDecision; // 'quick' 或是 'think'
+      const feedback = document.getElementById('step-1-feedback');
+      const nextBtn = document.getElementById('btn-next-to-2');
+      feedback.classList.remove('hidden');
+
+      if (chosenType === correctType) {
+        feedback.className = "p-5 rounded-2xl border-4 border-slate-900 font-bold text-sm bg-[#EFFFDA] text-slate-900 text-left shadow-[4px_4px_0_0_#0f172a]";
+        if (correctType === 'think') {
+          feedback.innerHTML = `
+            <strong class="text-lg text-emerald-700">🎉 答對了！啟動【時空暫停術】成功！</strong><br class="mb-1">
+            沒錯！這是一起日常人際糾紛，並沒有威脅到你的身體或生命安全。
+            你成功按下了「大腦暫停鍵」，深吸一口氣，我們成功幫衝動的大腦爭取到了冷靜的 5 秒鐘！
+            現在，我們可以優雅地使用「衝突顯微鏡」來分析這件事了！
+          `;
+        } else {
+          feedback.innerHTML = `
+            <strong class="text-lg text-emerald-700">🚨 答對了！啟動【身體安全防護罩】成功！</strong><br class="mb-1">
+            非常正確！這是一件攸關皮膚燙傷與受傷的「緊急身體安全事件」！
+            在此情境下，絕對不能在原地慢吞吞地「深呼吸5秒」或做什麼情緒分析。
+            必須立刻進行「快速決定」自救反射——大聲向老師呼救、立刻衝去洗手台沖冷水（沖、脫、泡、蓋、送）。身體安全永遠是第一優先！
+          `;
+        }
+        nextBtn.disabled = false;
+        nextBtn.className = "px-6 py-3 bg-[#FF99C8] hover:bg-[#FF6B9D] text-slate-900 font-black rounded-full transition-all flex items-center gap-1 border-3 brutal-btn cursor-pointer";
+        
+        // 撒一小點多巴胺彩帶慶祝
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          colors: ['#FF99C8', '#FFD124', '#9BE2F7', '#EFFFDA'],
+          origin: { y: 0.85 }
+        });
+      } else {
+        feedback.className = "p-5 rounded-2xl border-4 border-slate-900 font-bold text-sm bg-[#FFE5EC] text-slate-900 text-left shadow-[4px_4px_0_0_#0f172a]";
+        if (correctType === 'think') {
+          feedback.innerHTML = `
+            <strong class="text-lg text-rose-600">等一下！大腦警報拉響了！ 🚨</strong><br class="mb-1">
+            雖然此時你心裡「很急、很生氣、很想立刻反擊」，但請注意：現場<strong>並沒有</strong>生命威脅或身體受傷的危險。
+            如果此時你用最快的「快速反射」大吼大叫或動手，往往會讓衝突大爆炸，惹上更多麻煩！
+            讓我們重新選擇，試試看使用大腦的【深思熟慮】超能力，等一下再做決定！
+          `;
+        } else {
+          feedback.innerHTML = `
+            <strong class="text-lg text-rose-600">等一下！這時候可不能慢吞吞喔！ ⚠️</strong><br class="mb-1">
+            你的手臂被滾燙的貢丸湯淋到了，這是有嚴重燙傷威險的身體突發事件！
+            此時如果還在原地慢吞吞地「深呼吸冷靜5秒」或者是和緩地分析同學的想法，會錯失沖水急救的黃金時間！
+            遇到這種有身體安全威脅的情況，一定要以「安全快速自救」為第一位。請重新選擇！
+          `;
+        }
+        nextBtn.disabled = true;
+        nextBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+      }
+    }
+
+    // 動態載入步驟二選項
+    function renderStep2Options(data) {
+      // 1. 重設顯示鏡片
+      document.getElementById('btn-reveal-fact').innerHTML = "👁️ 點選顯微鏡對焦，看清「事實」";
+      document.getElementById('btn-reveal-fact').className = "w-full bg-white hover:bg-[#FFF3E0] border-3 border-dashed border-slate-400 hover:border-slate-900 py-3 rounded-xl text-slate-700 text-sm font-black transition-all shadow-[2px_2px_0_0_#0f172a] active:translate-y-0.5";
+
+      // 2. 注入感受情緒按鈕
+      const feelingBox = document.getElementById('feeling-options-container');
+      feelingBox.innerHTML = '';
+      data.feelingOptions.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = `btn-feeling-${opt.text}`;
+        btn.className = "py-2.5 bg-white hover:bg-[#FFE5EC] border-3 border-slate-900 rounded-xl transition-all text-xs font-black text-slate-800 flex flex-col items-center gap-1 shadow-[3px_3px_0_0_#0f172a] active:translate-y-0.5";
+        btn.innerHTML = `<span class="text-2xl dopamine-bounce">${opt.emoji}</span><span>${opt.text}</span>`;
+        btn.onclick = () => selectFeelingOpt(opt.emoji, opt.text);
+        feelingBox.appendChild(btn);
+      });
+
+      // 3. 注入猜測原因按鈕
+      const guessBox = document.getElementById('guess-options-container');
+      guessBox.innerHTML = '';
+      data.guesses.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = `btn-guess-${index}`;
+        btn.className = "w-full text-left p-3.5 bg-white hover:bg-[#E2F9FF] border-3 border-slate-900 rounded-xl transition-all flex items-center justify-between group shadow-[3px_3px_0_0_#0f172a] active:translate-y-0.5";
+        
+        let badgeColor = "bg-[#FFE5EC] text-rose-800 border-[#FF85A1]";
+        if (opt.type === 'neutral') badgeColor = "bg-[#E2F9FF] text-cyan-800 border-[#4EA8DE]";
+        if (opt.type === 'good') badgeColor = "bg-[#EFFFDA] text-emerald-800 border-[#9BE2F7]";
+
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full border-3 border-slate-900 bg-white flex items-center justify-center text-xs text-transparent group-hover:text-slate-900 group-hover:bg-[#FFD124] font-black">✓</span>
+            <span class="text-xs sm:text-sm font-bold text-slate-800 leading-normal">${opt.text}</span>
+          </div>
+          <span class="text-[10px] font-black px-2.5 py-1 rounded-full border-2 ${badgeColor} shrink-0 ml-2 shadow-[1px_1px_0_0_#0f172a]">${opt.badge}</span>
+        `;
+        btn.onclick = () => selectGuessOpt(opt.text, opt.type, index);
+        guessBox.appendChild(btn);
+      });
+    }
+
+    // 關卡二：調焦1 點擊看清事實
+    function clickFactLens() {
+      const data = SCENARIOS[currentScenarioId];
+      selectedFactRevealed = true;
+      
+      const lensFact = document.getElementById('lens-fact');
+      lensFact.className = "w-full lg:w-1/3 px-4 py-4 bg-[#FFD124]/30 border-4 border-slate-900 rounded-xl scale-105 transition-all text-left shadow-[4px_4px_0_0_#0f172a]";
+      document.getElementById('fact-content').innerHTML = `<strong>${data.fact}</strong>`;
+      document.getElementById('fact-content').className = "text-slate-900 text-xs mt-1 block font-black";
+
+      const btn = document.getElementById('btn-reveal-fact');
+      btn.className = "w-full bg-[#EFFFDA] text-slate-900 border-3 border-slate-900 font-black py-3 rounded-xl text-sm flex items-center justify-center gap-1 shadow-[2px_2px_0_0_#0f172a] cursor-default";
+      btn.innerHTML = "✓ 已成功對焦客觀事實！";
+
+      checkStep2Ready();
+    }
+
+    // 關卡二：調焦2 選擇心情感受
+    function selectFeelingOpt(emoji, text) {
+      const data = SCENARIOS[currentScenarioId];
+      selectedFeeling = { emoji, text };
+
+      // 重設所有情緒按鈕樣式
+      data.feelingOptions.forEach(opt => {
+        const btn = document.getElementById(`btn-feeling-${opt.text}`);
+        if (btn) btn.className = "py-2.5 bg-white hover:bg-[#FFE5EC] border-3 border-slate-900 rounded-xl transition-all text-xs font-black text-slate-800 flex flex-col items-center gap-1 shadow-[3px_3px_0_0_#0f172a]";
+      });
+
+      // 高亮已選按鈕 (多巴胺糖果粉)
+      const selectedBtn = document.getElementById(`btn-feeling-${text}`);
+      if (selectedBtn) {
+        selectedBtn.className = "py-2.5 bg-[#FF99C8] border-4 border-slate-900 rounded-xl text-xs font-black text-slate-900 flex flex-col items-center gap-1 scale-105 shadow-[4px_4px_0_0_#0f172a] transition-all";
+      }
+
+      // 更新顯微鏡面板
+      const lensFeeling = document.getElementById('lens-feeling');
+      lensFeeling.className = "w-full lg:w-1/3 px-4 py-4 bg-[#FF99C8]/30 border-4 border-slate-900 rounded-xl scale-105 transition-all text-left shadow-[4px_4px_0_0_#0f172a]";
+      document.getElementById('feeling-content').innerHTML = `<strong>覺得 ${emoji} ${text}</strong>`;
+      document.getElementById('feeling-content').className = "text-slate-950 text-xs mt-1 block font-black";
+
+      checkStep2Ready();
+    }
+
+    // 關卡二：調焦3 選擇大腦猜想
+    function selectGuessOpt(text, type, idx) {
+      const data = SCENARIOS[currentScenarioId];
+      selectedGuess = { text, type };
+
+      // 重設所有猜想按鈕樣式
+      data.guesses.forEach((opt, index) => {
+        const btn = document.getElementById(`btn-guess-${index}`);
+        if (btn) btn.className = "w-full text-left p-3.5 bg-white hover:bg-[#E2F9FF] border-3 border-slate-900 rounded-xl transition-all flex items-center justify-between group shadow-[3px_3px_0_0_#0f172a]";
+      });
+
+      // 高亮已選按鈕
+      const selectedBtn = document.getElementById(`btn-guess-${idx}`);
+      if (selectedBtn) {
+        selectedBtn.className = "w-full text-left p-3.5 bg-[#9BE2F7] border-4 border-slate-900 rounded-xl flex items-center justify-between shadow-[4px_4px_0_0_#0f172a] transition-all scale-[1.02]";
+      }
+
+      // 更新顯微鏡面板
+      const lensGuess = document.getElementById('lens-guess');
+      lensGuess.className = "w-full lg:w-1/3 px-4 py-4 bg-[#9BE2F7]/30 border-4 border-slate-900 rounded-xl scale-105 transition-all text-left shadow-[4px_4px_0_0_#0f172a]";
+      document.getElementById('guess-content').innerHTML = `<strong>${text.substring(0, 11)}...</strong>`;
+      document.getElementById('guess-content').className = "text-slate-950 text-xs mt-1 block font-black";
+
+      checkStep2Ready();
+    }
+
+    // 檢查關卡二是否完成，拼接公式並給予具備教育意義的大腦分析
+    function checkStep2Ready() {
+      if (selectedFactRevealed && selectedFeeling && selectedGuess) {
+        const resultPanel = document.getElementById('lens-result');
+        resultPanel.classList.remove('hidden');
+
+        const data = SCENARIOS[currentScenarioId];
+        
+        // 解決邏輯衝突：當選取「惡意猜測」時，不說沒被針對，而是解釋「大腦近視眼偏誤（情緒劫持）」
+        let analysisCommentary = "";
+        
+        if (selectedGuess.type === 'bad') {
+          analysisCommentary = `
+            <div class="mt-4 p-4 bg-[#FFE5EC] border-4 border-slate-900 rounded-2xl text-slate-900 text-xs md:text-sm leading-relaxed text-left shadow-[3px_3px_0_0_#0f172a]">
+              <strong class="text-base text-rose-600 flex items-center gap-1">⚠️ 警報！偵測到「大腦近視眼（認知偏誤）」：</strong>
+              這很正常！當我們感到 ${selectedFeeling.text} 時，我們大腦深處的警報器（杏仁核）會自動進入戰鬥模式，逼我們把同學的想法猜成最壞的「故意針對我、排擠我」。<br>
+              但人際科學家提醒你：這往往是生氣時大腦的「直覺近視眼（偏誤）」！在做出決定或反擊前，請試著想一想，他是不是也有可能是「不小心」或者有「其他苦衷」呢？
+            </div>
+          `;
+        } else if (selectedGuess.type === 'neutral') {
+          analysisCommentary = `
+            <div class="mt-4 p-4 bg-[#E2F9FF] border-4 border-slate-900 rounded-2xl text-slate-900 text-xs md:text-sm leading-relaxed text-left shadow-[3px_3px_0_0_#0f172a]">
+              <strong class="text-base text-cyan-600 flex items-center gap-1">💡 啟動「客觀理智大腦」！</strong>
+              太棒了！你跳脫了衝動的反射，看清了這件事這只是一場意外、或者單純是彼此的需求和興趣不同。<br>
+              當你發現「他不是故意要找我麻煩」時，心中的生氣大火是不是瞬間熄滅了一大半呢？你做得很棒！
+            </div>
+          `;
+        } else if (selectedGuess.type === 'good') {
+          analysisCommentary = `
+            <div class="mt-4 p-4 bg-[#EFFFDA] border-4 border-slate-900 rounded-2xl text-slate-900 text-xs md:text-sm leading-relaxed text-left shadow-[3px_3px_0_0_#0f172a]">
+              <strong class="text-base text-emerald-600 flex items-center gap-1">🌟 啟動「同理心超級大腦」！</strong>
+              哇！你太溫暖、太了不起了！你居然能在自己 ${selectedFeeling.text} 的當下，還能站在對方的立場，體會到他的不小心、專心或難處。<br>
+              當我們學會同理別人時，問題就已經被我們的主動善意解決了一半了！你是一個極其優秀的大腦科學家！
+            </div>
+          `;
+        }
+
+        resultPanel.innerHTML = `
+          <div class="space-y-3 text-left">
+            <h5 class="font-black text-slate-900 text-base flex items-center gap-1.5">🔬 顯微鏡成像算式（完成！）：</h5>
+            <div class="bg-white p-4 rounded-xl border-3 border-slate-900 text-slate-800 italic leading-relaxed text-xs md:text-sm font-bold shadow-inner">
+              「<strong>客觀事實：</strong>${data.fact}」<br>
+              <span class="text-slate-400 font-black">+</span> 「<strong>我的感受：</strong>我覺得 ${selectedFeeling.emoji} ${selectedFeeling.text}」<br>
+              <span class="text-slate-400 font-black">+</span> 「<strong>我的大腦猜測：</strong>對方可能 ${selectedGuess.text}」
+            </div>
+            ${analysisCommentary}
+            <p class="text-[11px] text-slate-500 font-black mt-2">💡 數學課連結：在數學課我們學過，把困難的大算式拆解開，答案就一目了然了。解決衝突的原理也是一模一樣喔！</p>
+          </div>
+        `;
+
+        // 啟動下一步按鈕 (多巴胺糖果粉)
+        const nextBtn = document.getElementById('btn-next-to-3');
+        nextBtn.disabled = false;
+        nextBtn.className = "px-6 py-3 bg-[#FF99C8] hover:bg-[#FF6B9D] text-slate-900 font-black rounded-full transition-all flex items-center gap-1 brutal-btn cursor-pointer";
+      }
+    }
+
+    // 動態載入步驟三選項（魔法藥水）
+    function renderStep3Options(data) {
+      const cabinet = document.getElementById('potion-cabinet');
+      cabinet.innerHTML = '';
+      
+      // 清空目前已混製配方
+      mixedPotions = [];
+      updateMagicPotUI();
+
+      data.potions.forEach(potion => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = `btn-potion-${potion.id}`;
+        btn.className = "p-4 text-left border-3 border-slate-900 rounded-2xl bg-white hover:bg-[#FFFDF0] transition-all flex items-start gap-3 shadow-[3px_3px_0_0_#0f172a] group active:translate-y-0.5";
+        
+        btn.innerHTML = `
+          <div class="text-3xl bg-slate-100 p-2.5 rounded-xl border-2 border-slate-900 group-hover:scale-110 group-hover:bg-[#FFD124] transition-all shrink-0 shadow-[1px_1px_0_0_#0f172a]">
+            🧪
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm text-slate-800 font-black leading-normal">${potion.text}</p>
+          </div>
+        `;
+        btn.onclick = () => togglePotionInMixer(potion);
+        cabinet.appendChild(btn);
+      });
+    }
+
+    // 點選/取消點選藥水
+    function togglePotionInMixer(potion) {
+      const idx = mixedPotions.findIndex(p => p.id === potion.id);
+      
+      if (idx > -1) {
+        // 已在釜中，移除
+        mixedPotions.splice(idx, 1);
+        document.getElementById(`btn-potion-${potion.id}`).classList.remove('border-[#FFD124]', 'bg-[#FFFDF0]');
+        document.getElementById(`btn-potion-${potion.id}`).classList.add('border-slate-900', 'bg-white');
+      } else {
+        // 尚未在釜中，加入 (限制最大4個)
+        if (mixedPotions.length >= 4) return;
+        mixedPotions.push(potion);
+        document.getElementById(`btn-potion-${potion.id}`).classList.remove('border-slate-900', 'bg-white');
+        document.getElementById(`btn-potion-${potion.id}`).classList.add('border-[#FFD124]', 'bg-[#FFFDF0]');
+      }
+
+      updateMagicPotUI();
+    }
+
+    // 更新魔法大釜與提交按鈕控制
+    function updateMagicPotUI() {
+      const container = document.getElementById('mixed-potions-list');
+      const countLabel = document.getElementById('mixed-potions-count');
+      const warningTip = document.getElementById('potion-warning-tip');
+      const submitBtn = document.getElementById('btn-submit-lab');
+
+      countLabel.innerHTML = mixedPotions.length;
+
+      if (mixedPotions.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 py-4 font-bold">魔法大釜目前還是空的唷，請在下方選取健康藥水！</p>`;
+        warningTip.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+        return;
+      }
+
+      container.innerHTML = '';
+      let hasDangerousPotion = false;
+
+      mixedPotions.forEach(potion => {
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-xl border-3 border-slate-900 flex items-center justify-between text-xs font-black shadow-[2px_2px_0_0_#0f172a] ${
+          potion.safe ? 'bg-[#EFFFDA] text-slate-900' : 'bg-[#FFE5EC] text-rose-900'
+        }`;
+        
+        item.innerHTML = `
+          <span class="truncate leading-relaxed">${potion.text.split('：')[0]}</span>
+          <button onclick="removePotionById('${potion.id}')" class="text-slate-500 hover:text-red-500 font-black ml-2 text-sm bg-white border-2 border-slate-900 w-5 h-5 rounded-full flex items-center justify-center shadow-[1px_1px_0_0_#0f172a]">✕</button>
+        `;
+
+        if (!potion.safe) {
+          hasDangerousPotion = true;
+        }
+
+        container.appendChild(item);
+      });
+
+      // 檢查是否包含負面衝突藥水
+      if (hasDangerousPotion) {
+        warningTip.classList.remove('hidden');
+        warningTip.innerHTML = `
+          <strong class="text-base text-rose-600 block mb-1">⚠️ 警報！魔法釜內冒出滾滾黑色濃煙！</strong>
+          你倒入了一瓶【💣 衝突/報復配方】。在人際交往中，如果使用憤怒咆哮、摔筆動粗或企圖報復的手段，就像朝大釜投入炸彈一樣，會讓局勢大爆炸，造成更厲害的傷害！<br>
+          請趕快點選藥水卡片旁的「✕」將這瓶危險配方移除，改選其他健康配方試試看！
+        `;
+        submitBtn.disabled = true;
+        submitBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+      } else {
+        warningTip.classList.add('hidden');
+        
+        // 需要至少2種健康方案才可以通關
+        if (mixedPotions.length >= 2) {
+          submitBtn.disabled = false;
+          submitBtn.className = "px-6 py-3 bg-[#9BE2F7] hover:bg-[#64DFDF] text-slate-900 font-black rounded-full transition-all flex items-center gap-1 border-3 brutal-btn cursor-pointer";
+        } else {
+          submitBtn.disabled = true;
+          submitBtn.className = "px-6 py-3 bg-slate-200 text-slate-400 brutal-btn-disabled font-black rounded-full transition-all flex items-center gap-1 border-3";
+        }
+      }
+    }
+
+    // 輔助：從魔法釜中移除特定藥水
+    function removePotionById(id) {
+      const potion = mixedPotions.find(p => p.id === id);
+      if (potion) togglePotionInMixer(potion);
+    }
+
+    // 完成實驗：生成證書
+    function submitLabExperiment() {
+      // 顯示證書畫面
+      document.getElementById('lab-board').classList.add('hidden');
+      document.getElementById('report-screen').classList.remove('hidden');
+
+      const data = SCENARIOS[currentScenarioId];
+
+      // 證書細節注入
+      document.getElementById('cert-scenario-name').innerHTML = `${data.emoji} 【${data.title}】`;
+      
+      // 顯微鏡報告公式拼接
+      document.getElementById('cert-micro-formula').innerHTML = `
+        「<strong>客觀事實：</strong>${data.fact}」<br>
+        「<strong>我的心情是：</strong>覺得 ${selectedFeeling.emoji} ${selectedFeeling.text}」<br>
+        「<strong>多角度大腦分析：</strong>對方可能 ${selectedGuess.text}」
+      `;
+
+      // 魔法點子注入
+      const certList = document.getElementById('cert-potions-list');
+      certList.innerHTML = '';
+      mixedPotions.forEach(potion => {
+        const li = document.createElement('li');
+        li.innerHTML = potion.text;
+        certList.appendChild(li);
+      });
+
+      // 撒超大面積多巴胺彩色煙火慶祝完成！
+      confetti({
+        particleCount: 180,
+        spread: 90,
+        colors: ['#FF99C8', '#FFD124', '#9BE2F7', '#EFFFDA', '#9D4EDD'],
+        origin: { y: 0.6 }
+      });
+    }
+
+    // 側邊教師面板抽屜開關
+    function toggleTeacherPanel() {
+      const drawer = document.getElementById('teacher-drawer');
+      const isClosed = drawer.classList.contains('translate-x-full');
+      if (isClosed) {
+        drawer.classList.remove('translate-x-full');
+      } else {
+        drawer.classList.add('translate-x-full');
+      }
+    }
+  </script>
+</body>
+</html>

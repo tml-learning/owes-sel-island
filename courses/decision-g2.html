@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇小偵探——停看聽，我想出好辦法！</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdfa; /* Tailwind teal-50 */
+            background-image: radial-gradient(#ccfbf1 2px, transparent 2px);
+            background-size: 30px 30px;
+            overflow-x: hidden;
+        }
+
+        .scene {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .scene.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .bouncy {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shaking {
+            animation: shake 0.5s;
+        }
+
+        .btn-kid {
+            transition: all 0.2s;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+        }
+        
+        .btn-kid:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.2);
+        }
+
+        /* 隱藏捲軸但可捲動 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col items-center justify-center p-2 sm:p-4">
+
+    <div id="custom-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl transform transition-all scale-95 border-4 border-teal-400 max-h-[95vh] overflow-y-auto">
+            <div id="modal-icon" class="text-5xl sm:text-6xl mb-4">💡</div>
+            <h3 id="modal-title" class="text-2xl sm:text-3xl font-black mb-4 text-teal-600"></h3>
+            <p id="modal-content" class="text-lg sm:text-xl mb-6 sm:mb-8 leading-relaxed font-bold text-gray-700"></p>
+            <button onclick="closeModal()" class="btn-kid bg-teal-500 hover:bg-teal-400 text-white text-xl sm:text-2xl font-bold py-3 px-6 sm:px-10 rounded-full w-full sm:w-auto">
+                我知道了！
+            </button>
+        </div>
+    </div>
+
+    <!-- 教師/家長專區 Modal (Support Zone) -->
+    <div id="support-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-3xl w-full max-w-3xl shadow-2xl transform transition-all border-4 border-indigo-400 max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="bg-indigo-100 px-6 py-4 border-b-4 border-indigo-200 flex justify-between items-center shrink-0">
+                <h2 class="text-2xl sm:text-3xl font-black text-indigo-800 flex items-center gap-2">
+                    <span>📘</span> 給大人的話：SEL 學習指南
+                </h2>
+                <button onclick="closeSupportZone()" class="text-indigo-400 hover:text-indigo-600 font-black text-3xl transition-colors leading-none">&times;</button>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 sm:p-8 overflow-y-auto text-slate-700 space-y-6 flex-1">
+                <section>
+                    <h3 class="text-xl font-black text-indigo-600 mb-2 border-b-2 border-indigo-100 pb-2">💡 設計理念與教育意義</h3>
+                    <p class="font-bold leading-relaxed">本教材對應 108 課綱「綜合活動」與「生活課程」，將 SEL 核心素養中的<span class="text-teal-600">「負責任的決策 (Responsible Decision-Making)」</span>轉化為低年級易懂的遊戲。低年級孩童的額葉（掌管理智）仍在發展，透過具象化的比喻，能幫助他們有效將抽象的「思考後果」轉為具體的生活技能。</p>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-black text-indigo-600 mb-2 border-b-2 border-indigo-100 pb-2">🎯 各關卡實施指南</h3>
+                    <ul class="space-y-4 font-bold">
+                        <li class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="text-red-500 font-black">▶ 步驟一（怪獸 vs 貓頭鷹）：區分衝動與理智</span><br>
+                            引導重點：帶領孩子親自做出「摸摸頭腦」的深呼吸動作。建立身體記憶後，未來孩子生氣時，大人只需比出這個動作，就能啟動他們的「貓頭鷹（自我調節）」。
+                        </li>
+                        <li class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="text-pink-500 font-black">▶ 步驟二（點子扭蛋機）：評估後果</span><br>
+                            引導重點：建立「公平、正確、有益」的內在過濾器。大人應盡量用提問代替說教：<span class="text-blue-600">「如果你這麼做，別人會有什麼感覺？接下來會發生什麼事？」</span>讓孩子自己說出後果。
+                        </li>
+                        <li class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="text-green-600 font-black">▶ 步驟三（金頭腦大考驗）：多選項思考</span><br>
+                            引導重點：低年級孩子容易陷入「非黑即白」（不是搶過來，就是不玩了）。此階段在訓練大腦產生「第二條路」。請鼓勵孩子激盪出更多雙贏的 C 方案或 D 方案。
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-black text-indigo-600 mb-2 border-b-2 border-indigo-100 pb-2">🌱 日常延伸 (Daily Practice)</h3>
+                    <p class="font-bold leading-relaxed">建議將本課的通關口訣：<span class="text-orange-500 text-lg">「遇到問題停看聽，想出兩招好聰明，猜猜後果行不行！」</span>作為班級或家庭中的共同語言。當孩子遇到人際衝突時，溫和地唸出這句口訣，作為中斷衝動的提示音。</p>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 p-4 border-t-2 border-gray-200 flex justify-end shrink-0">
+                <button onclick="closeSupportZone()" class="btn-kid bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-2 px-6 rounded-full text-lg">
+                    了解！關閉指南
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主控台容器 -->
+    <main class="w-full max-w-5xl bg-white/90 backdrop-blur rounded-3xl shadow-xl border-4 border-teal-200 overflow-hidden flex flex-col h-[95vh] sm:h-[90vh]">
+        
+        <!-- 頂部進度列與標題 -->
+        <header class="bg-teal-500 p-3 sm:p-4 flex justify-between items-center text-white shrink-0">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-black drop-shadow-md tracking-wide">🎒 選擇小偵探</h1>
+            <div class="flex gap-2 text-xs sm:text-sm md:text-base font-bold bg-teal-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full whitespace-nowrap">
+                <span id="step-indicator">首頁</span>
+            </div>
+        </header>
+
+        <!-- 內容區塊 (Scenes) -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 relative">
+
+            <div id="scene-0" class="scene active flex-col items-center justify-center h-full text-center">
+                <div class="text-7xl sm:text-8xl mb-4 sm:mb-6 bouncy">🕵️‍♂️</div>
+                <h2 class="text-3xl sm:text-4xl md:text-6xl font-black text-teal-600 mb-4 sm:mb-6 drop-shadow-sm leading-tight">停看聽，<br class="block sm:hidden">我想出好辦法！</h2>
+                <p class="text-lg sm:text-xl md:text-2xl text-gray-600 font-bold mb-8 sm:mb-10 max-w-2xl px-2">
+                    各位二年級的小偵探們，準備好學習怎麼做出「超棒的決定」了嗎？<br class="hidden sm:block">我們出發吧！
+                </p>
+                <button onclick="goToScene(1)" class="btn-kid bg-orange-400 hover:bg-orange-300 text-white text-2xl sm:text-3xl font-black py-3 sm:py-4 px-8 sm:px-12 rounded-full border-4 border-orange-500 w-[90%] sm:w-auto">
+                    🚀 開始挑戰！
+                </button>
+            </div>
+
+            <div id="scene-1" class="scene flex-col h-full w-full max-w-4xl mx-auto justify-center">
+                <div class="bg-blue-50 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-blue-200 text-center">
+                    <h3 class="text-xl sm:text-2xl font-black text-blue-800 mb-2">🎈 狀況一：不小心跌倒了！</h3>
+                    <p class="text-base sm:text-xl font-bold text-gray-700">「下課時，你正開心地跑向溜滑梯，突然有人不小心撞到你，害你跌倒了！」</p>
+                </div>
+                
+                <h4 class="text-xl sm:text-3xl font-black text-center mb-4 sm:mb-8 text-slate-700">大腦裡會跑出誰呢？點點看！</h4>
+
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 justify-center items-stretch w-full">
+                    <!-- 衝動小怪獸 -->
+                    <div onclick="showMonster()" class="flex-1 cursor-pointer transform hover:scale-105 transition-transform bg-red-100 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center border-4 border-red-300 text-center shadow-lg group">
+                        <div class="text-6xl sm:text-8xl mb-2 sm:mb-4 group-hover:scale-125 transition-transform duration-300">👹</div>
+                        <h5 class="text-2xl sm:text-3xl font-black text-red-600 mb-1 sm:mb-2">衝動小怪獸</h5>
+                        <p class="text-base sm:text-lg font-bold text-red-800">這是「反射反應」<br>很快，但可能會後悔！</p>
+                    </div>
+
+                    <!-- 思考貓頭鷹 -->
+                    <div onclick="showOwl()" class="flex-1 cursor-pointer transform hover:scale-105 transition-transform bg-green-100 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center border-4 border-green-300 text-center shadow-lg group">
+                        <div class="text-6xl sm:text-8xl mb-2 sm:mb-4 group-hover:scale-125 transition-transform duration-300">🦉</div>
+                        <h5 class="text-2xl sm:text-3xl font-black text-green-600 mb-1 sm:mb-2">思考貓頭鷹</h5>
+                        <p class="text-base sm:text-lg font-bold text-green-800">這是「嚴謹思考」<br>摸摸頭腦，冷靜一下！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="scene-2" class="scene flex-col items-center justify-center w-full max-w-4xl mx-auto h-full">
+                <div class="bg-yellow-50 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border-2 border-yellow-200 text-center w-full">
+                    <h3 class="text-xl sm:text-2xl font-black text-yellow-800 mb-2">🎨 狀況二：忘記帶彩色筆！</h3>
+                    <p class="text-base sm:text-xl font-bold text-gray-700">「今天美術課，你發現自己忘記帶彩色筆了，好想哭怎麼辦？」</p>
+                </div>
+
+                <!-- 扭蛋機 UI -->
+                <div class="bg-pink-100 border-4 border-pink-400 rounded-t-[3rem] rounded-b-3xl p-4 sm:p-8 w-full max-w-md flex flex-col items-center relative shadow-xl">
+                    <div class="text-3xl sm:text-5xl mb-4 font-black text-pink-600">點子扭蛋機</div>
+                    
+                    <!-- 掉出來的膠囊區 -->
+                    <div id="capsule-display" class="w-full bg-white rounded-2xl min-h-[100px] sm:min-h-[120px] mb-4 sm:mb-6 border-4 border-dashed border-pink-300 flex items-center justify-center p-4 text-center">
+                        <p class="text-lg sm:text-2xl font-bold text-gray-400">請按按鈕轉出想法</p>
+                    </div>
+
+                    <button id="spin-btn" onclick="spinGashapon()" class="btn-kid bg-pink-500 hover:bg-pink-400 text-white text-2xl sm:text-3xl font-black w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-pink-600 flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+                        轉！
+                    </button>
+                </div>
+
+                <!-- 靈魂三問評估區 (預設隱藏) -->
+                <div id="evaluation-area" class="w-full mt-4 sm:mt-6 bg-white rounded-3xl p-4 sm:p-6 border-4 border-indigo-200 hidden shadow-md flex-col items-center">
+                    <h4 class="text-lg sm:text-2xl font-black text-indigo-600 mb-4 text-center">🔍 想想三個問題：公平嗎？正確嗎？有幫助嗎？</h4>
+                    <div class="flex gap-4 w-full sm:w-auto justify-center">
+                        <button onclick="evaluateIdea(true)" class="flex-1 sm:flex-none btn-kid bg-blue-500 text-white text-xl sm:text-3xl font-black py-3 px-4 sm:px-8 rounded-2xl border-b-4 border-blue-700 flex items-center justify-center gap-1 sm:gap-2">
+                            ⭕️ 可以！
+                        </button>
+                        <button onclick="evaluateIdea(false)" class="flex-1 sm:flex-none btn-kid bg-red-500 text-white text-xl sm:text-3xl font-black py-3 px-4 sm:px-8 rounded-2xl border-b-4 border-red-700 flex items-center justify-center gap-1 sm:gap-2">
+                            ❌ 不行！
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="scene-3" class="scene flex-col items-center justify-center w-full max-w-4xl mx-auto h-full">
+                <div class="bg-purple-50 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8 border-2 border-purple-200 text-center w-full shrink-0">
+                    <h3 class="text-xl sm:text-2xl font-black text-purple-800 mb-2">⏱️ 狀況三：積木只剩一組！</h3>
+                    <p class="text-base sm:text-xl font-bold text-gray-700">「下課剩5分鐘，你和小明都想玩同一組積木，可是積木只剩下一組了！」</p>
+                </div>
+                
+                <h4 class="text-xl sm:text-3xl font-black text-center mb-4 sm:mb-6 text-slate-700 shrink-0">不要只會搶過來，你想走哪一條路？</h4>
+
+                <!-- Y字型叉路口圖形化表示 -->
+                <div class="relative w-full max-w-2xl flex-1 flex flex-col items-center mt-2">
+                    <!-- 起點 -->
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-slate-300 rounded-full mb-2 z-10 border-4 border-slate-400 flex items-center justify-center text-2xl">🧍</div>
+                    
+                    <!-- 分岔線 -->
+                    <div class="absolute top-[56px] sm:top-[64px] left-1/2 -ml-[2px] w-1 h-8 sm:h-12 bg-slate-400"></div>
+                    <div class="absolute top-[88px] sm:top-[112px] w-[80%] md:w-1/2 h-1 bg-slate-400"></div>
+
+                    <!-- 兩條路的選項 -->
+                    <div class="w-full flex justify-around sm:justify-between mt-8 sm:mt-12 px-0 md:px-12 relative z-10">
+                        <!-- 方案 A -->
+                        <div onclick="choosePathA()" class="cursor-pointer group flex flex-col items-center w-[48%] sm:w-[45%]">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-200 rounded-full mb-2 sm:mb-4 border-4 border-green-400 flex items-center justify-center text-3xl sm:text-4xl group-hover:scale-110 transition-transform shadow-lg">🏰</div>
+                            <div class="bg-white p-2 sm:p-4 rounded-xl border-4 border-green-300 text-center w-full shadow-md group-hover:-translate-y-2 transition-transform">
+                                <h5 class="text-lg sm:text-2xl font-black text-green-600 mb-1 sm:mb-2">方案 A<br><span class="text-sm sm:text-base">(一起玩)</span></h5>
+                                <p class="font-bold text-gray-700 text-xs sm:text-base">我們合作蓋<br>一座大城堡！</p>
+                            </div>
+                        </div>
+
+                        <!-- 方案 B -->
+                        <div onclick="choosePathB()" class="cursor-pointer group flex flex-col items-center w-[48%] sm:w-[45%]">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-200 rounded-full mb-2 sm:mb-4 border-4 border-blue-400 flex items-center justify-center text-3xl sm:text-4xl group-hover:scale-110 transition-transform shadow-lg">⏱️</div>
+                            <div class="bg-white p-2 sm:p-4 rounded-xl border-4 border-blue-300 text-center w-full shadow-md group-hover:-translate-y-2 transition-transform">
+                                <h5 class="text-lg sm:text-2xl font-black text-blue-600 mb-1 sm:mb-2">方案 B<br><span class="text-sm sm:text-base">(輪流玩)</span></h5>
+                                <p class="font-bold text-gray-700 text-xs sm:text-base">猜拳！贏的先玩<br>換輸的玩</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="scene-4" class="scene flex-col items-center justify-center w-full max-w-4xl mx-auto h-full text-center">
+                <div class="text-6xl sm:text-8xl mb-4 sm:mb-6 bouncy">🏆</div>
+                <h2 class="text-2xl sm:text-4xl font-black text-teal-600 mb-6 sm:mb-8">恭喜你！成為選擇小偵探！</h2>
+                
+                <div class="bg-yellow-100 border-4 border-yellow-400 p-4 sm:p-8 rounded-3xl w-full max-w-2xl shadow-xl transform sm:rotate-1">
+                    <h3 class="text-xl sm:text-3xl font-black text-yellow-700 mb-4 sm:mb-6 border-b-4 border-yellow-300 pb-2 inline-block">📝 幸福小筆記</h3>
+                    <p class="text-base sm:text-2xl font-bold text-gray-700 leading-relaxed mb-4 sm:mb-6">
+                        遇到問題時，先請<span class="text-green-600">「思考貓頭鷹」</span>出來幫忙。<br>想一想方案A和方案B，並問自己：<br>
+                        <span class="text-red-500 bg-white px-2 mt-2 inline-block rounded-lg shadow-sm">「這個選擇的後果是什麼？」</span>
+                    </p>
+                </div>
+
+                <div class="mt-6 sm:mt-10 bg-teal-500 text-white p-4 sm:p-6 rounded-2xl w-full max-w-3xl shadow-lg border-4 border-teal-600 transform sm:-rotate-1">
+                    <p class="text-base sm:text-xl font-bold mb-2 text-teal-100">大家一起大聲唸出通關口訣：</p>
+                    <p class="text-xl sm:text-3xl md:text-4xl font-black tracking-wide leading-relaxed">
+                        「遇到問題停看聽，<br class="block sm:hidden">想出兩招好聰明，<br>猜猜後果行不行！」
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 底部導覽按鈕 -->
+        <footer class="bg-gray-100 p-3 sm:p-4 border-t-2 border-gray-200 flex justify-between items-center shrink-0">
+            <button id="btn-prev" onclick="prevScene()" class="btn-kid bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 sm:px-6 rounded-full hidden text-sm sm:text-base whitespace-nowrap">
+                ⬅️ 上一步
+            </button>
+            
+            <!-- 將原本的文字改為打開專區的按鈕 -->
+            <div class="flex-1 text-center px-2">
+                <button onclick="showSupportZone()" class="text-indigo-600 hover:text-indigo-800 font-bold text-sm sm:text-base underline decoration-indigo-300 hover:decoration-indigo-500 underline-offset-4 transition-all">
+                    📘 教師 / 家長專區 (SEL 指南)
+                </button>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="btn-next" onclick="nextScene()" class="btn-kid bg-teal-500 hover:bg-teal-400 text-white font-bold py-2 px-4 sm:px-6 rounded-full hidden text-sm sm:text-base whitespace-nowrap">
+                    下一步 ➡️
+                </button>
+                <button id="btn-restart" onclick="restartGame()" class="btn-kid bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 sm:px-6 rounded-full hidden text-sm sm:text-base whitespace-nowrap">
+                    🔄 回首頁再次挑戰
+                </button>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // --- 狀態管理 ---
+        let currentScene = 0;
+        const totalScenes = 5; // 0 to 4
+        const sceneNames = ["首頁", "步驟一：你是誰？", "步驟二：點子扭蛋機", "步驟三：金頭腦大考驗", "步驟四：幸福筆記"];
+
+        // 扭蛋機資料庫
+        const gashaponIdeas = [
+            {
+                text: "偷偷拿隔壁同學的來用",
+                isGood: false,
+                type: "搗蛋膠囊 😈",
+                consequence: "同學會找不到，他會傷心，我也會被老師罵，大家都不開心。"
+            },
+            {
+                text: "趴在桌上一直大哭",
+                isGood: false,
+                type: "哭泣膠囊 😭",
+                consequence: "圖畫還是沒有塗顏色，而且眼睛會痛。"
+            },
+            {
+                text: "舉手問老師或同學借",
+                isGood: true,
+                type: "聰明膠囊 💡",
+                consequence: "我可以順利畫完畫，還能學會跟別人說謝謝，大家都很開心！"
+            }
+        ];
+        
+        // 確保扭蛋隨機且不馬上重複
+        let remainingIdeas = [...gashaponIdeas];
+        let currentIdea = null;
+
+        // --- 畫面控制邏輯 ---
+        function updateUI() {
+            // 隱藏所有場景
+            document.querySelectorAll('.scene').forEach(el => el.classList.remove('active'));
+            // 顯示當前場景
+            document.getElementById(`scene-${currentScene}`).classList.add('active');
+            
+            // 更新進度標籤
+            document.getElementById('step-indicator').innerText = sceneNames[currentScene];
+
+            // 按鈕控制
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const btnRestart = document.getElementById('btn-restart');
+            
+            btnPrev.style.display = currentScene > 0 ? 'block' : 'none';
+            btnNext.style.display = currentScene > 0 && currentScene < (totalScenes - 1) ? 'block' : 'none';
+            btnRestart.style.display = currentScene === (totalScenes - 1) ? 'block' : 'none';
+
+            // 重置扭蛋機畫面
+            if (currentScene === 2) {
+                resetGashapon();
+            }
+        }
+
+        function restartGame() {
+            currentScene = 0;
+            remainingIdeas = [...gashaponIdeas]; // 重置扭蛋題庫
+            currentIdea = null;
+            updateUI();
+        }
+
+        function goToScene(index) {
+            currentScene = index;
+            updateUI();
+        }
+
+        function nextScene() {
+            if (currentScene < totalScenes - 1) {
+                currentScene++;
+                updateUI();
+            }
+        }
+
+        function prevScene() {
+            if (currentScene > 0) {
+                currentScene--;
+                updateUI();
+            }
+        }
+
+        // --- 自訂彈出視窗 (Modal) 邏輯 ---
+        function showModal(title, content, icon = "💡", isError = false) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal-icon').innerText = icon;
+            
+            const modalTitleEl = document.getElementById('modal-title');
+            if(isError) {
+                modalTitleEl.className = "text-3xl font-black mb-4 text-red-600";
+            } else {
+                modalTitleEl.className = "text-3xl font-black mb-4 text-teal-600";
+            }
+
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // --- 教師/家長專區邏輯 (Support Zone) ---
+        function showSupportZone() {
+            document.getElementById('support-modal').classList.remove('hidden');
+        }
+
+        function closeSupportZone() {
+            document.getElementById('support-modal').classList.add('hidden');
+        }
+
+        // --- 步驟一互動：怪獸與貓頭鷹 ---
+        function showMonster() {
+            showModal(
+                "吼～是衝動小怪獸！", 
+                `大叫、生氣、甚至想打人！<br><br><span class='text-red-500 text-sm sm:text-lg'>（這就是反射反應，很快，但事後可能會讓我們非常後悔喔！）</span>`, 
+                "👹", 
+                true
+            );
+        }
+
+        function showOwl() {
+            showModal(
+                "呼～是思考貓頭鷹！", 
+                `深呼吸，用手摸自己的頭腦。<br>先看看對方是不是故意的，拍拍灰塵站起來。<br><br><span class='text-green-600 text-sm sm:text-lg'>（這就是嚴謹思考，幫助我們做出好決定！）</span>`, 
+                "🦉"
+            );
+        }
+
+        // --- 步驟二互動：扭蛋機邏輯 ---
+        function resetGashapon() {
+            document.getElementById('capsule-display').innerHTML = '<p class="text-lg sm:text-2xl font-bold text-gray-400">請按按鈕轉出想法</p>';
+            document.getElementById('evaluation-area').classList.add('hidden');
+            document.getElementById('spin-btn').disabled = false;
+            document.getElementById('spin-btn').classList.remove('opacity-50');
+        }
+
+        function spinGashapon() {
+            const btn = document.getElementById('spin-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            
+            // 扭蛋機震動動畫
+            const machine = btn.parentElement;
+            machine.classList.add('shaking');
+            
+            // 隨機選一個
+            setTimeout(() => {
+                machine.classList.remove('shaking');
+                
+                // 補充扭蛋池 (如果三個點子都抽完了，重新裝填)
+                if (remainingIdeas.length === 0) {
+                    remainingIdeas = [...gashaponIdeas];
+                }
+
+                // 隨機抽取一個並從池中移除，保證不重複
+                const randomIndex = Math.floor(Math.random() * remainingIdeas.length);
+                currentIdea = remainingIdeas.splice(randomIndex, 1)[0];
+                
+                // 顯示掉出來的點子
+                const displayArea = document.getElementById('capsule-display');
+                displayArea.innerHTML = `
+                    <div class="bg-pink-100 p-2 sm:p-4 rounded-xl border-4 border-pink-400 w-full animate-bounce">
+                        <span class="text-3xl sm:text-4xl block mb-1 sm:mb-2">💊</span>
+                        <p class="text-lg sm:text-2xl font-black text-pink-700">${currentIdea.text}</p>
+                    </div>
+                `;
+
+                // 顯示評估按鈕
+                document.getElementById('evaluation-area').classList.remove('hidden');
+            }, 500);
+        }
+
+        function evaluateIdea(userVotesYes) {
+            if (!currentIdea) return;
+
+            const isCorrectVote = (userVotesYes === currentIdea.isGood);
+            
+            if (isCorrectVote) {
+                // 答對了
+                const title = currentIdea.isGood ? "答對了！這是一顆聰明膠囊！" : `答對了！這是一顆${currentIdea.type}！`;
+                const content = `
+                    <p class="text-base sm:text-xl mb-3 sm:mb-4 text-blue-700 font-bold">因為：三個條件 ${currentIdea.isGood ? '都符合⭕️' : '不符合❌'}</p>
+                    <div class="bg-gray-100 p-3 sm:p-4 rounded-xl text-left border-l-4 border-blue-500">
+                        <span class="block font-black text-gray-500 mb-1 text-sm sm:text-base">🔍 後果是什麼？</span>
+                        <span class="text-base sm:text-xl text-gray-800">${currentIdea.consequence}</span>
+                    </div>
+                `;
+                showModal(title, content, "✨");
+                
+                // 重新開啟扭蛋機按鈕，讓老師可以再抽
+                document.getElementById('spin-btn').disabled = false;
+                document.getElementById('spin-btn').classList.remove('opacity-50');
+                document.getElementById('evaluation-area').classList.add('hidden');
+                
+                // 清空剛才的扭蛋內容，提示可以抽下一個
+                if (remainingIdeas.length > 0) {
+                    document.getElementById('capsule-display').innerHTML = '<p class="text-lg sm:text-2xl font-bold text-gray-400">請按按鈕轉出下一個想法</p>';
+                } else {
+                    document.getElementById('capsule-display').innerHTML = '<p class="text-lg sm:text-2xl font-bold text-pink-500">全部點子都轉完囉！再按一次可重新裝填！</p>';
+                }
+                
+            } else {
+                // 答錯了，給予引導
+                showModal(
+                    "想一想...", 
+                    "再檢查一次：這個方法真的公平、正確、而且對大家有幫助嗎？請思考貓頭鷹來幫忙吧！", 
+                    "🦉", 
+                    true
+                );
+            }
+        }
+
+        // --- 步驟三互動：Y字冒險 ---
+        function choosePathA() {
+            showModal(
+                "選擇了：合作蓋城堡！", 
+                `<div class="bg-green-50 p-3 sm:p-4 rounded-xl border-2 border-green-200"><span class="block font-black text-green-700 mb-1 sm:mb-2 text-sm sm:text-base">👉 後果大發現：</span><span class="text-base sm:text-xl text-green-900">兩個人都能一起玩到積木，而且感情變得更好了！</span></div>`, 
+                "🤝"
+            );
+        }
+
+        function choosePathB() {
+            showModal(
+                "選擇了：輪流玩！", 
+                `<div class="bg-blue-50 p-3 sm:p-4 rounded-xl border-2 border-blue-200"><span class="block font-black text-blue-700 mb-1 sm:mb-2 text-sm sm:text-base">👉 後果大發現：</span><span class="text-base sm:text-xl text-blue-900">很公平！雖然要等一下下，但大家都玩得到，沒有人會生氣。</span></div>`, 
+                "⚖️"
+            );
+        }
+
+        // 初始化
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四年級自我覺察反思 (本地端)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom styles for a playful, kid-friendly look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f3f8; /* Light, soft background */
+        }
+        .card {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background-color: #6d28d9; /* Deep purple */
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #5b21aa;
+            transform: scale(1.02);
+        }
+        .mood-icon {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            filter: grayscale(100%);
+        }
+        .mood-icon:hover {
+            transform: scale(1.1);
+        }
+        .mood-icon.selected {
+            filter: grayscale(0%);
+            border: 4px solid #f97316; /* Orange border for selection */
+            transform: scale(1.15);
+        }
+        /* Custom scrollbar for better visual appeal */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8">
+
+    <!-- Main Application Container -->
+    <div id="app" class="max-w-4xl mx-auto bg-white rounded-3xl card p-6 sm:p-10">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-purple-700 mb-2">🧠 我的覺察日記 📝</h1>
+            <p class="text-lg text-gray-600">國小四年級：情緒詞彙、證據反思、壓力分辨</p>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav class="flex justify-center space-x-2 sm:space-x-4 mb-8 p-3 bg-indigo-100 rounded-xl shadow-inner flex-wrap gap-y-2">
+            <button onclick="app.setActiveView('home')" class="nav-btn bg-white text-indigo-700 font-semibold py-2 px-4 rounded-full transition duration-300 shadow-md">首頁</button>
+            <button onclick="app.setActiveView('checkin')" class="nav-btn hover:bg-indigo-300 text-indigo-700 font-semibold py-2 px-4 rounded-full transition duration-300">每日檢查</button>
+            <button onclick="app.setActiveView('evidence')" class="nav-btn hover:bg-indigo-300 text-indigo-700 font-semibold py-2 px-4 rounded-full transition duration-300">優勢與弱點</button>
+            <button onclick="app.setActiveView('pressure')" class="nav-btn hover:bg-indigo-300 text-indigo-700 font-semibold py-2 px-4 rounded-full transition duration-300">區分壓力</button>
+        </nav>
+
+        <!-- Content Area -->
+        <div id="content" class="min-h-[400px]">
+            <!-- Views will be rendered here -->
+        </div>
+
+        <!-- History/Feedback Section -->
+        <div class="mt-10 pt-6 border-t border-purple-200">
+            <h2 class="text-2xl font-bold text-purple-700 mb-4 flex items-center justify-between">
+                <span class="flex items-center">
+                    <i data-lucide="book-open-text" class="w-6 h-6 mr-2 text-pink-500"></i>
+                    我的反思紀錄
+                </span>
+                <!-- 清除紀錄按鈕 -->
+                <button onclick="app.promptClearHistory()" class="text-sm text-red-500 hover:text-red-700 font-semibold flex items-center transition">
+                    <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> 清除紀錄
+                </button>
+            </h2>
+            <div id="history-log" class="space-y-4 max-h-60 overflow-y-auto p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <p class="text-gray-500 text-center">載入中...</p>
+            </div>
+        </div>
+
+        <!-- SEL Support Zone (Hidden by default) -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <button onclick="app.toggleGuide()" class="w-full sm:w-auto flex items-center justify-center mx-auto text-gray-500 hover:text-purple-700 transition duration-300 px-4 py-2 rounded-lg hover:bg-gray-100 font-semibold">
+                <i data-lucide="info" class="w-5 h-5 mr-2"></i>
+                教師 / 家長專區：給大人的話 (SEL 教學指南)
+                <i data-lucide="chevron-down" class="w-4 h-4 ml-2 transition-transform duration-300" id="guide-chevron"></i>
+            </button>
+            
+            <div id="sel-guide" class="hidden mt-6 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                <h3 class="text-xl font-bold text-gray-800 border-b pb-2 flex items-center">
+                    <i data-lucide="heart-handshake" class="w-6 h-6 mr-2 text-rose-500"></i>
+                    設計理念與實施指南
+                </h3>
+                <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                    本互動網頁專為四年級（中年級）學生設計。此階段的學生已具備基礎閱讀能力，因此社會情緒學習 (SEL) 的重點應轉向<strong class="text-purple-600">情緒詞彙的精確分化</strong>，並開始練習<strong class="text-purple-600">結構化與證據導向的反思</strong>。
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-xl border-l-4 border-green-500">
+                        <h4 class="font-bold text-green-800 text-lg mb-1">1. 每日檢查 (Check In Before You Check Out)</h4>
+                        <p class="text-sm text-gray-700 mb-2"><strong class="text-green-700">🎯 教育意義：</strong> 幫助學生精確分化情緒詞彙（超越單純的「好」與「壞」），並透過記錄「學到/完成的事」進行淺層反思，累積日常成就感。</p>
+                        <p class="text-sm text-gray-700"><strong class="text-green-700">💡 實施指南：</strong> 鼓勵孩子真實記錄，無需評價他們的負面情緒。若孩子不知如何寫反思，可引導他們具體描述小事（如：「我今天幫忙發作業」），建立自我肯定。</p>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-xl border-l-4 border-yellow-500">
+                        <h4 class="font-bold text-yellow-800 text-lg mb-1">2. 識別優勢與弱點（證據導向）</h4>
+                        <p class="text-sm text-gray-700 mb-2"><strong class="text-yellow-700">🎯 教育意義：</strong> 四年級是發展自我概念的關鍵期。要求孩子提供「證據」能避免過度自卑或盲目自信，培養客觀的自我評估與思辨能力。</p>
+                        <p class="text-sm text-gray-700"><strong class="text-yellow-700">💡 實施指南：</strong> 當孩子寫不出證據時，大人可提問引導：「你記得那天你做對了哪一步嗎？」「你覺得哪裡卡住了？」幫助他們將焦點放在「過程與策略」，而非單純的結果或天賦。</p>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+                        <h4 class="font-bold text-blue-800 text-lg mb-1">3. 區分內在與外在壓力</h4>
+                        <p class="text-sm text-gray-700 mb-2"><strong class="text-blue-700">🎯 教育意義：</strong> 這是較高階的自我覺察。分辨壓力來源能讓孩子明白：哪些是可以掌控的（內在壓力需要放鬆調適），哪些是外部環境帶來的（外在壓力需要尋求協助與溝通）。</p>
+                        <p class="text-sm text-gray-700"><strong class="text-blue-700">💡 實施指南：</strong> 觀察孩子是否常將大人的期待內化為過度的自我壓力。運用網頁中的清單（找誰幫忙 / 怎麼放鬆）作為對話契機，與孩子一起討論並演練具體可行的減壓方案。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Notification Modal -->
+        <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-yellow-100 p-6 rounded-xl shadow-2xl max-w-sm w-full border-4 border-yellow-500 transform transition-all duration-300 scale-100">
+                <h3 class="text-2xl font-bold text-yellow-800 mb-3 flex items-center">
+                    <i data-lucide="party-popper" class="w-6 h-6 mr-2 text-orange-500"></i>
+                    通知
+                </h3>
+                <p id="modal-message" class="text-gray-700 mb-4">資料已成功送出！</p>
+                <button onclick="app.closeNotification()" class="w-full btn-primary text-white py-2 rounded-lg font-bold">我知道了</button>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal (For clearing history) -->
+        <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full border-4 border-red-500 transform transition-all duration-300 scale-100">
+                <h3 class="text-2xl font-bold text-red-700 mb-3 flex items-center">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 mr-2 text-red-500"></i>
+                    清除確認
+                </h3>
+                <p class="text-gray-700 mb-6">確定要刪除所有在本機的紀錄嗎？這個動作無法復原喔！</p>
+                <div class="flex space-x-3">
+                    <button onclick="app.executeClearHistory()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-bold transition duration-200">確定刪除</button>
+                    <button onclick="app.closeConfirmModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg font-bold transition duration-200">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // --- Core Application Logic (Local Storage Version) ---
+        window.app = (function() {
+            let currentView = 'home';
+            const contentDiv = document.getElementById('content');
+            const historyLog = document.getElementById('history-log');
+            const LOCAL_STORAGE_KEY = 'self_awareness_4th_grade_records';
+
+            const VIEWS = {
+                home: renderHome,
+                checkin: renderCheckIn,
+                evidence: renderEvidence,
+                pressure: renderPressure,
+            };
+
+            // Global State for current activity data
+            let activityData = {
+                checkin: { mood: null, reflection: '' },
+                evidence: { successEvent: '', successReason: '', failureEvent: '', failureReason: '' },
+                pressure: { situation: '', pressureType: null, reflection: '' }
+            };
+
+            // --- Modal Controls ---
+            const showNotification = (message) => {
+                document.getElementById('modal-message').textContent = message;
+                document.getElementById('modal').classList.remove('hidden');
+                document.getElementById('modal').classList.add('flex');
+            };
+
+            const closeNotification = () => {
+                document.getElementById('modal').classList.add('hidden');
+                document.getElementById('modal').classList.remove('flex');
+            };
+
+            const promptClearHistory = () => {
+                document.getElementById('confirm-modal').classList.remove('hidden');
+                document.getElementById('confirm-modal').classList.add('flex');
+            };
+
+            const closeConfirmModal = () => {
+                document.getElementById('confirm-modal').classList.add('hidden');
+                document.getElementById('confirm-modal').classList.remove('flex');
+            };
+
+            const toggleGuide = () => {
+                const guide = document.getElementById('sel-guide');
+                const chevron = document.getElementById('guide-chevron');
+                if (guide.classList.contains('hidden')) {
+                    guide.classList.remove('hidden');
+                    // Add slight rotation animation to the chevron icon
+                    chevron.style.transform = 'rotate(180deg)';
+                } else {
+                    guide.classList.add('hidden');
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            };
+
+            // --- Local Storage Operations ---
+            const loadRecords = () => {
+                const recordsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (recordsJSON) {
+                    try {
+                        return JSON.parse(recordsJSON);
+                    } catch (e) {
+                        console.error("Error parsing local storage data:", e);
+                        return [];
+                    }
+                }
+                return [];
+            };
+
+            const saveRecord = (type, data) => {
+                const records = loadRecords();
+                
+                const newRecord = {
+                    type: type,
+                    data: data,
+                    timestamp: new Date().getTime(), // Store as milliseconds
+                };
+                
+                records.push(newRecord);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
+
+                showNotification("紀錄成功儲存於本地端！請繼續反思或往下查看。");
+                
+                // Reset the current form state after successful submission
+                if (type === 'checkin') activityData.checkin = { mood: null, reflection: '' };
+                if (type === 'evidence') activityData.evidence = { successEvent: '', successReason: '', failureEvent: '', failureReason: '' };
+                if (type === 'pressure') activityData.pressure = { situation: '', pressureType: null, reflection: '' };
+                
+                setActiveView(type); // Re-render the current view to clear the form
+                renderHistory(); // Immediately update the history view
+            };
+
+            const executeClearHistory = () => {
+                 localStorage.removeItem(LOCAL_STORAGE_KEY);
+                 renderHistory();
+                 closeConfirmModal();
+                 showNotification("所有紀錄已清除。");
+            }
+
+            const renderHistory = () => {
+                const records = loadRecords();
+
+                // Sort records by timestamp descending (newest first)
+                records.sort((a, b) => b.timestamp - a.timestamp);
+
+                if (records.length === 0) {
+                    historyLog.innerHTML = '<p class="text-gray-500 p-4 text-center">目前還沒有反思紀錄喔，趕快開始吧！</p>';
+                    return;
+                }
+
+                let logHtml = '';
+                records.forEach(record => {
+                    const dateObj = new Date(record.timestamp);
+                    const dateStr = dateObj.toLocaleDateString('zh-TW', {
+                        year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    let content = '';
+                    let color = 'bg-blue-100 border-blue-400';
+                    let title = '紀錄';
+
+                    switch(record.type) {
+                        case 'checkin':
+                            title = '每日檢查 (Check In)';
+                            color = 'bg-green-100 border-green-400';
+                            content = `心情：${record.data.mood || '未選'}<br>反思：${record.data.reflection.substring(0, 50)}...`;
+                            break;
+                        case 'evidence':
+                            title = '優勢與弱點 (證據導向)';
+                            color = 'bg-yellow-100 border-yellow-400';
+                            content = `成功事件：${record.data.successEvent.substring(0, 20)}...<br>改進事件：${record.data.failureEvent.substring(0, 20)}...`;
+                            break;
+                        case 'pressure':
+                            title = '區分壓力與解決方案'; 
+                            color = 'bg-red-100 border-red-400';
+                            const typeText = record.data.pressureType === 'internal' ? '心理壓力 (內在)' : (record.data.pressureType === 'external' ? '外加壓力 (外在)' : '未選');
+                            
+                            // Process the reflection/solution text for display
+                            const fullResolution = record.data.reflection || '無解決方法';
+                            let displayResolution = fullResolution.replace(/\n/g, ' ').trim();
+                            const maxLength = 50; 
+                            const isTruncated = displayResolution.length > maxLength;
+                            displayResolution = displayResolution.substring(0, maxLength);
+
+                            content = `情境：${record.data.situation.substring(0, 20)}...<br>判斷：${typeText}<br><strong>解決方法：</strong>${displayResolution}${isTruncated ? '...' : ''}`;
+                            break;
+                    }
+
+                    logHtml += `
+                        <div class="${color} p-3 rounded-lg border-l-4">
+                            <p class="text-sm font-bold text-gray-800">${title}</p>
+                            <p class="text-xs text-gray-600">${dateStr}</p>
+                            <p class="text-sm text-gray-700 mt-1">${content}</p>
+                        </div>
+                    `;
+                });
+
+                historyLog.innerHTML = logHtml;
+                if(window.lucide) window.lucide.createIcons();
+            };
+
+            // --- View Rendering Functions ---
+            function setActiveView(viewName) {
+                if (VIEWS[viewName]) {
+                    currentView = viewName;
+                    VIEWS[viewName]();
+                    // Update navigation button active state
+                    document.querySelectorAll('.nav-btn').forEach(btn => {
+                        if (btn.onclick.toString().includes(`'${viewName}'`)) {
+                            btn.classList.add('bg-white', 'text-indigo-700', 'shadow-md');
+                            btn.classList.remove('hover:bg-indigo-300');
+                        } else {
+                            btn.classList.remove('bg-white', 'text-indigo-700', 'shadow-md');
+                            btn.classList.add('hover:bg-indigo-300');
+                        }
+                    });
+                }
+            }
+
+            // 1. Home View
+            function renderHome() {
+                contentDiv.innerHTML = `
+                    <div class="p-6 text-center bg-purple-50 rounded-2xl border-2 border-purple-300">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-pink-500 mx-auto mb-4"></i>
+                        <h2 class="text-3xl font-bold text-purple-700 mb-4">歡迎來到我的覺察空間！</h2>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                            在這裡，我們學習認識自己的心情、思考自己擅長什麼，以及分清楚壓力的來源。
+                            四年級的你，已經很棒了，讓我們一起來深入探索自己的內心世界吧！
+                        </p>
+                        <ul class="text-left inline-block space-y-3">
+                            <li class="flex items-start text-indigo-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-2 mt-1 flex-shrink-0"></i>
+                                <strong>每日檢查：</strong> 在一天結束前，給自己的心情和學習一個分數！
+                            </li>
+                            <li class="flex items-start text-indigo-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-2 mt-1 flex-shrink-0"></i>
+                                <strong>證據反思：</strong> 成功或失敗，都要找出「原因」來支持！
+                            </li>
+                            <li class="flex items-start text-indigo-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-2 mt-1 flex-shrink-0"></i>
+                                <strong>壓力區分：</strong> 了解壓力是來自「內在」還是「外在」的要求。
+                            </li>
+                        </ul>
+                        <button onclick="app.setActiveView('checkin')" class="mt-8 btn-primary text-white py-3 px-8 rounded-full font-bold text-xl shadow-lg w-full sm:w-auto">
+                            <i data-lucide="chevron-right" class="w-5 h-5 inline-block"></i>
+                            開始我的第一次反思
+                        </button>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // 2. Check In Before You Check Out
+            function renderCheckIn() {
+                const { mood, reflection } = activityData.checkin;
+                const moods = [
+                    { name: '快樂', emoji: '😊', value: 'happy', color: 'text-yellow-500' },
+                    { name: '平靜', emoji: '😌', value: 'calm', color: 'text-blue-500' },
+                    { name: '生氣', emoji: '😡', value: 'angry', color: 'text-red-500' },
+                    { name: '難過', emoji: '😢', value: 'sad', color: 'text-indigo-500' },
+                    { name: '疲倦', emoji: '😴', value: 'tired', color: 'text-gray-500' },
+                    { name: '興奮', emoji: '🤩', value: 'excited', color: 'text-pink-500' },
+                ];
+
+                contentDiv.innerHTML = `
+                    <div class="p-4 sm:p-8 bg-green-50 rounded-2xl card border-2 border-green-300">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-green-700 mb-4 flex items-center">
+                            <i data-lucide="sun" class="w-6 h-6 sm:w-7 sm:h-7 mr-2 text-orange-500 flex-shrink-0"></i>
+                            1. 每日檢查：Check In Before You Check Out
+                        </h2>
+                        <p class="text-gray-600 mb-6 text-sm sm:text-base">
+                            選出最能代表你今天心情的表情符號，並想想你今天學到了什麼或完成了什麼！
+                        </p>
+
+                        <!-- Mood Selection -->
+                        <div class="mb-6">
+                            <label class="block text-lg sm:text-xl font-semibold text-gray-700 mb-3">我的心情是：</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                                ${moods.map(m => `
+                                    <div class="mood-icon p-3 rounded-xl border-2 border-transparent flex flex-col items-center justify-center ${mood === m.value ? 'selected bg-orange-100' : 'bg-white hover:bg-gray-100'}"
+                                         data-mood="${m.value}" onclick="app.selectMood('${m.value}', this)">
+                                        <span class="text-4xl">${m.emoji}</span>
+                                        <span class="text-sm font-medium ${m.color} mt-1">${m.name}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Reflection -->
+                        <div class="mb-6">
+                            <label for="reflection" class="block text-lg sm:text-xl font-semibold text-gray-700 mb-3">我今天學到了/完成了什麼？（淺層反思）</label>
+                            <textarea id="reflection" rows="4" class="w-full p-3 border-2 border-green-300 rounded-lg focus:ring-green-500 focus:border-green-500 resize-none text-sm sm:text-base"
+                                placeholder="例如：我學會了長除法的步驟，並且幫媽媽洗了碗。" oninput="app.updateCheckInReflection(this.value)">${reflection}</textarea>
+                        </div>
+
+                        <button onclick="app.submitCheckIn()" class="w-full btn-primary text-white py-3 rounded-xl font-bold text-lg shadow-md">
+                            <i data-lucide="send" class="w-5 h-5 inline-block mr-2"></i>
+                            送出每日檢查紀錄
+                        </button>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // 3. Identify Strengths & Weaknesses (Evidence-Based)
+            function renderEvidence() {
+                const { successEvent, successReason, failureEvent, failureReason } = activityData.evidence;
+                contentDiv.innerHTML = `
+                    <div class="p-4 sm:p-8 bg-yellow-50 rounded-2xl card border-2 border-yellow-400">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-yellow-700 mb-4 flex items-center">
+                            <i data-lucide="lightbulb" class="w-6 h-6 sm:w-7 sm:h-7 mr-2 text-orange-600 flex-shrink-0"></i>
+                            2. 識別優勢與弱點（證據導向）
+                        </h2>
+                        <p class="text-gray-600 mb-6 text-sm sm:text-base">
+                            回顧你最近做的事情，思考成功或失敗的原因，並且要用「證據」來說明喔！
+                        </p>
+
+                        <!-- Strengths (Success) -->
+                        <div class="mb-8 p-4 bg-lime-100 rounded-xl border-l-4 border-lime-600">
+                            <h3 class="text-xl sm:text-2xl font-semibold text-lime-700 mb-3">我的優勢：最近一次成功的事件</h3>
+                            <label for="successEvent" class="block text-sm font-medium text-gray-700 mb-1">事件是什麼？</label>
+                            <input type="text" id="successEvent" value="${successEvent}" placeholder="例如：數學考試拿到95分" oninput="app.updateEvidence('successEvent', this.value)"
+                                class="w-full p-2 border-2 border-lime-300 rounded-lg mb-3 focus:ring-lime-500 focus:border-lime-500 text-sm sm:text-base">
+
+                            <label for="successReason" class="block text-sm font-medium text-gray-700 mb-1">為什麼我擅長這件事？（證據）</label>
+                            <textarea id="successReason" rows="3" placeholder="例如：因為我每天都有花15分鐘複習乘法，而且我上課都有專心聽老師的口訣。" oninput="app.updateEvidence('successReason', this.value)"
+                                class="w-full p-2 border-2 border-lime-300 rounded-lg resize-none focus:ring-lime-500 focus:border-lime-500 text-sm sm:text-base">${successReason}</textarea>
+                        </div>
+
+                        <!-- Weaknesses (Challenges) -->
+                        <div class="mb-8 p-4 bg-red-100 rounded-xl border-l-4 border-red-600">
+                            <h3 class="text-xl sm:text-2xl font-semibold text-red-700 mb-3">我的弱點：最近一次遇到挑戰或失敗的事件</h3>
+                            <label for="failureEvent" class="block text-sm font-medium text-gray-700 mb-1">事件是什麼？</label>
+                            <input type="text" id="failureEvent" value="${failureEvent}" placeholder="例如：體育課跳繩一直絆倒" oninput="app.updateEvidence('failureEvent', this.value)"
+                                class="w-full p-2 border-2 border-red-300 rounded-lg mb-3 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base">
+
+                            <label for="failureReason" class="block text-sm font-medium text-gray-700 mb-1">我哪裡可以改進？（證據）</label>
+                            <textarea id="failureReason" rows="3" placeholder="例如：我發現我跳的時候，繩子太長了，而且手轉動的速度太慢，導致絆倒。" oninput="app.updateEvidence('failureReason', this.value)"
+                                class="w-full p-2 border-2 border-red-300 rounded-lg resize-none focus:ring-red-500 focus:border-red-500 text-sm sm:text-base">${failureReason}</textarea>
+                        </div>
+
+                        <button onclick="app.submitEvidence()" class="w-full btn-primary text-white py-3 rounded-xl font-bold text-lg shadow-md">
+                            <i data-lucide="send" class="w-5 h-5 inline-block mr-2"></i>
+                            送出優勢與弱點反思
+                        </button>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // 4. Distinguish Internal vs. External Pressure
+            function renderPressure() {
+                const { situation, pressureType, reflection } = activityData.pressure;
+                contentDiv.innerHTML = `
+                    <div class="p-4 sm:p-8 bg-blue-50 rounded-2xl card border-2 border-blue-400">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-blue-700 mb-4 flex items-center">
+                            <i data-lucide="cloud-rain" class="w-6 h-6 sm:w-7 sm:h-7 mr-2 text-indigo-500 flex-shrink-0"></i>
+                            3. 區分內在與外在壓力
+                        </h2>
+                        <p class="text-gray-600 mb-6 text-sm sm:text-base">
+                            當你感到有壓力時，是來自於自己的要求（內在），還是別人對你的要求（外在）呢？
+                        </p>
+
+                        <!-- Pressure Type Definitions -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm font-medium">
+                            <div class="p-3 bg-indigo-100 rounded-lg border-l-4 border-indigo-600">
+                                <span class="text-base sm:text-lg font-bold text-indigo-700">心理壓力 (內在)</span>
+                                <p class="text-gray-700 mt-1">來自自己內心深處的感受，通常覺得無力改變。</p>
+                            </div>
+                            <div class="p-3 bg-red-100 rounded-lg border-l-4 border-red-600">
+                                <span class="text-base sm:text-lg font-bold text-red-700">外加壓力 (外在)</span>
+                                <p class="text-gray-700 mt-1">來自外面的要求（例如：老師、家長、朋友）。</p>
+                            </div>
+                        </div>
+
+                        <!-- Situation Input -->
+                        <div class="mb-6">
+                            <label for="situation" class="block text-lg sm:text-xl font-semibold text-gray-700 mb-3">你感到有壓力的情境是？</label>
+                            <input type="text" id="situation" value="${situation}" placeholder="例如：我覺得我數學一定要考滿分" oninput="app.updatePressure('situation', this.value)"
+                                class="w-full p-3 border-2 border-blue-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        </div>
+
+                        <!-- Pressure Type Selection -->
+                        <div class="mb-6">
+                            <label class="block text-lg sm:text-xl font-semibold text-gray-700 mb-3">你覺得這是哪一種壓力？</label>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <button onclick="app.selectPressureType('internal', this)"
+                                    class="flex-1 py-3 px-2 rounded-xl font-bold text-base sm:text-lg border-2 transition duration-300 flex items-center justify-center
+                                    ${pressureType === 'internal' ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' : 'bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-100'}">
+                                    <i data-lucide="user-check" class="w-5 h-5 inline-block mr-2 flex-shrink-0"></i>
+                                    心理壓力 (內在)
+                                </button>
+                                <button onclick="app.selectPressureType('external', this)"
+                                    class="flex-1 py-3 px-2 rounded-xl font-bold text-base sm:text-lg border-2 transition duration-300 flex items-center justify-center
+                                    ${pressureType === 'external' ? 'bg-red-600 text-white border-red-600 shadow-lg' : 'bg-white text-red-700 border-red-300 hover:bg-red-100'}">
+                                    <i data-lucide="users" class="w-5 h-5 inline-block mr-2 flex-shrink-0"></i>
+                                    外加壓力 (外在)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reflection -->
+                        <div class="mb-6">
+                            <label for="pressureReflection" class="block text-lg sm:text-xl font-semibold text-gray-700 mb-3">我的「解決方法」是什麼？</label>
+                            <textarea id="pressureReflection" rows="5" class="w-full p-3 border-2 border-blue-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none text-sm sm:text-base"
+                                placeholder="1. 如果是外在壓力（來自別人），我可以找誰幫忙？（例如：和老師/家長溝通）&#10;&#10;2. 如果是心理壓力（來自自己），我可以怎麼放鬆？" oninput="app.updatePressure('reflection', this.value)">${reflection}</textarea>
+                        </div>
+                        
+                        <button onclick="app.submitPressure()" class="w-full btn-primary text-white py-3 rounded-xl font-bold text-lg shadow-md">
+                            <i data-lucide="send" class="w-5 h-5 inline-block mr-2"></i>
+                            送出壓力區分反思
+                        </button>
+                    </div>
+                `;
+                if(window.lucide) window.lucide.createIcons();
+            }
+
+            // --- State/Data Handlers ---
+            function selectMood(moodValue, element) {
+                activityData.checkin.mood = moodValue;
+                document.querySelectorAll('.mood-icon').forEach(el => el.classList.remove('selected', 'bg-orange-100'));
+                element.classList.add('selected', 'bg-orange-100');
+            }
+
+            function updateCheckInReflection(value) {
+                activityData.checkin.reflection = value;
+            }
+
+            function submitCheckIn() {
+                const { mood, reflection } = activityData.checkin;
+                if (!mood || reflection.trim() === '') {
+                    showNotification("請選擇心情並寫下今日的反思！");
+                    return;
+                }
+                saveRecord('checkin', activityData.checkin);
+            }
+
+            function updateEvidence(key, value) {
+                activityData.evidence[key] = value;
+            }
+
+            function submitEvidence() {
+                const { successEvent, successReason, failureEvent, failureReason } = activityData.evidence;
+                if ([successEvent, successReason, failureEvent, failureReason].some(v => v.trim() === '')) {
+                    showNotification("請填寫所有優勢與弱點的事件和證據！");
+                    return;
+                }
+                saveRecord('evidence', activityData.evidence);
+            }
+
+            function selectPressureType(type, element) {
+                activityData.pressure.pressureType = type;
+                const buttons = element.parentNode.querySelectorAll('button');
+
+                const INDIGO_CLASSES_ACTIVE = 'bg-indigo-600 text-white border-indigo-600 shadow-lg';
+                const INDIGO_CLASSES_INACTIVE = 'bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-100';
+                const RED_CLASSES_ACTIVE = 'bg-red-600 text-white border-red-600 shadow-lg';
+                const RED_CLASSES_INACTIVE = 'bg-white text-red-700 border-red-300 hover:bg-red-100';
+                
+                const ALL_TOGGLE_CLASSES = [
+                    ...INDIGO_CLASSES_ACTIVE.split(' '), 
+                    ...INDIGO_CLASSES_INACTIVE.split(' '), 
+                    ...RED_CLASSES_ACTIVE.split(' '), 
+                    ...RED_CLASSES_INACTIVE.split(' ')
+                ];
+
+                buttons.forEach(btn => {
+                    const isSelected = btn === element;
+                    const isInternal = btn.textContent.includes('內在'); 
+
+                    let activeClasses = isInternal ? INDIGO_CLASSES_ACTIVE : RED_CLASSES_ACTIVE;
+                    let inactiveClasses = isInternal ? INDIGO_CLASSES_INACTIVE : RED_CLASSES_INACTIVE;
+                    
+                    btn.classList.remove(...ALL_TOGGLE_CLASSES);
+
+                    if (isSelected) {
+                        btn.classList.add(...activeClasses.split(' '));
+                    } else {
+                        btn.classList.add(...inactiveClasses.split(' '));
+                    }
+                });
+            }
+
+            function updatePressure(key, value) {
+                activityData.pressure[key] = value;
+            }
+
+            function submitPressure() {
+                const { situation, pressureType, reflection } = activityData.pressure;
+                
+                if (situation.trim() === '') {
+                    showNotification("請描述你感到有壓力的情境！");
+                    return;
+                }
+                if (!pressureType) {
+                    showNotification("請點選並確認這是內在壓力還是外在壓力！");
+                    return;
+                }
+                
+                const placeholderText = `1. 如果是外在壓力（來自別人），我可以找誰幫忙？（例如：和老師/家長溝通）\n\n2. 如果是心理壓力（來自自己），我可以怎麼放鬆？`;
+
+                if (reflection.trim() === '' || reflection.trim() === placeholderText.trim()) {
+                    showNotification("請在反思區塊寫下你找到的解決方法！");
+                    return;
+                }
+
+                saveRecord('pressure', activityData.pressure);
+            }
+            
+            // Initialize on load
+            window.addEventListener('DOMContentLoaded', () => {
+                setActiveView('home');
+                renderHistory();
+            });
+
+            return {
+                setActiveView,
+                selectMood,
+                updateCheckInReflection,
+                submitCheckIn,
+                updateEvidence,
+                submitEvidence,
+                selectPressureType,
+                updatePressure,
+                submitPressure,
+                promptClearHistory,
+                executeClearHistory,
+                closeConfirmModal,
+                closeNotification,
+                toggleGuide
+            };
+        })();
+    </script>
+</body>
+</html>

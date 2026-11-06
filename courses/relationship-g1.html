@@ -1,0 +1,1394 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人際探險隊 - 國小低年級 SEL 互動網頁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background-color: #f7fee7; /* 溫和的探險淺綠底色 */
+        }
+        
+        /* 轉盤旋轉與透視 */
+        .wheel-container {
+            perspective: 1000px;
+        }
+        .wheel-transition {
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1);
+        }
+        
+        /* 確保怪獸標題絕對不跳行 */
+        .monster-name {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+        }
+        
+        /* 飄浮金幣與星星動畫 */
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+        .float-sparkle {
+            position: absolute;
+            animation: floatUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        /* 怪獸懸停與點擊動畫 */
+        .monster-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .monster-card:hover {
+            transform: translateY(-8px) scale(1.03);
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px) rotate(-3deg); }
+            40%, 80% { transform: translateX(8px) rotate(3deg); }
+        }
+        .shake-anim {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* 五彩碎紙效果 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 99;
+            animation: confettiFall 2.5s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden relative">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg sticky top-0 z-40 px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="bg-yellow-400 p-2 rounded-full text-emerald-900 animate-bounce shadow-md">
+                <i class="fas fa-compass text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black tracking-wider flex items-center">
+                    人際探險隊<span class="text-xs bg-yellow-400 text-emerald-900 font-bold px-2.5 py-1 rounded-full ml-2 shadow-inner">一年級 SEL 專屬課堂</span>
+                </h1>
+            </div>
+        </div>
+        
+        <!-- 任務快速切換 -->
+        <nav class="hidden lg:flex items-center space-x-2">
+            <button onclick="switchTab('module1')" id="nav-module1" class="tab-btn bg-emerald-700 text-white px-4 py-2.5 rounded-2xl text-sm font-black border-2 border-yellow-300 shadow hover:bg-emerald-800 transition">
+                🧩 任務一：隊規大轉盤
+            </button>
+            <button onclick="switchTab('module2')" id="nav-module2" class="tab-btn bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-sm font-black border-2 border-transparent hover:bg-emerald-700 transition">
+                🎭 任務二：情緒怪獸挑戰
+            </button>
+            <button onclick="switchTab('module3')" id="nav-module3" class="tab-btn bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-sm font-black border-2 border-transparent hover:bg-emerald-700 transition">
+                ⚡ 任務三：座位拉霸與交流
+            </button>
+        </nav>
+
+        <!-- 右側輔助工具 -->
+        <div class="flex items-center space-x-2">
+            <button onclick="stopAudio()" class="bg-red-500 hover:bg-red-600 text-white font-black px-3 py-2.5 rounded-2xl text-xs md:text-sm flex items-center shadow-md transition" title="停止語音">
+                <i class="fas fa-volume-mute mr-1.5 text-base"></i> 停止語音
+            </button>
+            <button onclick="toggleTeacherGuide()" class="bg-yellow-400 hover:bg-yellow-300 text-emerald-950 font-black px-4 py-2.5 rounded-2xl text-xs md:text-sm flex items-center shadow-md transition">
+                <i class="fas fa-graduation-cap mr-1.5 text-base"></i> 隨堂教案指引
+            </button>
+            <button onclick="resetAll()" class="bg-rose-500 hover:bg-rose-600 text-white p-2.5 rounded-2xl text-sm transition shadow" title="重設所有資料">
+                <i class="fas fa-undo"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 行動端導覽列 (中螢幕以下顯示) -->
+    <div class="lg:hidden bg-emerald-700 border-b border-emerald-600 text-white flex justify-around py-2.5 px-1 text-xs font-bold sticky top-[64px] z-30 shadow-inner">
+        <button onclick="switchTab('module1')" id="m-nav-module1" class="flex flex-col items-center py-1.5 px-3 rounded-xl bg-emerald-800 border-b-2 border-yellow-300">
+            <span class="text-xl">🧩</span>
+            <span>任務一：轉盤</span>
+        </button>
+        <button onclick="switchTab('module2')" id="m-nav-module2" class="flex flex-col items-center py-1.5 px-3 rounded-xl opacity-75">
+            <span class="text-xl">🎭</span>
+            <span>任務二：怪獸</span>
+        </button>
+        <button onclick="switchTab('module3')" id="m-nav-module3" class="flex flex-col items-center py-1.5 px-3 rounded-xl opacity-75">
+            <span class="text-xl">⚡</span>
+            <span>任務三：座位</span>
+        </button>
+    </div>
+
+    <!-- 隨隨堂教案側邊欄 -->
+    <div id="teacherGuidePanel" class="fixed right-0 top-[64px] bottom-0 w-80 lg:w-96 bg-white shadow-2xl border-l-4 border-emerald-500 z-50 transition-transform duration-300 transform translate-x-full flex flex-col">
+        <div class="bg-emerald-50 p-4 border-b border-emerald-100 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">📋</span>
+                <div>
+                    <h3 class="font-black text-emerald-900">隨堂自主教案 & 課綱指引</h3>
+                </div>
+            </div>
+            <button onclick="toggleTeacherGuide()" class="text-slate-400 hover:text-slate-600 text-xl font-bold p-1">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- 教案內容 (滾動區) -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-6 text-sm text-slate-700">
+            <!-- 第一課時 -->
+            <div class="border-l-4 border-amber-400 pl-3">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full">第 1 課時</span>
+                <h4 class="font-bold text-slate-900 mt-1">建立隊規與情緒認同 (40分)</h4>
+                
+                <div class="mt-3 space-y-4">
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div class="font-bold text-slate-800 text-xs flex justify-between">
+                            <span>1. 引起動機：探險隊出發！</span>
+                            <span class="text-emerald-600">5分</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
+                            引導語：「各位小探險家！我們要前往『人際探險島』尋找寶藏。在出發前，我們必須一起制定維持安全的『探險隊規』喔！」
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div class="font-bold text-slate-800 text-xs flex justify-between">
+                            <span>2. 隊規轉盤初體驗</span>
+                            <span class="text-emerald-600">15分</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
+                            打開<strong>【任務一】</strong>，點擊大轉盤！轉出指定常規。例如轉到「傾聽」，帶領全班思考耳朵要聽、眼睛要看哪裡。點擊「挑戰計時器」，在30秒倒數內全班保持安靜擺出該姿勢，完成的小組由老師在畫面點擊獎勵金幣。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div class="font-bold text-slate-800 text-xs flex justify-between">
+                            <span>3. 情緒怪獸偵探</span>
+                            <span class="text-emerald-600">20分</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
+                            打開<strong>【任務二】</strong>。點選四隻情緒怪獸讓學生練習揣摩面部與音調。點擊「情境大挑戰」，引導學生根據聽到的錄音故事，上台點擊正確情緒。最後利用「對話框拼讀鷹架」，讓學生兩兩一組朗讀練習表達情緒與原因。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二課時 -->
+            <div class="border-l-4 border-indigo-500 pl-3">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-0.5 rounded-full">第 2 課時</span>
+                <h4 class="font-bold text-slate-900 mt-1">關係建立與座位大風吹 (40分)</h4>
+                
+                <div class="mt-3 space-y-4">
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div class="font-bold text-slate-800 text-xs flex justify-between">
+                            <span>1. 快問快答大破冰</span>
+                            <span class="text-emerald-600">15分</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
+                            打開<strong>【任務三-快問快答】</strong>。兩人一組啟動時限倒數，在 60 秒內跟組員分享喜歡的食物、卡通，降低課堂防備心。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div class="font-bold text-slate-800 text-xs flex justify-between">
+                            <span>2. 盲盒座位大風吹</span>
+                            <span class="text-emerald-600">20分</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
+                            點擊<strong>【任務三-座位大風吹】</strong>，按下大風吹！系統會自動隨機打散排序全班座位，換到新鄰居後，老師指引立刻對新朋友說「請多多指教！」，並重新使用任務二的句型交流。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-3 bg-emerald-50 text-center text-xs text-emerald-700 border-t border-emerald-100">
+            💡 全網頁互動元件皆搭載擬真語音，無障礙輔助低年級學童！
+        </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <main id="mainContent" class="flex-1 p-4 md:p-6 transition-all duration-300">
+
+        <!-- ==================== 任務一：合作與規範 ==================== -->
+        <section id="module1" class="tab-content block space-y-6">
+            <div class="bg-white rounded-3xl p-5 md:p-6 shadow-xl border-4 border-amber-300">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-dashed border-amber-200 pb-4 mb-6 gap-4">
+                    <div>
+                        <span class="bg-amber-400 text-amber-950 font-black px-3 py-1 rounded-full text-xs">🧩 任務一：合作與常規</span>
+                        <h2 class="text-2xl md:text-3xl font-black text-amber-900 mt-1 flex items-center">
+                            我們的隊規大轉盤
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1 font-bold">旋轉轉盤抽取隊規，並在 30 秒內全班一起做出指定合作常規姿勢！</p>
+                    </div>
+                    <div class="bg-amber-50 px-5 py-3 rounded-2xl border border-amber-100 text-center w-full md:w-auto shadow-inner">
+                        <span class="text-xs text-slate-500 block font-bold">當前選中常規</span>
+                        <span id="currentRuleDisplay" class="font-black text-xl text-amber-600 tracking-wide">— 尚未轉動 —</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- 左側：彩虹大轉盤 -->
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center py-4 relative">
+                        <div class="relative w-72 h-72 md:w-80 md:h-80 wheel-container select-none">
+                            <!-- 轉盤指針：尖端朝向圓心（向下） -->
+                            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30 filter drop-shadow-md">
+                                <svg class="w-10 h-10 text-rose-500 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12 22 L2 2 H22 Z"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- 轉盤圓盤 -->
+                            <div id="wheel" class="w-full h-full rounded-full border-8 border-amber-400 shadow-2xl overflow-hidden relative wheel-transition" style="transform: rotate(0deg);">
+                                <svg class="w-full h-full" viewBox="0 0 200 200">
+                                    <!-- 傾聽區 (藍) -->
+                                    <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#3b82f6" />
+                                    <!-- 舉手區 (綠) -->
+                                    <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#10b981" />
+                                    <!-- 分享區 (橘) -->
+                                    <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#f97316" />
+                                    <!-- 合作區 (黃) -->
+                                    <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#eab308" />
+                                    <!-- 讚美區 (粉紅) -->
+                                    <path d="M100,100 L13.4,150 A100,100 0 0,1 13.4,50 Z" fill="#ec4899" />
+                                    <!-- 專心區 (紫) -->
+                                    <path d="M100,100 L13.4,50 A100,100 0 0,1 100,0 Z" fill="#a855f7" />
+
+                                    <!-- 轉盤文字標示（已移除注音，僅保留文字與 Emoji） -->
+                                    <g font-family="Noto Sans TC, sans-serif" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle">
+                                        <!-- 傾聽 -->
+                                        <text transform="translate(132, 45) rotate(30)">
+                                            👂 傾聽
+                                        </text>
+                                        <!-- 舉手 -->
+                                        <text transform="translate(160, 105) rotate(90)">
+                                            🙋 舉手
+                                        </text>
+                                        <!-- 分享 -->
+                                        <text transform="translate(132, 155) rotate(150)">
+                                            🤝 分享
+                                        </text>
+                                        <!-- 合作 -->
+                                        <text transform="translate(70, 155) rotate(210)">
+                                            🧩 合作
+                                        </text>
+                                        <!-- 讚美 -->
+                                        <text transform="translate(40, 105) rotate(270)">
+                                            ❤️ 讚美
+                                        </text>
+                                        <!-- 專心 -->
+                                        <text transform="translate(70, 45) rotate(330)">
+                                            🎯 專心
+                                        </text>
+                                    </g>
+                                    <circle cx="100" cy="100" r="24" fill="#ffffff" stroke="#f59e0b" stroke-width="4"/>
+                                    <text x="100" y="105" font-size="13" fill="#b45309" font-weight="900" text-anchor="middle">GO!</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- 啟動旋轉按鈕 -->
+                        <button onclick="spinWheel()" id="spinBtn" class="mt-6 bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-black text-xl px-12 py-4 rounded-3xl shadow-lg border-b-4 border-amber-700 active:translate-y-1 hover:brightness-110 transition duration-150 flex items-center space-x-2">
+                            <span>🎰</span>
+                            <span>轉動探險大轉盤！</span>
+                        </button>
+                    </div>
+
+                    <!-- 右側：挑戰倒數與加分計分牆 -->
+                    <div class="lg:col-span-6 space-y-6">
+                        <!-- 計時挑戰盒 -->
+                        <div class="bg-rose-50 rounded-3xl p-5 border-2 border-rose-200 shadow-md flex flex-col items-center">
+                            <h3 class="font-black text-rose-800 text-lg flex items-center space-x-2">
+                                <span>⏰</span>
+                                <span>探險隊規挑戰計時</span>
+                            </h3>
+                            <p id="timerPrompt" class="text-xs text-rose-600 mt-1 font-bold text-center">轉出隊規後，大家要在 30 秒內全班一起做到正確動作唷！</p>
+                            
+                            <div class="flex items-center space-x-6 mt-4">
+                                <div class="relative w-28 h-28 flex items-center justify-center">
+                                    <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                                        <circle cx="56" cy="56" r="48" stroke="#ffe4e6" stroke-width="8" fill="transparent"/>
+                                        <circle id="timerProgress" cx="56" cy="56" r="48" stroke="#f43f5e" stroke-width="8" fill="transparent" stroke-dasharray="301.6" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear"/>
+                                    </svg>
+                                    <span id="timerText" class="text-3xl font-black text-rose-700">30s</span>
+                                </div>
+                                
+                                <div class="flex flex-col space-y-2">
+                                    <button onclick="startTimer(30)" id="timerStartBtn" class="bg-rose-500 hover:bg-rose-600 text-white font-black px-5 py-2.5 rounded-2xl text-sm shadow transition flex items-center space-x-2 justify-center">
+                                        <i class="fas fa-play"></i> <span>開始挑戰</span>
+                                    </button>
+                                    <button onclick="resetTimer()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold px-5 py-2.5 rounded-2xl text-sm transition flex items-center space-x-2 justify-center">
+                                        <i class="fas fa-undo"></i> <span>重置</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 班級小組加分榮譽榜 -->
+                        <div class="bg-amber-50 rounded-3xl p-5 border-2 border-amber-200 shadow-md">
+                            <h3 class="font-black text-amber-900 text-lg flex items-center space-x-2">
+                                <span>🪙</span>
+                                <span>探險隊小組榮譽金幣牆</span>
+                            </h3>
+                            <p class="text-xs text-amber-700 mt-1 font-bold">表現良好的小組，老師可點擊按鈕給予一顆實體噴砂金幣加分！</p>
+                            
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第一組 🐻</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g1" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g1', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第二組 🦁</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g2" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g2', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第三組 🐰</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g3" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g3', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第四組 🐨</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g4" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g4', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第五組 🐼</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g5" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g5', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center justify-between">
+                                    <span class="font-black text-xs text-slate-600">第六組 🦊</span>
+                                    <div class="flex items-center space-x-1 my-2">
+                                        <span class="text-xl">🪙</span>
+                                        <span id="score-g6" class="font-black text-amber-600 text-xl">0</span>
+                                    </div>
+                                    <button onclick="rewardGold('g6', this)" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black text-xs px-3 py-2 rounded-xl transition shadow-sm w-full">
+                                        給金幣 +1
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 任務二：基礎溝通 ==================== -->
+        <section id="module2" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-5 md:p-6 shadow-xl border-4 border-emerald-400">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-dashed border-emerald-200 pb-4 mb-6">
+                    <div>
+                        <span class="bg-emerald-500 text-white font-black px-3 py-1 rounded-full text-xs">🎭 任務二：基礎情緒表達</span>
+                        <h2 class="text-2xl md:text-3xl font-black text-emerald-900 mt-1 flex items-center">
+                            情緒怪獸變變變 👾
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1 font-bold">點擊怪獸聆聽心情，並引導孩子找出故事中所屬的正確情緒！</p>
+                    </div>
+                </div>
+
+                <!-- 情境分析與互動句型 (移到上方) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                    <!-- 左：情境卡 -->
+                    <div class="lg:col-span-5 bg-teal-50 rounded-3xl p-5 border border-teal-100 flex flex-col justify-between shadow-sm">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-black text-teal-900 text-lg flex items-center">
+                                    <span class="mr-2">🧩</span> 情境故事大挑戰
+                                </h3>
+                                <span class="bg-teal-200 text-teal-800 text-xs px-2.5 py-1 rounded-full font-black" id="scenarioIndex">情境 1 / 6</span>
+                            </div>
+                            <p class="text-xs text-teal-700 font-bold">先聽聽語音故事，再協助主角找出正確心情吧：</p>
+                            
+                            <!-- 情境內文 -->
+                            <div class="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm my-4 text-lg md:text-xl font-bold leading-loose text-slate-800 h-64 overflow-y-auto" id="scenarioContent">
+                                <!-- 由 JS 動態繪製 -->
+                            </div>
+                        </div>
+
+                        <!-- 控制按鈕 -->
+                        <div class="flex items-center space-x-2 mt-4">
+                            <button onclick="playScenarioAudio()" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-black px-4 py-3.5 rounded-2xl transition shadow flex items-center justify-center space-x-2">
+                                <i class="fas fa-volume-up text-lg"></i>
+                                <span>大聲播放情境故事</span>
+                            </button>
+                            <button onclick="nextScenario()" class="bg-white hover:bg-slate-100 text-teal-700 border border-teal-300 font-bold p-3.5 rounded-2xl transition shadow" title="下一個故事">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 右：對話練習大字框 (鷹架教育已修正) -->
+                    <div class="lg:col-span-7 bg-amber-50 rounded-3xl p-5 border-2 border-amber-300 flex flex-col justify-between shadow-sm relative">
+                        <!-- 回饋答對特效遮罩 (隱藏) -->
+                        <div id="correctOverlay" class="absolute inset-0 bg-amber-100/90 rounded-3xl flex flex-col items-center justify-center space-y-2 opacity-0 pointer-events-none transition-all duration-300 z-10">
+                            <span class="text-5xl animate-bounce">🎉 答對囉！</span>
+                            <span class="text-sm font-bold text-slate-700">跟著台上的同學，看著下方的鷹架大聲讀讀看！</span>
+                        </div>
+
+                        <div>
+                            <h3 class="font-black text-amber-950 text-base md:text-lg flex items-center space-x-1.5">
+                                <span>🗣️</span>
+                                <span>溝通語句練習鷹架</span>
+                            </h3>
+                            <p class="text-xs text-amber-700 mt-1 font-bold">請選對情緒的小隊友，看著大螢幕的文字把話說出口：</p>
+                            
+                            <!-- 互動對話鷹架大字板 -->
+                            <div class="bg-white p-5 md:p-6 rounded-2xl border border-amber-100 shadow-sm mt-4 space-y-4 text-slate-800 text-lg md:text-xl font-black leading-loose">
+                                <div>
+                                    當 
+                                    <span id="phrase-cause" class="text-teal-600 underline decoration-wavy decoration-teal-400 px-2 bg-teal-50 rounded-xl">
+                                        鉛筆被弄斷了
+                                    </span> 
+                                    ，
+                                </div>
+                                <div>
+                                    我覺得 
+                                    <span id="phrase-monster" class="text-rose-500 border-b-4 border-dashed border-rose-400 px-3 bg-rose-50 rounded-xl font-black">
+                                        ______
+                                    </span> 
+                                    會出現，
+                                </div>
+                                <div>
+                                    因為 
+                                    <span id="phrase-reason" class="text-slate-600 underline px-2 bg-slate-50 rounded-xl">
+                                        ____________
+                                    </span>
+                                    。
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 快速範例切換 (6 個情境快速鈕) -->
+                        <div class="mt-4 flex flex-wrap gap-2 items-center">
+                            <span class="text-xs text-amber-800 font-black">快速切換情境：</span>
+                            <button onclick="applyScenarioByBtn(0)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                1. 鉛筆弄斷
+                            </button>
+                            <button onclick="applyScenarioByBtn(1)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                2. 沒人理我
+                            </button>
+                            <button onclick="applyScenarioByBtn(2)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                3. 老師稱讚
+                            </button>
+                            <button onclick="applyScenarioByBtn(3)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                4. 積木被搶
+                            </button>
+                            <button onclick="applyScenarioByBtn(4)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                5. 上台說故事
+                            </button>
+                            <button onclick="applyScenarioByBtn(5)" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs px-2.5 py-1.5 rounded-xl font-bold transition">
+                                6. 跌倒扶起
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 情緒怪獸四大陣容 (移到下方) -->
+                <div class="bg-emerald-50 rounded-3xl p-4 md:p-5 border border-emerald-100">
+                    <h3 class="font-black text-emerald-800 text-base flex items-center mb-4">
+                        <span class="mr-2">🦖</span> 點點名！聽聽看小怪獸在說些什麼話：
+                    </h3>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- 開心怪獸 -->
+                        <button onclick="selectMonster('happy')" id="monster-happy" class="monster-card bg-white rounded-2xl p-4 border-2 border-yellow-300 hover:shadow-lg flex flex-col items-center justify-center space-y-2 select-none overflow-hidden">
+                            <svg class="w-20 h-20" viewBox="0 0 100 100">
+                                <rect x="15" y="15" width="70" height="70" rx="20" fill="#facc15" />
+                                <circle cx="35" cy="40" r="8" fill="#1e293b"/>
+                                <circle cx="65" cy="40" r="8" fill="#1e293b"/>
+                                <circle cx="25" cy="52" r="7" fill="#f87171" opacity="0.6"/>
+                                <circle cx="75" cy="52" r="7" fill="#f87171" opacity="0.6"/>
+                                <path d="M 32 60 Q 50 78 68 60" stroke="#1e293b" stroke-width="6" stroke-linecap="round" fill="transparent"/>
+                            </svg>
+                            <span class="font-black text-yellow-600 text-base md:text-lg monster-name">
+                                開心怪獸
+                            </span>
+                        </button>
+
+                        <!-- 難過怪獸 -->
+                        <button onclick="selectMonster('sad')" id="monster-sad" class="monster-card bg-white rounded-2xl p-4 border-2 border-sky-300 hover:shadow-lg flex flex-col items-center justify-center space-y-2 select-none overflow-hidden">
+                            <svg class="w-20 h-20" viewBox="0 0 100 100">
+                                <rect x="15" y="15" width="70" height="70" rx="20" fill="#38bdf8" />
+                                <ellipse cx="35" cy="42" rx="7" ry="5" fill="#1e293b"/>
+                                <ellipse cx="65" cy="42" rx="7" ry="5" fill="#1e293b"/>
+                                <path d="M 23 32 Q 35 25 43 32" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="transparent"/>
+                                <path d="M 77 32 Q 65 25 57 32" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="transparent"/>
+                                <path d="M 33 50 C 33 58 28 58 33 58" stroke="#60a5fa" stroke-width="5" fill="none" stroke-linecap="round"/>
+                                <path d="M 67 50 C 67 58 72 58 67 58" stroke="#60a5fa" stroke-width="5" fill="none" stroke-linecap="round"/>
+                                <path d="M 38 68 Q 50 56 62 68" stroke="#1e293b" stroke-width="6" stroke-linecap="round" fill="transparent"/>
+                            </svg>
+                            <span class="font-black text-sky-600 text-base md:text-lg monster-name">
+                                難過怪獸
+                            </span>
+                        </button>
+
+                        <!-- 生氣怪獸 -->
+                        <button onclick="selectMonster('angry')" id="monster-angry" class="monster-card bg-white rounded-2xl p-4 border-2 border-rose-300 hover:shadow-lg flex flex-col items-center justify-center space-y-2 select-none overflow-hidden">
+                            <svg class="w-20 h-20" viewBox="0 0 100 100">
+                                <rect x="15" y="15" width="70" height="70" rx="20" fill="#f87171" />
+                                <circle cx="35" cy="46" r="8" fill="#1e293b"/>
+                                <circle cx="65" cy="46" r="8" fill="#1e293b"/>
+                                <path d="M 23 33 L 45 42" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                                <path d="M 77 33 L 55 42" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                                <path d="M 35 66 Q 50 54 65 66" stroke="#1e293b" stroke-width="6" stroke-linecap="round" fill="transparent"/>
+                            </svg>
+                            <span class="font-black text-rose-600 text-base md:text-lg monster-name">
+                                生氣怪獸
+                            </span>
+                        </button>
+
+                        <!-- 害怕怪獸 -->
+                        <button onclick="selectMonster('scared')" id="monster-scared" class="monster-card bg-white rounded-2xl p-4 border-2 border-purple-300 hover:shadow-lg flex flex-col items-center justify-center space-y-2 select-none overflow-hidden">
+                            <svg class="w-20 h-20" viewBox="0 0 100 100">
+                                <rect x="15" y="15" width="70" height="70" rx="20" fill="#c084fc" />
+                                <circle cx="35" cy="40" r="11" fill="#ffffff"/>
+                                <circle cx="35" cy="40" r="5" fill="#1e293b"/>
+                                <circle cx="65" cy="40" r="11" fill="#ffffff"/>
+                                <circle cx="65" cy="40" r="5" fill="#1e293b"/>
+                                <path d="M 24 25 Q 35 24 40 18" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="transparent"/>
+                                <path d="M 76 25 Q 65 24 60 18" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="transparent"/>
+                                <ellipse cx="50" cy="66" rx="9" ry="12" fill="#1e293b"/>
+                            </svg>
+                            <span class="font-black text-purple-600 text-base md:text-lg monster-name">
+                                害怕怪獸
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 任務三：建立關係 ==================== -->
+        <section id="module3" class="tab-content hidden space-y-6">
+            <!-- 子頁籤按鈕 -->
+            <div class="flex space-x-2">
+                <button onclick="switchSubTab('sub-brainstorm')" id="tab-btn-brainstorm" class="sub-tab-btn bg-indigo-600 text-white font-black px-4 py-2.5 rounded-2xl text-sm border-2 border-indigo-400 shadow-sm">
+                    ⚡ 1分鐘快問快答大破冰
+                </button>
+                <button onclick="switchSubTab('sub-seating')" id="tab-btn-seating" class="sub-tab-btn bg-white hover:bg-slate-100 text-indigo-950 font-black px-4 py-2.5 rounded-2xl text-sm shadow-sm">
+                    🎰 座位大風吹拉霸機
+                </button>
+            </div>
+
+            <!-- 子模組 A: 快速腦力激盪器 (1分鐘快問快答) -->
+            <div id="sub-brainstorm" class="sub-tab-content block bg-white rounded-3xl p-5 md:p-6 shadow-xl border-4 border-indigo-500">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-dashed border-indigo-100 pb-4 mb-6">
+                    <div>
+                        <span class="bg-indigo-500 text-white font-black px-3 py-1 rounded-full text-xs">任務三 A</span>
+                        <h2 class="text-2xl font-black text-indigo-950 mt-1">1分鐘快問快答（人際建立）</h2>
+                        <p class="text-sm text-slate-500 mt-1 font-bold">兩兩一組，倒數 60 秒，輪流回答大螢幕出現的對話主題吧！</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    <!-- 左：題目顯示卡 -->
+                    <div class="md:col-span-7 bg-indigo-50 rounded-3xl p-6 border-2 border-indigo-200 shadow flex flex-col justify-between min-h-[260px]">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-xs bg-indigo-200 text-indigo-800 px-3 py-1 rounded-full font-black">🎯 破冰對談問題</span>
+                                <button onclick="nextBrainstormQuestion()" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs flex items-center space-x-1">
+                                    <i class="fas fa-sync"></i> <span>更換題目</span>
+                                </button>
+                            </div>
+                            
+                            <!-- 題目文字在下方 JS 動態繪製 -->
+                            <div class="text-center py-6 text-2xl md:text-3xl font-black text-slate-800 leading-loose" id="brainstormText">
+                                <!-- JS 動態繪製 -->
+                            </div>
+                        </div>
+
+                        <button onclick="playBrainstormAudio()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-2xl transition shadow flex items-center justify-center space-x-2 w-full mt-4">
+                            <i class="fas fa-volume-up"></i>
+                            <span>播放題目語音</span>
+                        </button>
+                    </div>
+
+                    <!-- 右：1分鐘倒數計時器 -->
+                    <div class="md:col-span-5 bg-amber-50 rounded-3xl p-6 border-2 border-amber-200 shadow flex flex-col items-center justify-center">
+                        <h3 class="font-black text-amber-900 text-lg mb-1">⏱️ 互動輪流倒數</h3>
+                        <p class="text-xs text-amber-700 text-center mb-4 font-bold">聲音播出一半會提醒同學更換說話者唷！</p>
+                        
+                        <div class="relative w-36 h-36 flex items-center justify-center my-2">
+                            <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                                <circle cx="72" cy="72" r="64" stroke="#ffedd5" stroke-width="10" fill="transparent"/>
+                                <circle id="qProgress" cx="72" cy="72" r="64" stroke="#f97316" stroke-width="10" fill="transparent" stroke-dasharray="402.1" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear"/>
+                            </svg>
+                            <span id="qTimerText" class="text-4xl font-black text-amber-800">60s</span>
+                        </div>
+
+                        <div class="flex space-x-2 mt-4 w-full">
+                            <button onclick="startQTimer()" id="qTimerStartBtn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black py-3 rounded-2xl transition shadow flex items-center justify-center space-x-2">
+                                <i class="fas fa-play"></i> <span>啟動倒數</span>
+                            </button>
+                            <button onclick="resetQTimer()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold px-4 py-3 rounded-2xl transition flex items-center justify-center">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 子模組 B: 座位調換拉霸機 -->
+            <div id="sub-seating" class="sub-tab-content hidden bg-white rounded-3xl p-5 md:p-6 shadow-xl border-4 border-indigo-500">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-dashed border-indigo-100 pb-4 mb-6">
+                    <div>
+                        <span class="bg-indigo-500 text-white font-black px-3 py-1 rounded-full text-xs">任務三 B</span>
+                        <h2 class="text-2xl font-black text-indigo-950 mt-1">座位大風吹拉霸機 🎰</h2>
+                        <p class="text-sm text-slate-500 mt-1 font-bold">隨機重新洗牌兩兩配對，促進班級所有學生的人際互動！</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- 左：設定 -->
+                    <div class="lg:col-span-4 bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="block font-black text-slate-700 text-sm">🎒 學生座號名單設定</label>
+                                <button onclick="loadDefaultStudents()" class="text-xs text-indigo-600 hover:underline font-bold">載入示範名單</button>
+                            </div>
+                            <textarea id="studentNamesInput" rows="6" class="w-full rounded-2xl border border-slate-300 p-3 text-xs focus:ring-2 focus:ring-indigo-400 font-bold" placeholder="請輸入學生名字，每行一人..."></textarea>
+                            
+                            <div class="mt-4">
+                                <label class="block font-black text-slate-700 text-sm mb-2">👥 鄰座配置：</label>
+                                <div class="flex space-x-4">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                                        <input type="radio" name="groupType" value="2" checked class="text-indigo-600 focus:ring-indigo-400">
+                                        <span class="text-sm text-slate-700 font-bold">兩兩一組 (左右對坐)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                                        <input type="radio" name="groupType" value="4" class="text-indigo-600 focus:ring-indigo-400">
+                                        <span class="text-sm text-slate-700 font-bold">四人一組 (前後桌)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <button onclick="shuffleSeats()" id="shuffleBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl text-lg shadow-lg border-b-4 border-indigo-900 active:translate-y-1 transition flex items-center justify-center space-x-2">
+                                <i class="fas fa-random text-xl animate-pulse"></i>
+                                <span>大風吹！座位大洗牌！</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 右：排列呈現 -->
+                    <div class="lg:col-span-8 bg-indigo-50 rounded-2xl p-5 border-2 border-indigo-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-black text-indigo-950 text-base flex items-center space-x-1">
+                                <span>🏫</span>
+                                <span>課堂新座位示意排版</span>
+                            </h3>
+                            <div class="bg-indigo-200 text-indigo-900 font-black px-3 py-1 rounded-full text-xs">
+                                📢 講台方向在此
+                            </div>
+                        </div>
+
+                        <!-- 講台 -->
+                        <div class="w-full bg-slate-300 text-slate-700 py-1.5 rounded-xl text-center font-black text-xs shadow-inner mb-6">
+                            👨‍🏫 老師講台 👩‍🏫
+                        </div>
+
+                        <!-- 網格 -->
+                        <div id="seatingGrid" class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-4 p-2 overflow-y-auto max-h-[350px]">
+                            <div class="col-span-full py-16 text-center text-slate-400 flex flex-col items-center">
+                                <i class="fas fa-th text-4xl mb-2 text-indigo-200"></i>
+                                <span class="text-sm font-bold">尚未開始大風吹！請在左側確認名單後，點擊「大風吹」洗牌！</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 課堂客製化通知彈窗 (代替 alert) -->
+    <div id="customAlertModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl border-4 border-yellow-400 transform scale-90 transition-all duration-300" id="customAlertBox">
+            <div class="text-center space-y-3">
+                <span class="text-5xl" id="customAlertIcon">💡</span>
+                <h4 class="text-lg font-black text-slate-800" id="customAlertTitle">提示</h4>
+                <p class="text-xs text-slate-500 font-bold" id="customAlertMessage">訊息內容</p>
+                <button onclick="closeCustomAlert()" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-sm px-6 py-2.5 rounded-2xl shadow transition w-full">
+                    確定知道了！
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="bg-slate-800 text-slate-400 text-xs py-4 px-6 text-center border-t border-slate-700 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+            <div>
+                <p class="font-bold">人際探險隊 - 低年級互動式 SEL 素養教材系統</p>
+            </div>
+            <div class="flex space-x-4">
+                <span class="hover:text-white transition font-bold"><i class="fas fa-shield-alt"></i> 108課綱融入</span>
+                <span class="hover:text-white transition font-bold"><i class="fas fa-check-circle"></i> 老師免備課隨課教案</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== 音效生成系統 (已依需求移除 Web Audio API) ====================
+        function initAudio() {
+            // 不使用 Web Audio API
+        }
+
+        function playTone(freq, type, duration, endFreq = null) {
+            // 不使用 Web Audio API
+        }
+
+        function playSuccessSound() {
+            // 不使用 Web Audio API
+        }
+
+        function playTickSound() {
+            // 不使用 Web Audio API
+        }
+
+        function playBubbleSound() {
+            // 不使用 Web Audio API
+        }
+
+        // ==================== 語音朗讀系統 (TTS) ====================
+        function speakChinese(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-TW'; 
+                utterance.rate = 0.75; // 小一學生適應之稍慢語速
+                utterance.pitch = 1.15; // 提高音調增加親和力
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function stopAudio() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // ==================== 客製化通知彈窗 ====================
+        function showCustomAlert(title, msg, icon = "💡") {
+            document.getElementById('customAlertTitle').innerText = title;
+            document.getElementById('customAlertMessage').innerText = msg;
+            document.getElementById('customAlertIcon').innerText = icon;
+            
+            const modal = document.getElementById('customAlertModal');
+            const box = document.getElementById('customAlertBox');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-90');
+            box.classList.add('scale-100');
+            playTone(500, 'sine', 0.15, 800);
+        }
+
+        function closeCustomAlert() {
+            const modal = document.getElementById('customAlertModal');
+            const box = document.getElementById('customAlertBox');
+            
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-90');
+            playTone(400, 'sine', 0.05);
+        }
+
+        // ==================== 頁籤切換邏輯 ====================
+        function switchTab(tabId) {
+            initAudio();
+            playBubbleSound();
+            
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-700', 'border-yellow-300');
+                btn.classList.add('bg-emerald-600', 'border-transparent');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-emerald-600', 'border-transparent');
+                activeBtn.classList.add('bg-emerald-700', 'border-yellow-300');
+            }
+
+            document.querySelectorAll('.lg\\:hidden button').forEach(btn => {
+                btn.classList.add('opacity-75');
+                btn.classList.remove('bg-emerald-800', 'border-b-2', 'border-yellow-300');
+            });
+            const mActiveBtn = document.getElementById('m-nav-' + tabId);
+            if (mActiveBtn) {
+                mActiveBtn.classList.remove('opacity-75');
+                mActiveBtn.classList.add('bg-emerald-800', 'border-b-2', 'border-yellow-300');
+            }
+        }
+
+        function toggleTeacherGuide() {
+            initAudio();
+            playTone(500, 'sine', 0.06);
+            const panel = document.getElementById('teacherGuidePanel');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (panel.classList.contains('translate-x-0')) {
+                panel.classList.remove('translate-x-0');
+                panel.classList.add('translate-x-full');
+                mainContent.classList.remove('mr-80', 'lg:mr-96');
+            } else {
+                panel.classList.remove('translate-x-full');
+                panel.classList.add('translate-x-0');
+                mainContent.classList.add('mr-80', 'lg:mr-96');
+            }
+        }
+
+        // ==================== 任務一：我們的隊規大轉盤核心 ====================
+        const rules = ["傾聽", "舉手", "分享", "合作", "讚美", "專心"];
+        const ruleDetails = {
+            "傾聽": "👂 眼睛注視說話的人、耳朵專心聽對方把話說完喔！",
+            "舉手": "🙋 發言之前，要把手手先舉高高，保持安靜等待發言！",
+            "分享": "🤝 一起輪流玩，分享玩具，兩個人都會覺得更開心！",
+            "合作": "🧩 和身邊的小組員分工合作，一起完成課堂的任務！",
+            "讚美": "❤️ 看見隔壁同學的優點，大聲對他說『你剛才這裡做得很棒喔』！",
+            "專心": "🎯 身體坐端正，視線跟著講台上的老師轉動！"
+        };
+        let isSpinning = false;
+        let currentWheelAngle = 0;
+
+        function spinWheel() {
+            if (isSpinning) return;
+            initAudio();
+            isSpinning = true;
+            document.getElementById('spinBtn').disabled = true;
+
+            const randomDegree = Math.floor(Math.random() * 360);
+            const extraSpins = 360 * 7; 
+            currentWheelAngle += extraSpins + randomDegree;
+            
+            const wheel = document.getElementById('wheel');
+            wheel.style.transform = `rotate(${currentWheelAngle}deg)`;
+
+            let spinTicks = 0;
+            const tickInterval = setInterval(() => {
+                if (spinTicks < 20) {
+                    playTickSound();
+                    spinTicks++;
+                } else {
+                    clearInterval(tickInterval);
+                }
+            }, 180);
+
+            setTimeout(() => {
+                isSpinning = false;
+                document.getElementById('spinBtn').disabled = false;
+                
+                // 修正同步指標位置 (正上方)
+                const normalizedAngle = (360 - (currentWheelAngle % 360)) % 360;
+                // 一圓360度共6個區間，每個區間60度
+                const ruleIndex = Math.floor(normalizedAngle / 60) % 6;
+
+                const selectedRule = rules[ruleIndex];
+                document.getElementById('currentRuleDisplay').innerText = `🎉 ${selectedRule}`;
+                
+                speakChinese(`大轉盤抽到了：${selectedRule}。${ruleDetails[selectedRule]}`);
+                playSuccessSound();
+
+                document.getElementById('timerPrompt').innerText = `請全班在 30 秒挑戰時間內，安靜做到「${selectedRule}」的姿勢喔！`;
+            }, 4000);
+        }
+
+        // ==================== 任務一：30 秒環狀計時器 ====================
+        let m1Timer = null;
+        let m1SecondsLeft = 30;
+
+        function startTimer(seconds) {
+            initAudio();
+            clearInterval(m1Timer);
+            m1SecondsLeft = seconds;
+            
+            const progressBar = document.getElementById('timerProgress');
+            const timerText = document.getElementById('timerText');
+            const totalDash = 301.6;
+
+            playTone(440, 'sine', 0.1, 880);
+
+            m1Timer = setInterval(() => {
+                m1SecondsLeft--;
+                if (m1SecondsLeft >= 0) {
+                    timerText.innerText = `${m1SecondsLeft}s`;
+                    const offset = totalDash - (totalDash * m1SecondsLeft / seconds);
+                    progressBar.style.strokeDashoffset = offset;
+                    
+                    if (m1SecondsLeft <= 5 && m1SecondsLeft > 0) {
+                        playTone(1000, 'triangle', 0.04);
+                    }
+                } else {
+                    clearInterval(m1Timer);
+                    playSuccessSound();
+                    createConfettiExplosion();
+                    showCustomAlert("⏱️ 挑戰時間到！", "全班都做得非常好！請給守規矩的小朋友大聲拍拍手！", "👏");
+                    speakChinese("時間到！全班挑戰小隊規成功！大家都做得好棒！");
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(m1Timer);
+            m1SecondsLeft = 30;
+            document.getElementById('timerText').innerText = '30s';
+            document.getElementById('timerProgress').style.strokeDashoffset = 0;
+            playTone(400, 'sine', 0.08);
+        }
+
+        // ==================== 任務一：小組加分榮譽金幣牆 ====================
+        const groupScores = { g1: 0, g2: 0, g3: 0, g4: 0, g5: 0, g6: 0 };
+
+        function rewardGold(groupId, btnElement) {
+            initAudio();
+            groupScores[groupId]++;
+            document.getElementById(`score-${groupId}`).innerText = groupScores[groupId];
+            
+            playTone(987.77, 'sine', 0.1, 1400); 
+
+            const rect = btnElement.getBoundingClientRect();
+            const bodyRect = document.body.getBoundingClientRect();
+            const x = rect.left - bodyRect.left + rect.width / 2;
+            const y = rect.top - bodyRect.top;
+
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'float-sparkle text-3xl select-none';
+                particle.innerHTML = '🪙';
+                particle.style.left = `${x + (Math.random() * 50 - 25)}px`;
+                particle.style.top = `${y}px`;
+                particle.style.animationDelay = `${Math.random() * 0.15}s`;
+                document.body.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
+
+        // ==================== 任務二：情緒怪獸挑戰核心 ====================
+        const monsterVoices = {
+            happy: "我現在覺得好開心喔！大家今天都要跟我一起快樂地玩躲貓貓！",
+            sad: "我覺得有些難過，同學不小心把我的彩色筆弄斷了...",
+            angry: "我現在好生氣！同學不先詢問，就把我的玩具搶走了！",
+            scared: "這裡黑漆漆的，我覺得好害怕會出現喔..."
+        };
+
+        const monsterChineseNames = {
+            happy: "開心怪獸",
+            sad: "難過怪獸",
+            angry: "生氣怪獸",
+            scared: "害怕怪獸"
+        };
+
+        const scenarios = [
+            {
+                text: `小華的鉛筆不小心被同學弄斷了，小華的心情會是哪隻怪獸呢？`,
+                audioText: "小華的鉛筆不小心被同學弄斷了，小華的心情會是哪隻怪獸呢？",
+                cause: "鉛筆被弄斷了",
+                correctKey: ["sad", "angry", "scared"], 
+                reason: "他最心愛的文具壞掉了", 
+                monsterText: "害怕怪獸 會出現" 
+            },
+            {
+                text: `下課時，小明想跟同學一起玩，可是大家都跑走不理他...`,
+                audioText: "下課時，小明想跟同學一起玩，可是大家都跑走了不理他...",
+                cause: "大家都跑走、不想理我",
+                correctKey: ["sad", "angry", "scared"], 
+                reason: "我覺得自己好像被孤立了",
+                monsterText: "難過怪獸 會出現"
+            },
+            {
+                text: `今天上課，老師在全班面前，稱讚我很守秩序！`,
+                audioText: "今天上課，老師在全班面前稱讚我很守秩序！",
+                cause: "老師在班上稱讚我",
+                correctKey: ["happy"], 
+                reason: "守規矩受到肯定",
+                monsterText: "開心怪獸 會出現"
+            },
+            {
+                text: `玩積木時，同學突然搶走我排好的火車...`,
+                audioText: "玩積木的時候，同學突然動手搶走我辛苦排好的火車...",
+                cause: "積木與玩具被搶走",
+                correctKey: ["sad", "angry"], 
+                reason: "他沒有先問我的意見",
+                monsterText: "生氣怪獸 會出現"
+            },
+            {
+                text: `老師請我上台說故事，看到好多眼睛看著我...`,
+                audioText: "老師突然請我上台說故事，看到台下好多眼睛盯著我看...",
+                cause: "老師請我上台說故事",
+                correctKey: ["scared"], 
+                reason: "我好緊張，不知道要說什麼",
+                monsterText: "害怕怪獸 會出現"
+            },
+            {
+                text: `我不小心跌倒了，好心同學趕快跑過來把我扶起來！`,
+                audioText: "我不小心在走廊跌倒了，好心同學趕快跑過來把我扶起來！",
+                cause: "受傷跌倒時被同學扶起",
+                correctKey: ["happy"], 
+                reason: "我感受到同學對我的愛心",
+                monsterText: "開心怪獸 會出現"
+            }
+        ];
+
+        let currentScenarioIdx = 0;
+
+        function selectMonster(emotion) {
+            initAudio();
+            
+            document.querySelectorAll('.monster-card').forEach(el => {
+                el.classList.remove('bg-emerald-100', 'ring-4', 'ring-emerald-400', 'shake-anim');
+            });
+            
+            const btn = document.getElementById(`monster-${emotion}`);
+            if (btn) {
+                btn.classList.add('bg-emerald-100', 'ring-4', 'ring-emerald-400', 'shake-anim');
+            }
+
+            const targetScenario = scenarios[currentScenarioIdx];
+            
+            // 檢查選中的情緒是否在正確答案陣列中
+            const isCorrect = Array.isArray(targetScenario.correctKey) 
+                ? targetScenario.correctKey.includes(emotion) 
+                : targetScenario.correctKey === emotion;
+
+            if (isCorrect) {
+                // 將使用者選中的怪獸填入對話框中 (對齊語句鷹架樣式)
+                document.getElementById('phrase-monster').innerText = monsterChineseNames[emotion] + "會出現";
+                
+                playSuccessSound();
+                createConfettiExplosion();
+                
+                const overlay = document.getElementById('correctOverlay');
+                overlay.style.opacity = "1";
+                overlay.style.pointerEvents = "auto";
+                
+                speakChinese(`答對囉！我們可以用下方的語句練習說說看：當 ${targetScenario.cause}，我覺得 ${monsterChineseNames[emotion]}會出現，因為 ${targetScenario.reason}。`);
+                
+                setTimeout(() => {
+                    overlay.style.opacity = "0";
+                    overlay.style.pointerEvents = "none";
+                }, 4000);
+            } else {
+                // 答錯時，將空格恢復並給予語音提示
+                document.getElementById('phrase-monster').innerText = "______";
+                speakChinese("請再想想情緒是什麼");
+                playTone(400, 'sine', 0.1, 600);
+            }
+        }
+
+        function playScenarioAudio() {
+            initAudio();
+            const s = scenarios[currentScenarioIdx];
+            speakChinese(s.audioText);
+        }
+
+        function nextScenario() {
+            initAudio();
+            currentScenarioIdx = (currentScenarioIdx + 1) % scenarios.length;
+            renderCurrentScenario();
+            playTone(600, 'sine', 0.08, 800);
+        }
+
+        function renderCurrentScenario() {
+            const s = scenarios[currentScenarioIdx];
+            document.getElementById('scenarioIndex').innerText = `情境 ${currentScenarioIdx + 1} / ${scenarios.length}`;
+            document.getElementById('scenarioContent').innerHTML = s.text;
+            
+            document.querySelectorAll('.monster-card').forEach(el => {
+                el.classList.remove('bg-emerald-100', 'ring-4', 'ring-emerald-400');
+            });
+
+            // 回歸初始鷹架格式 (當......，我覺得______會出現，因為____________。)
+            document.getElementById('phrase-cause').innerText = s.cause;
+            document.getElementById('phrase-monster').innerText = "______";
+            document.getElementById('phrase-reason').innerText = s.reason;
+        }
+
+        function applyScenarioByBtn(idx) {
+            initAudio();
+            currentScenarioIdx = idx;
+            renderCurrentScenario();
+            playTone(550, 'sine', 0.05);
+        }
+
+        // ==================== 五彩碎紙歡慶特效 ====================
+        function createConfettiExplosion() {
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6'];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `${window.scrollY}px`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animationDelay = `${Math.random() * 0.4}s`;
+                
+                document.body.appendChild(confetti);
+
+                confetti.addEventListener('animationend', () => {
+                    confetti.remove();
+                });
+            }
+        }
+
+        // ==================== 任務三A：1分鐘快問快答破冰 ====================
+        const brainstormQuestions = [
+            {
+                text: `你最喜歡吃的水果是什麼？`,
+                voice: "你最喜歡吃的水果是什麼呢？"
+            },
+            {
+                text: `你最喜歡看什麼卡通？`,
+                voice: "你最喜歡看什麼卡通？"
+            },
+            {
+                text: `下課時你最想玩什麼遊戲？`,
+                voice: "下課時你最想玩什麼遊戲呢？"
+            },
+            {
+                text: `你最喜歡什麼動物？`,
+                voice: "你最喜歡什麼動物？"
+            }
+        ];
+        let qIndex = 0;
+        let qTimer = null;
+        let qSecondsLeft = 60;
+
+        function switchSubTab(subTabId) {
+            initAudio();
+            playBubbleSound();
+            
+            document.querySelectorAll('.sub-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(subTabId).classList.remove('hidden');
+
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-400');
+                btn.classList.add('bg-white', 'text-indigo-950', 'hover:bg-slate-100');
+            });
+            
+            const activeBtn = document.getElementById(subTabId === 'sub-brainstorm' ? 'tab-btn-brainstorm' : 'tab-btn-seating');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-indigo-950', 'hover:bg-slate-100');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-400');
+            }
+        }
+
+        function nextBrainstormQuestion() {
+            initAudio();
+            qIndex = (qIndex + 1) % brainstormQuestions.length;
+            document.getElementById('brainstormText').innerHTML = brainstormQuestions[qIndex].text;
+            playTone(650, 'sine', 0.1, 900);
+        }
+
+        function playBrainstormAudio() {
+            speakChinese(brainstormQuestions[qIndex].voice);
+        }
+
+        function startQTimer() {
+            initAudio();
+            clearInterval(qTimer);
+            qSecondsLeft = 60;
+            
+            const progressBar = document.getElementById('qProgress');
+            const timerText = document.getElementById('qTimerText');
+            const totalDash = 402.1;
+
+            playTone(440, 'sine', 0.1, 700);
+
+            qTimer = setInterval(() => {
+                qSecondsLeft--;
+                if (qSecondsLeft >= 0) {
+                    timerText.innerText = `${qSecondsLeft}s`;
+                    const offset = totalDash - (totalDash * qSecondsLeft / 60);
+                    progressBar.style.strokeDashoffset = offset;
+                    
+                    if (qSecondsLeft === 30) {
+                        playTone(700, 'sine', 0.3, 1000);
+                        speakChinese("時間過了一半囉！現在換另外一位同學分享答案了！");
+                    }
+                    if (qSecondsLeft <= 5 && qSecondsLeft > 0) {
+                        playTone(900, 'triangle', 0.05);
+                    }
+                } else {
+                    clearInterval(qTimer);
+                    playSuccessSound();
+                    createConfettiExplosion();
+                    showCustomAlert("⏱️ 輪流分享完畢！", "新舊鄰居的破冰非常順利！快跟新組員說謝謝！", "🤝");
+                }
+            }, 1000);
+        }
+
+        function resetQTimer() {
+            clearInterval(qTimer);
+            qSecondsLeft = 60;
+            document.getElementById('qTimerText').innerText = '60s';
+            document.getElementById('qProgress').style.strokeDashoffset = 0;
+            playTone(400, 'sine', 0.1);
+        }
+
+        // ==================== 任務三B：座位大風吹拉霸 ====================
+        const defaultNames = "1號 軒軒\n2號 小蓁\n3號 宇宇\n4號 睿睿\n5號 晴晴\n6號 凱凱\n7號 彤彤\n8號 豪豪\n9號 琪琪\n10號 冠冠\n11號 晨晨\n12號 菲菲\n13號 霆霆\n14號 瀅瀅\n15號 阿嘉\n16號 小柔\n17號 小希\n18號 阿修\n19號 婷婷\n20號 翔翔";
+
+        function loadDefaultStudents() {
+            initAudio();
+            document.getElementById('studentNamesInput').value = defaultNames;
+            playTone(550, 'sine', 0.05);
+        }
+
+        function shuffleSeats() {
+            initAudio();
+            const inputVal = document.getElementById('studentNamesInput').value.trim();
+            if (!inputVal) {
+                showCustomAlert("提醒", "請先輸入學生名字，每行一人，或點擊『載入示範名單』！", "✏️");
+                return;
+            }
+
+            const students = inputVal.split('\n')
+                .map(n => n.trim())
+                .filter(n => n.length > 0);
+
+            if (students.length === 0) return;
+
+            const shuffled = [...students];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            const groupType = document.querySelector('input[name="groupType"]:checked').value;
+            const seatingGrid = document.getElementById('seatingGrid');
+            seatingGrid.innerHTML = ''; 
+
+            playTone(400, 'sawtooth', 0.3, 800);
+            speakChinese("大風吹，吹什麼？吹需要重新認識新朋友的人！座位洗牌開始囉！");
+
+            shuffled.forEach((student, index) => {
+                setTimeout(() => {
+                    const groupColor = groupType === "2" 
+                        ? (Math.floor(index / 2) % 2 === 0 ? 'bg-indigo-100 border-indigo-400' : 'bg-emerald-100 border-emerald-400')
+                        : (Math.floor(index / 4) % 2 === 0 ? 'bg-indigo-100 border-indigo-400' : 'bg-amber-100 border-amber-400');
+                    
+                    const groupLabel = groupType === "2"
+                        ? `組 ${Math.floor(index / 2) + 1}`
+                        : `組 ${Math.floor(index / 4) + 1}`;
+
+                    const deskHTML = `
+                        <div class="p-3 rounded-2xl border-2 shadow-sm ${groupColor} transform scale-50 opacity-0 transition-all duration-300 flex flex-col items-center justify-between min-h-[80px]" id="desk-${index}">
+                            <div class="flex justify-between w-full items-center text-[9px] text-slate-500 font-bold">
+                                <span>Desk ${index + 1}</span>
+                                <span class="bg-white/70 px-1.5 py-0.5 rounded-full">${groupLabel}</span>
+                            </div>
+                            <span class="font-black text-slate-800 text-sm mt-2">${student}</span>
+                        </div>
+                    `;
+                    seatingGrid.insertAdjacentHTML('beforeend', deskHTML);
+                    
+                    setTimeout(() => {
+                        const desk = document.getElementById(`desk-${index}`);
+                        if (desk) {
+                            desk.classList.remove('scale-50', 'opacity-0');
+                            desk.classList.add('scale-100', 'opacity-100');
+                        }
+                    }, 50);
+
+                    playTickSound();
+                }, index * 120); 
+            });
+
+            setTimeout(() => {
+                playSuccessSound();
+                createConfettiExplosion();
+            }, shuffled.length * 120 + 200);
+        }
+
+        // ==================== 系統全面重置機制 ====================
+        function resetAll() {
+            initAudio();
+            showCustomAlert("系統重置", "已為您重置金幣、大轉盤、倒數器與所有座位紀錄！", "🔄");
+            
+            for (const key in groupScores) {
+                groupScores[key] = 0;
+                document.getElementById(`score-${key}`).innerText = "0";
+            }
+            document.getElementById('currentRuleDisplay').innerText = "— 尚未轉動 —";
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+            currentWheelAngle = 0;
+            
+            resetTimer();
+            resetQTimer();
+            
+            document.getElementById('seatingGrid').innerHTML = `
+                <div class="col-span-full py-16 text-center text-slate-400 flex flex-col items-center">
+                    <i class="fas fa-th text-4xl mb-2 text-indigo-200"></i>
+                    <span class="text-sm font-bold">尚未開始大風吹！請在左側確認名單後，點擊「大風吹」洗牌！</span>
+                </div>
+            `;
+            
+            playTone(300, 'sine', 0.4);
+            speakChinese("系統已重新設定，讓我們重新開始探險吧！");
+        }
+
+        // ==================== 頁面初始運行 ====================
+        window.onload = function() {
+            document.getElementById('studentNamesInput').value = defaultNames;
+            
+            renderCurrentScenario();
+            document.getElementById('brainstormText').innerHTML = brainstormQuestions[0].text;
+
+            document.body.addEventListener('click', function init() {
+                initAudio();
+                document.body.removeEventListener('click', init);
+            });
+            
+            setTimeout(() => {
+                speakChinese("各位同學好，歡迎來到人際探險隊！今天讓我們跟著小怪獸，一起完成各項探險任務吧！");
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

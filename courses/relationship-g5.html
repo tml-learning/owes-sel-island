@@ -1,0 +1,1007 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五之神探險隊：SEL 互動合作與情緒魔法鏡</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adventure: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        emotion: {
+                            calm: '#0ea5e9',
+                            angry: '#ef4444',
+                            passive: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .domino {
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .domino.fallen {
+            transform: rotate(75deg) translateY(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- 頂部冒險導航 -->
+    <header class="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2.5 rounded-2xl backdrop-blur-sm border border-white/10 shadow-inner">
+                    <span class="text-3xl">🧭</span>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-wider flex items-center gap-2">
+                        五之神探險隊 <span class="bg-yellow-300 text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold">5年級人際關係技巧學習</span>
+                    </h1>
+                    <p class="text-xs text-emerald-50 mt-0.5">學習「高階合作、情緒傳染、同儕壓力防護罩」的魔法鏡</p>
+                </div>
+            </div>
+            <!-- 教學指引速看按鈕 -->
+            <button onclick="toggleSupportZone()" class="bg-white/20 hover:bg-white/30 border border-white/30 px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                <span class="text-yellow-300">💡</span> 教師/家長引導指南
+            </button>
+        </div>
+    </header>
+
+    <!-- 主要分頁導覽 -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-4xl mx-auto px-2 sm:px-4 flex justify-between">
+            <button onclick="switchTab('tab-jigsaw')" id="btn-tab-jigsaw" class="tab-btn flex-1 py-3 sm:py-4 text-center font-black text-xs sm:text-sm md:text-base border-b-4 border-emerald-500 text-emerald-600 transition-all flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                <span class="text-base sm:text-lg">🧩</span> <span class="leading-tight">1. 團隊任務</span>
+            </button>
+            <button onclick="switchTab('tab-domino')" id="btn-tab-domino" class="tab-btn flex-1 py-3 sm:py-4 text-center font-black text-xs sm:text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-emerald-500 transition-all flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                <span class="text-base sm:text-lg">⚡</span> <span class="leading-tight">2. 魔法鏡</span>
+            </button>
+            <button onclick="switchTab('tab-log')" id="btn-tab-log" class="tab-btn flex-1 py-3 sm:py-4 text-center font-black text-xs sm:text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-emerald-500 transition-all flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                <span class="text-base sm:text-lg">🛡️</span> <span class="leading-tight">3. 反思日誌</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+
+        <!-- 頁籤一：團隊拼圖任務 (Jigsaw & Carbon Task) -->
+        <section id="tab-jigsaw" class="tab-content block space-y-6">
+            
+            <!-- 任務 1-1：生火密碼 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl mt-0.5">💡</span>
+                    <div>
+                        <h3 class="font-black text-lg text-slate-800">【任務 1-1：營地生火】沒有你，我們就無法完成！</h3>
+                        <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+                            國小五年級的團隊合作越來越複雜。如果只有一個人埋頭苦幹，探險隊就無法度過黑夜。
+                            請小組內<b>3人各選一個專家角色</b>，認真閱讀被分派到的「生存秘密」並用<b>口頭分享</b>給隊友，合力破解「生火密碼」！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 角色卡選擇 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 地圖專家 -->
+                <div class="bg-amber-50/50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl p-5 shadow-sm transition-all duration-300 relative overflow-hidden flex flex-col justify-between" id="card-role-a">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-lg">角色 A</span>
+                            <span id="badge-a" class="text-xs font-bold text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full bg-slate-50">🔒 尚未解鎖</span>
+                        </div>
+                        <h4 class="font-extrabold text-xl text-slate-800 flex items-center gap-2">🗺️ 地圖導航專家</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">負責規劃安全的攀爬與行進路線，避開大自然的陷阱。</p>
+                    </div>
+                    
+                    <button onclick="openUnlockModal('A')" class="mt-6 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
+                        取得機密情報
+                    </button>
+
+                    <!-- 機密資訊內容區 -->
+                    <div id="secret-content-a" class="hidden mt-4 border-t border-slate-100 pt-4 text-xs bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                        <span class="text-emerald-800 font-bold block mb-1">【我的口頭傳授秘密】</span>
+                        <p class="text-slate-600 leading-relaxed mb-2">
+                            我們必須先走安全步道，雖然比較遠但安全。<b>第一碼通關數字是【 5 】</b>。
+                        </p>
+                        <span class="text-[10px] text-slate-400 italic block">※請用講的，千萬別讓隊友偷看！</span>
+                    </div>
+                </div>
+
+                <!-- 物資專家 -->
+                <div class="bg-blue-50/50 border-2 border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm transition-all duration-300 relative overflow-hidden flex flex-col justify-between" id="card-role-b">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-bold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-lg">角色 B</span>
+                            <span id="badge-b" class="text-xs font-bold text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full bg-slate-50">🔒 尚未解鎖</span>
+                        </div>
+                        <h4 class="font-extrabold text-xl text-slate-800 flex items-center gap-2">🎒 背包物資專家</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">負責分配水、乾糧、手電筒以及防寒衣物重力分配。</p>
+                    </div>
+                    
+                    <button onclick="openUnlockModal('B')" class="mt-6 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
+                        取得機密情報
+                    </button>
+
+                    <!-- 機密資訊內容區 -->
+                    <div id="secret-content-b" class="hidden mt-4 border-t border-slate-100 pt-4 text-xs bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                        <span class="text-emerald-800 font-bold block mb-1">【我的口頭傳授秘密】</span>
+                        <p class="text-slate-600 leading-relaxed mb-2">
+                            每人背包要留空間分擔重物，水 and 急救包放在外側。<b>第二碼通關數字是【 2 】</b>。
+                        </p>
+                        <span class="text-[10px] text-slate-400 italic block">※請用講的，千萬別讓隊友偷看！</span>
+                    </div>
+                </div>
+
+                <!-- 風險專家 -->
+                <div class="bg-purple-50/50 border-2 border-slate-200 hover:border-purple-400 rounded-2xl p-5 shadow-sm transition-all duration-300 relative overflow-hidden flex flex-col justify-between" id="card-role-c">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-bold bg-purple-100 text-purple-800 px-2.5 py-1 rounded-lg">角色 C</span>
+                            <span id="badge-c" class="text-xs font-bold text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full bg-slate-50">🔒 尚未解鎖</span>
+                        </div>
+                        <h4 class="font-extrabold text-xl text-slate-800 flex items-center gap-2">⚠️ 安全風險專家</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">負責觀測雲霧、防範雷雨 and 意外失溫的預防應變。</p>
+                    </div>
+                    
+                    <button onclick="openUnlockModal('C')" class="mt-6 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
+                        取得機密情報
+                    </button>
+
+                    <!-- 機密資訊內容區 -->
+                    <div id="secret-content-c" class="hidden mt-4 border-t border-slate-100 pt-4 text-xs bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                        <span class="text-emerald-800 font-bold block mb-1">【我的口頭傳授秘密】</span>
+                        <p class="text-slate-600 leading-relaxed mb-2">
+                            如果遇到大雨，我們必須原地避雨絕不強行攀登。<b>第三碼通關數字是【 0 】</b>。
+                        </p>
+                        <span class="text-[10px] text-slate-400 italic block">※請用講的，千萬別讓隊友偷看！</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 密碼通關區域 -->
+            <div class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100 text-slate-800 rounded-2xl p-6 shadow-md border border-amber-200 mt-8">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <div class="flex-grow space-y-2 text-center md:text-left">
+                        <span class="text-xs font-bold uppercase tracking-wider text-orange-600 flex items-center justify-center md:justify-start gap-1">
+                            <i class="fa-solid fa-fire"></i> 營地挑戰：生火安全鎖
+                        </span>
+                        <h4 class="text-xl font-extrabold text-slate-800">輸入全組專家帶來的 3 位數秘密程式碼！</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            只有集合地圖（A）、物資（B）和風險（C）專家的答案，推導出正确的代碼順序（A→B→C），才能成功升起篝火！
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-center flex-wrap gap-2">
+                        <input type="text" id="jigsaw-input-1" maxlength="1" oninput="focusNextInput(this, 'jigsaw-input-2')" class="w-12 h-14 bg-white border border-amber-300 rounded-xl text-center text-2xl font-black text-amber-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-sm">
+                        <input type="text" id="jigsaw-input-2" maxlength="1" oninput="focusNextInput(this, 'jigsaw-input-3')" class="w-12 h-14 bg-white border border-amber-300 rounded-xl text-center text-2xl font-black text-amber-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-sm">
+                        <input type="text" id="jigsaw-input-3" maxlength="1" class="w-12 h-14 bg-white border border-amber-300 rounded-xl text-center text-2xl font-black text-amber-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-sm">
+                        <button onclick="verifyJigsawCode()" class="ml-0 sm:ml-2 mt-2 sm:mt-0 w-full sm:w-auto px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white font-extrabold rounded-xl transition-all shadow-md">
+                            破解
+                        </button>
+                    </div>
+                </div>
+                <!-- 驗證成功畫面 -->
+                <div id="jigsaw-success-box" class="hidden mt-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
+                    <p class="text-emerald-700 font-black text-lg flex items-center justify-center gap-2">
+                        🎉 <span id="success-message">恭喜通關！營火熊熊燃起！</span> 🔥
+                    </p>
+                    <p class="text-xs text-slate-600 mt-1">
+                        你們小組落實了「正向相互依賴」，每個人都是至關重要的拼圖！
+                    </p>
+                </div>
+            </div>
+
+            <!-- 分隔線 -->
+            <hr class="my-10 border-slate-200 border-dashed border-2">
+
+            <!-- 任務 1-2：減碳任務 (專家會議與小組教學) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl mt-0.5">🌱</span>
+                    <div>
+                        <h3 class="font-black text-lg text-slate-800">【任務 1-2：拯救地球】減碳專家會議與小組教學</h3>
+                        <p class="text-sm text-slate-500 mt-2 leading-relaxed">
+                            地球爺爺生病了，需要大家集思廣益！這次我們將進行真實的「專家會議」：<br><br>
+                            <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-bold mr-1">步驟 1</span> <b>專家會議：</b>請暫時離開原本的小組。全班的「角色A」集合在一起討論節能，「角色B」討論資源回收，「角色C」討論綠色出行。<br>
+                            <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-bold mr-1">步驟 2</span> <b>做好筆記：</b>將你們專家小組討論出的「減碳秘訣」，用文字記錄在下方的專屬筆記本中。<br>
+                            <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-bold mr-1">步驟 3</span> <b>小組教學：</b>會議結束後，回到你原來的3人探險小組，看著你的筆記，把秘訣「教導」給你的隊友！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 專家筆記區 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 專家 A 筆記 -->
+                <div class="bg-teal-50/50 border-2 border-teal-200 rounded-2xl p-5 shadow-sm flex flex-col h-full">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-bold bg-teal-100 text-teal-800 px-2.5 py-1 rounded-lg">角色 A</span>
+                    </div>
+                    <h4 class="font-extrabold text-lg text-teal-900 mb-1">💡 節能減碳專家</h4>
+                    <p class="text-xs text-teal-700 mb-3 flex-grow-0">請記錄專家小組討論出的節能方法：</p>
+                    <textarea rows="5" class="w-full p-3 rounded-xl border border-teal-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm text-slate-700 custom-scroll flex-grow" placeholder="例如：隨手關燈、冷氣調高溫度、拔掉待機插頭..."></textarea>
+                </div>
+
+                <!-- 專家 B 筆記 -->
+                <div class="bg-indigo-50/50 border-2 border-indigo-200 rounded-2xl p-5 shadow-sm flex flex-col h-full">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-bold bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-lg">角色 B</span>
+                    </div>
+                    <h4 class="font-extrabold text-lg text-indigo-900 mb-1">♻️ 資源回收專家</h4>
+                    <p class="text-xs text-indigo-700 mb-3 flex-grow-0">請記錄專家小組討論出的回收與減廢方法：</p>
+                    <textarea rows="5" class="w-full p-3 rounded-xl border border-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm text-slate-700 custom-scroll flex-grow" placeholder="例如：確實做好垃圾分類、出門攜帶環保餐具與水壺..."></textarea>
+                </div>
+
+                <!-- 專家 C 筆記 -->
+                <div class="bg-rose-50/50 border-2 border-rose-200 rounded-2xl p-5 shadow-sm flex flex-col h-full">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-bold bg-rose-100 text-rose-800 px-2.5 py-1 rounded-lg">角色 C</span>
+                    </div>
+                    <h4 class="font-extrabold text-lg text-rose-900 mb-1">🚴 綠色出行專家</h4>
+                    <p class="text-xs text-rose-700 mb-3 flex-grow-0">請記錄專家小組討論出的交通環保方法：</p>
+                    <textarea rows="5" class="w-full p-3 rounded-xl border border-rose-300 focus:ring-2 focus:ring-rose-500 focus:outline-none text-sm text-slate-700 custom-scroll flex-grow" placeholder="例如：短程距離多走路或騎腳踏車、盡量搭乘大眾運輸工具..."></textarea>
+                </div>
+            </div>
+
+            <!-- 完成教學按鈕 -->
+            <div class="text-center mt-8 pb-4">
+                <button onclick="finishCarbonTeaching()" class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    🎉 我們小組已經完成互相教學！
+                </button>
+            </div>
+
+        </section>
+
+        <!-- 頁籤二：情緒連鎖魔法鏡 (Dominoes & Emotion Simulator) -->
+        <section id="tab-domino" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl mt-0.5">🧠</span>
+                    <div>
+                        <h3 class="font-black text-lg text-slate-800">情緒骨牌效應：你的反應，決定環境的溫度</h3>
+                        <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+                            在合作中，衝突常在不自知的「口語與肢體（挑釁、不屑）」中蔓延。
+                            試著選擇不同的應對態度，觀看情緒魔法鏡中的「骨牌」與「合作溫度計」將如何產生天差地別的變化！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 情境背景說明 -->
+            <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-sm border border-indigo-700">
+                <span class="text-xs bg-indigo-400 text-white px-2.5 py-1 rounded-full font-bold">🚨 探險危機情境</span>
+                <p class="font-bold text-base md:text-lg mt-2">
+                    「天啊！你的隊友阿強不小心把整壺水倒在地圖上，你們唯一的紙本地圖全毀了！」
+                </p>
+                <p class="text-xs text-indigo-100 mt-1">這時，你決定用哪種「心態和語氣」來展開對話？</p>
+            </div>
+
+            <!-- 骨牌動畫可視覺化區域與溫度計 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-stretch">
+                <!-- 合作溫度計 -->
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl flex flex-col items-center justify-center gap-4 text-center shadow-sm">
+                    <span class="font-black text-sm text-slate-600">🌡️ 合作溫度計</span>
+                    <div class="h-40 w-8 bg-slate-100 rounded-full relative overflow-hidden flex flex-col justify-end border border-slate-200 shadow-inner">
+                        <div id="temp-bar" class="w-full bg-sky-400 transition-all duration-700" style="height: 37%;"></div>
+                    </div>
+                    <div>
+                        <span id="temp-value" class="font-black text-2xl text-sky-500">37°C</span>
+                        <p id="temp-status" class="text-xs text-slate-500 mt-1 font-bold">溫和理性中</p>
+                    </div>
+                </div>
+
+                <!-- 情緒連鎖模擬鏡 -->
+                <div class="md:col-span-3 bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 border border-sky-100 rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden min-h-[300px] shadow-sm">
+                    <div class="absolute inset-0 bg-[radial-gradient(#3b82f61a_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
+                    
+                    <!-- 骨牌視覺帶 -->
+                    <div class="relative z-10 flex justify-around items-center h-48 border-b border-sky-100 px-4">
+                        <div id="domino-1" class="domino w-8 h-24 bg-white rounded-lg shadow-sm border border-sky-300 flex flex-col justify-center items-center font-bold text-sky-800 text-xs">我</div>
+                        <div id="domino-2" class="domino w-8 h-24 bg-white rounded-lg shadow-sm border border-sky-200 flex flex-col justify-center items-center font-bold text-sky-700 text-xs">阿強</div>
+                        <div id="domino-3" class="domino w-8 h-24 bg-white rounded-lg shadow-sm border border-sky-200 flex flex-col justify-center items-center font-bold text-sky-700 text-xs">隊友</div>
+                        <div id="domino-4" class="domino w-8 h-24 bg-white rounded-lg shadow-sm border border-sky-200 flex flex-col justify-center items-center font-bold text-sky-700 text-xs">結局</div>
+                    </div>
+
+                    <!-- 情緒對話對話泡泡 -->
+                    <div class="relative z-10 bg-white/90 border border-sky-100 p-4 rounded-xl shadow-sm">
+                        <p id="dialogue-box" class="text-sm font-medium text-slate-600 text-center italic">
+                            「請在下方挑選你的情緒反應，看魔法鏡如何連鎖！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 選擇反應 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="simulateEmotion('angry')" class="p-4 bg-white hover:bg-rose-50 border-2 border-slate-200 hover:border-rose-400 rounded-2xl transition-all text-left flex items-start gap-3 group shadow-sm">
+                    <span class="text-3xl">😠</span>
+                    <div>
+                        <h4 class="font-extrabold text-slate-800 group-hover:text-rose-700">【憤怒指責】直接發飆</h4>
+                        <p class="text-xs text-slate-500 mt-1">「你是故意的嗎？搞什麼啊！全隊都被你害慘了！」</p>
+                    </div>
+                </button>
+                <button onclick="simulateEmotion('passive')" class="p-4 bg-white hover:bg-amber-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl transition-all text-left flex items-start gap-3 group shadow-sm">
+                    <span class="text-3xl">🙄</span>
+                    <div>
+                        <h4 class="font-extrabold text-slate-800 group-hover:text-amber-700">【消極被動】翻白眼、冷嘲熱諷</h4>
+                        <p class="text-xs text-slate-500 mt-1">「隨便啦，反正我們這組就是倒楣。我不想管了。」</p>
+                    </div>
+                </button>
+                <button onclick="simulateEmotion('calm')" class="p-4 bg-white hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-400 rounded-2xl transition-all text-left flex items-start gap-3 group shadow-sm">
+                    <span class="text-3xl">😌</span>
+                    <div>
+                        <h4 class="font-extrabold text-slate-800 group-hover:text-emerald-700">【SEL正向溝通】情緒控制</h4>
+                        <p class="text-xs text-slate-500 mt-1">先深呼吸，溫和地說：「別慌，雖然有點生氣，但我們來想別的辦法。」</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- 頁籤三：進階反思日誌與反思牆 (Log & Peer Pressure Shield) -->
+        <section id="tab-log" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <!-- 日誌表單 -->
+                <div class="lg:col-span-3 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div>
+                        <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-1">
+                            <span>🛡️</span> 進階合作日誌
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">勇敢寫下你的真實貢獻，與應對社交壓力的策略。</p>
+                    </div>
+
+                    <form id="log-form" onsubmit="submitReflection(event)" class="space-y-4">
+                        <!-- 我負責的角色 -->
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 mb-1">Q1. 我今天在小組探險裡扮演了什麼角色？對團隊有何貢獻？</label>
+                            <input type="text" id="log-role" required placeholder="例如：地圖導航專家，用口頭提供關鍵數字5，並教導大家節能方法！" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        </div>
+
+                        <!-- 互助星星自評 -->
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 mb-2">Q2. 我給今天小組的合作與溝通打幾顆星？（自我覺察）</label>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="rateStars(1)" id="star-1" class="text-2xl text-slate-200 hover:scale-110 transition-transform"><i class="fa-solid fa-star"></i></button>
+                                <button type="button" onclick="rateStars(2)" id="star-2" class="text-2xl text-slate-200 hover:scale-110 transition-transform"><i class="fa-solid fa-star"></i></button>
+                                <button type="button" onclick="rateStars(3)" id="star-3" class="text-2xl text-slate-200 hover:scale-110 transition-transform"><i class="fa-solid fa-star"></i></button>
+                                <button type="button" onclick="rateStars(4)" id="star-4" class="text-2xl text-slate-200 hover:scale-110 transition-transform"><i class="fa-solid fa-star"></i></button>
+                                <button type="button" onclick="rateStars(5)" id="star-5" class="text-2xl text-slate-200 hover:scale-110 transition-transform"><i class="fa-solid fa-star"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- 抵抗不當壓力盾牌 (鷹架機制) -->
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 mb-2">
+                                Q3. 💡 挑戰：組員都在偷懶玩平板，並叫你幫他們把日誌亂寫敷衍，你會怎麼防禦同儕壓力？
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                                <button type="button" onclick="applyShield('firm')" class="text-left p-2.5 bg-sky-50 border border-sky-200 hover:bg-sky-100 rounded-xl transition-all">
+                                    <span class="text-xs font-extrabold text-sky-800 block">🛡️ 溫和堅定盾</span>
+                                    <span class="text-[10px] text-sky-600 mt-0.5 block">明確表達意願與原則</span>
+                                </button>
+                                <button type="button" onclick="applyShield('alt')" class="text-left p-2.5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 rounded-xl transition-all">
+                                    <span class="text-xs font-extrabold text-emerald-800 block">🛡️ 替代分工盾</span>
+                                    <span class="text-[10px] text-emerald-600 mt-0.5 block">提出具體雙贏建議</span>
+                                </button>
+                                <button type="button" onclick="applyShield('empathy')" class="text-left p-2.5 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-xl transition-all">
+                                    <span class="text-xs font-extrabold text-amber-800 block">🛡️ 同理台階盾</span>
+                                    <span class="text-[10px] text-amber-600 mt-0.5 block">同理隊友並維持關係</span>
+                                </button>
+                            </div>
+                            <textarea id="log-pressure" required rows="3" placeholder="點選上方的『防護罩盾牌』快速獲得溝通靈感，或親自輸入..." class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+                        </div>
+
+                        <!-- 姓名填寫與存檔 -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                            <div class="flex-grow">
+                                <input type="text" id="log-name" required placeholder="輸入你的名字" class="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            </div>
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm transition-all shadow-md">
+                                送出反思牆
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 右側反思牆 -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-extrabold text-slate-800 flex items-center gap-2">
+                                <span class="text-lg">🧱</span> 班級探險反思牆
+                            </h4>
+                        </div>
+                        <div id="class-wall-logs" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scroll">
+                            <!-- 動態生成紀錄將插入此處 -->
+                            <div id="no-log-placeholder" class="text-center py-8 text-slate-400 text-xs italic">
+                                目前反思牆空空如也，快當第一個發表的人吧！
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-4 flex justify-between items-center">
+                        <span class="text-[10px] text-slate-400">※ 資料僅保留在瀏覽器中</span>
+                        <button id="clear-logs-btn" onclick="clearLogs()" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold transition-all">
+                            🗑️ 清除所有紀錄
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 家長與教師支持專區 (Support Zone) -->
+    <section class="max-w-4xl w-full mx-auto px-4 mb-8">
+        <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl overflow-hidden shadow-sm">
+            <!-- 專區標題按鈕 -->
+            <button onclick="toggleSupportZone()" class="w-full flex justify-between items-center p-5 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-left transition-all hover:opacity-95">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🌟</span>
+                    <div>
+                        <h3 class="font-extrabold text-base md:text-lg">家長與教師支持專區（給大人的話）</h3>
+                        <p class="text-xs text-indigo-100 mt-0.5">理解 SEL 的核心教育意義，獲取課堂引導與家庭共學指南</p>
+                    </div>
+                </div>
+                <span id="support-toggle-icon" class="text-xl transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+
+            <!-- 專區內容 (預設折疊) -->
+            <div id="support-content" class="hidden border-t border-indigo-200 bg-white">
+                <!-- 專區內部分頁標籤 -->
+                <div class="flex border-b border-slate-200 bg-slate-50/50">
+                    <button onclick="switchSupportTab('sup-theory')" id="btn-sup-theory" class="support-tab-btn flex-1 py-3 text-xs md:text-sm font-bold text-indigo-700 border-b-2 border-indigo-600 transition-all text-center">
+                        🧠 設計背後的教育意義
+                    </button>
+                    <button onclick="switchSupportTab('sup-class')" id="btn-sup-class" class="support-tab-btn flex-1 py-3 text-xs md:text-sm font-bold text-slate-500 hover:text-indigo-600 transition-all text-center">
+                        🏫 課堂教學實施指南
+                    </button>
+                    <button onclick="switchSupportTab('sup-home')" id="btn-sup-home" class="support-tab-btn flex-1 py-3 text-xs md:text-sm font-bold text-slate-500 hover:text-indigo-600 transition-all text-center">
+                        🏠 家庭親情延伸共學
+                    </button>
+                </div>
+
+                <!-- 分頁內文 -->
+                <div class="p-6">
+                    <!-- Tab A: 教育意義 -->
+                    <div id="sup-theory" class="support-tab-content block space-y-4 text-slate-700 text-sm">
+                        <h4 class="font-extrabold text-indigo-900 flex items-center gap-2 text-base">
+                            <span class="p-1 bg-indigo-100 rounded text-indigo-700 text-xs">SEL核心 01</span> 
+                            拼圖教學法 (Jigsaw Method) 如何增進「正向相互依賴」？
+                        </h4>
+                        <p class="leading-relaxed">
+                            國小五年級學生正處於群體同儕認同的關鍵期，常出現「能力強者過度主導任務、其他成員搭便車」的現象。拼圖法先讓學生分組解謎（生火密碼），再進入「專家會議」共同討論（減碳筆記），最後回到原組別擔任「小老師」。這能建立學生的社會責任感，讓每位學生在團體中都能肯定自我價值，並學會傾聽同儕。
+                        </p>
+                        
+                        <hr class="border-slate-100 my-4">
+                        
+                        <h4 class="font-extrabold text-indigo-900 flex items-center gap-2 text-base">
+                            <span class="p-1 bg-indigo-100 rounded text-indigo-700 text-xs">SEL核心 02</span> 
+                            情緒反應模擬與「非口語溝通」的隱形張力
+                        </h4>
+                        <p class="leading-relaxed">
+                            人際摩擦中，造成對立的往往不是「說話內容」，而是「說話表情、語氣、動作」（非口語訊息）。高年級學生大腦的杏仁核發育漸趨成熟，容易對敵意訊息產生「戰或逃（Fight or Flight）」的本能反應。本模擬器透過「骨牌反應」和「合作溫度計」，將抽象的情緒流動視覺化，教導學生在刺激與反應之間，保有一段「自我管理」的緩衝空間。
+                        </p>
+
+                        <hr class="border-slate-100 my-4">
+
+                        <h4 class="font-extrabold text-indigo-900 flex items-center gap-2 text-base">
+                            <span class="p-1 bg-indigo-100 rounded text-indigo-700 text-xs">SEL核心 03</span> 
+                            社交壓力與防禦寫作：同儕群體中的自主權
+                        </h4>
+                        <p class="leading-relaxed">
+                            「從眾行為」在高年級尤為明顯。當團體產生「不想努力、排擠、嘲諷」等不良風氣時，學生因害怕落單往往選擇妥協。藉由情境式的防禦寫作，我們提供三種<strong>溝通防禦盾牌（溫和堅定、提出分工、同理給台階）</strong>，這不僅是話術練習，更能幫助孩子建立內在核心信念（Self-efficacy），在社交壓力下做出合乎道德的抉擇。
+                        </p>
+                    </div>
+
+                    <!-- Tab B: 課堂實施 -->
+                    <div id="sup-class" class="support-tab-content hidden space-y-5 text-slate-700 text-sm">
+                        <div class="bg-amber-50/50 border border-amber-100 p-4 rounded-xl">
+                            <h5 class="font-bold text-amber-800 text-sm flex items-center gap-1.5 mb-2">
+                                <i class="fa-solid fa-clock"></i> 建議課堂節數：1~2 節課 (40~80分鐘)
+                            </h5>
+                            <ol class="list-decimal list-inside space-y-2 text-xs md:text-sm text-slate-600">
+                                <li><strong>課前暖身（10分鐘）：</strong>引導話題「你們曾在哪個小組合作中感到挫折？當時大家都負責了什麼？」</li>
+                                <li><strong>第一階段：生火密碼（15分鐘）：</strong>將班上每3人分為一組，分配 A、B、C 專家，完全用「口頭」將生存祕密與彼此分享並解鎖密碼。</li>
+                                <li><strong>第二階段：專家會議與教學（15分鐘）：</strong>將所有A角色集合成大組討論節能，以此類推。討論後寫下筆記，再回到原來的3人小組互相教導。</li>
+                                <li><strong>情緒模擬與角色扮演（10分鐘）：</strong>請同學上台示範不同的情緒表達（生氣 vs 溫和），體會非口語溝通對環境氣氛的影響。</li>
+                                <li><strong>反思書寫與牆上發表（10分鐘）：</strong>學生各自填寫合作日誌，並匯出檔案，供老師收集為形成性評量基準。</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Tab C: 家庭共學 -->
+                    <div id="sup-home" class="support-tab-content hidden space-y-4 text-slate-700 text-sm">
+                        <p class="leading-relaxed font-semibold">
+                            家庭是孩子情緒與社交技巧的第一個修練場。回到家中，家長可以利用日常事件延伸本教具的學習成果：
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex gap-3 items-start bg-emerald-50/40 p-3.5 rounded-xl border border-emerald-100">
+                                <span class="text-xl">✨</span>
+                                <div>
+                                    <h5 class="font-bold text-emerald-800 text-sm">家長心法 1：日常情緒「倒帶與重播」</h5>
+                                    <p class="text-xs text-slate-600 mt-1">
+                                        當孩子與手足或同學發生爭吵時，別急著責備。可以套用網頁中的「情緒魔法鏡」，詢問孩子：「如果當時你用『溫和與解決問題』代替『直接指責』，你覺得後面的骨牌會怎麼倒下去？」引導孩子自己推論行為後果。
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 items-start bg-emerald-50/40 p-3.5 rounded-xl border border-emerald-100">
+                                <span class="text-xl">🛡️</span>
+                                <div>
+                                    <h5 class="font-bold text-emerald-800 text-sm">家長心法 2：練習對無理要求「說不」</h5>
+                                    <p class="text-xs text-slate-600 mt-1">
+                                        利用角色扮演，和孩子演練社交壓力情境。例如：「如果好朋友要你幫他作弊，否則就不當你的好朋友，你會挑選哪一面防禦盾牌來回應？」讓孩子在家中安全、無壓力的環境中，建立堅韌的人際自主權。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 自訂美化提示訊息 (取代危險的 alert) -->
+    <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 scale-90 w-[90%] max-w-md">
+        <div id="toast-box" class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700/50 justify-center">
+            <span id="toast-icon" class="text-xl flex-shrink-0">🔔</span>
+            <span id="toast-message" class="text-sm font-bold tracking-wide break-words">這是一條通知</span>
+        </div>
+    </div>
+
+    <!-- 解鎖機密用的彈出視窗 (Modal) -->
+    <div id="unlock-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300" id="modal-card">
+            <div class="flex justify-between items-start mb-4">
+                <h4 class="font-black text-lg text-slate-800 flex items-center gap-1.5">
+                    🔓 領取 <span id="modal-role-title" class="text-emerald-700">A</span> 專家機密情報
+                </h4>
+                <button onclick="closeUnlockModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- 輸入探險者姓名 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">1. 輸入你的名字</label>
+                    <input type="text" id="modal-user-name" placeholder="請輸入名字..." class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                </div>
+
+                <!-- 誓言複選框 -->
+                <label class="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 cursor-pointer select-none">
+                    <input type="checkbox" id="modal-pledge" class="w-4 h-4 mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                    <div>
+                        <span class="text-xs font-extrabold text-slate-700 block">✋ 團隊守護宣言</span>
+                        <span class="text-[10px] text-slate-500 leading-relaxed block mt-0.5">
+                            我承諾會用「口頭方式」分享這個秘密，絕不把螢幕直接展示給組員看，讓我們一起體驗拼圖合作的樂趣！
+                        </span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button onclick="closeUnlockModal()" class="flex-1 py-2.5 border border-slate-200 text-slate-500 hover:bg-slate-50 font-bold rounded-xl text-sm transition-all">
+                    取消
+                </button>
+                <button onclick="confirmUnlock()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
+                    確認解鎖
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 系統狀態
+        let currentTab = 'tab-jigsaw';
+        let currentUnlockRole = ''; 
+        let ratingScore = 0; 
+        
+        // 支援專區狀態
+        let isSupportOpen = false;
+
+        // 專家任務機密內容 (僅保留生火任務)
+        const roleSecrets = {
+            'A': {
+                name: '地圖導航專家',
+                badgeId: 'badge-a',
+                cardId: 'card-role-a',
+                contentId: 'secret-content-a'
+            },
+            'B': {
+                name: '背包物資專家',
+                badgeId: 'badge-b',
+                cardId: 'card-role-b',
+                contentId: 'secret-content-b'
+            },
+            'C': {
+                name: '安全風險專家',
+                badgeId: 'badge-c',
+                cardId: 'card-role-c',
+                contentId: 'secret-content-c'
+            }
+        };
+
+        // 頁籤切換
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(element => {
+                element.classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-500', 'text-emerald-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.add('border-emerald-500', 'text-emerald-600');
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+            
+            currentTab = tabId;
+        }
+
+        // 顯示精美 Toast 提示
+        function showToast(message, icon = '🔔') {
+            const container = document.getElementById('toast-container');
+            const box = document.getElementById('toast-box');
+            document.getElementById('toast-icon').innerText = icon;
+            document.getElementById('toast-message').innerText = message;
+
+            container.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+            setTimeout(() => {
+                container.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // 開啟解鎖 Modal (團隊拼圖)
+        function openUnlockModal(roleCode) {
+            currentUnlockRole = roleCode;
+            document.getElementById('modal-role-title').innerText = roleSecrets[roleCode].name;
+            document.getElementById('modal-user-name').value = '';
+            document.getElementById('modal-pledge').checked = false;
+
+            const modal = document.getElementById('unlock-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-95');
+        }
+
+        // 關閉解鎖 Modal
+        function closeUnlockModal() {
+            const modal = document.getElementById('unlock-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            card.classList.add('scale-95');
+        }
+
+        // 確認解鎖專家機密
+        function confirmUnlock() {
+            const userName = document.getElementById('modal-user-name').value.trim();
+            const pledgeChecked = document.getElementById('modal-pledge').checked;
+
+            if (!userName) {
+                showToast('請先輸入您的探險者姓名！', '✍️');
+                return;
+            }
+            if (!pledgeChecked) {
+                showToast('請勾選並承諾「團隊守護宣言」！', '✋');
+                return;
+            }
+
+            const role = roleSecrets[currentUnlockRole];
+            
+            // 更新卡片 UI
+            const badge = document.getElementById(role.badgeId);
+            badge.innerText = `👤 已解鎖：${userName}`;
+            badge.className = "text-xs font-bold text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full bg-emerald-50";
+
+            let bgClass = "bg-white";
+            if (currentUnlockRole === 'A') bgClass = "bg-amber-50/70";
+            else if (currentUnlockRole === 'B') bgClass = "bg-blue-50/70";
+            else if (currentUnlockRole === 'C') bgClass = "bg-purple-50/70";
+
+            const card = document.getElementById(role.cardId);
+            card.className = `${bgClass} border-2 border-emerald-500 rounded-2xl p-5 shadow-sm transition-all duration-300 relative overflow-hidden flex flex-col justify-between`;
+
+            // 顯示機密內容
+            document.getElementById(role.contentId).classList.remove('hidden');
+
+            showToast(`${userName} 成功獲取秘密，快口頭分享給隊友吧！`, '🔓');
+            closeUnlockModal();
+        }
+
+        // 自動聚焦下一個輸入格
+        function focusNextInput(current, nextId) {
+            if (current.value.length >= 1) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        // 驗證 3 位數生存拼圖密碼
+        function verifyJigsawCode() {
+            const d1 = document.getElementById('jigsaw-input-1').value.trim();
+            const d2 = document.getElementById('jigsaw-input-2').value.trim();
+            const d3 = document.getElementById('jigsaw-input-3').value.trim();
+            const code = d1 + d2 + d3;
+
+            if (code.length < 3) {
+                showToast('密碼不完整，請集齊三位專家的線索！', '🧩');
+                return;
+            }
+
+            if (code === '520') {
+                document.getElementById('jigsaw-success-box').classList.remove('hidden');
+                document.getElementById('success-message').innerText = "恭喜破解！520 代表你們愛護隊友、合作成功！";
+                showToast('生火成功！全隊平安度過寒冬之夜！', '🔥');
+            } else {
+                showToast('不對唷！密碼錯誤。請再次口述核對各位的祕密數字。', '❌');
+                document.getElementById('jigsaw-input-1').value = '';
+                document.getElementById('jigsaw-input-2').value = '';
+                document.getElementById('jigsaw-input-3').value = '';
+                document.getElementById('jigsaw-input-1').focus();
+            }
+        }
+
+        // 完成減碳教學任務按鈕
+        function finishCarbonTeaching() {
+            showToast('太棒了！你們成功將各自的減碳專業拼湊起來了，地球爺爺感謝你們！', '🌍');
+        }
+
+        // 模擬情緒連鎖反應 (Domino System)
+        function simulateEmotion(type) {
+            // 重置骨牌狀態
+            document.querySelectorAll('.domino').forEach(domino => {
+                domino.classList.remove('fallen');
+                domino.className = "domino w-8 h-24 bg-white rounded-lg shadow-sm border border-sky-300 flex flex-col justify-center items-center font-bold text-sky-800 text-xs";
+            });
+
+            const tempBar = document.getElementById('temp-bar');
+            const tempValue = document.getElementById('temp-value');
+            const tempStatus = document.getElementById('temp-status');
+            const dialogueBox = document.getElementById('dialogue-box');
+
+            if (type === 'angry') {
+                setTimeout(() => { document.getElementById('domino-1').className = "domino fallen w-8 h-24 bg-gradient-to-t from-rose-500 to-rose-400 rounded-lg shadow-md border border-rose-300 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 100);
+                setTimeout(() => { document.getElementById('domino-2').className = "domino fallen w-8 h-24 bg-rose-400 rounded-lg shadow-md border border-rose-300 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 500);
+                setTimeout(() => { document.getElementById('domino-3').className = "domino fallen w-8 h-24 bg-rose-300 rounded-lg shadow-md border border-rose-200 flex flex-col justify-center items-center font-bold text-rose-800 text-xs"; }, 900);
+                setTimeout(() => { document.getElementById('domino-4').className = "domino fallen w-8 h-24 bg-rose-200 rounded-lg shadow-md border border-rose-100 flex flex-col justify-center items-center font-bold text-rose-900 text-xs"; }, 1300);
+
+                tempBar.style.height = '100%';
+                tempBar.className = 'w-full bg-red-500 transition-all duration-700';
+                tempValue.innerText = '100°C';
+                tempValue.className = 'font-black text-2xl text-red-500';
+                tempStatus.innerText = '💥 關係爆炸了！';
+                tempStatus.className = 'text-xs text-red-500 mt-1 font-bold';
+
+                dialogueBox.innerHTML = `「你狂罵阿強，阿強也憤而怒吼：『你行你來啊！』，其他組員也跟著指責，最後大家不歡而散，<b>合作完全破裂</b>。」`;
+                showToast('小心！憤怒的連鎖反應速度極快。', '⚠️');
+
+            } else if (type === 'passive') {
+                setTimeout(() => { document.getElementById('domino-1').className = "domino w-8 h-24 bg-gradient-to-t from-amber-400 to-yellow-300 rounded-lg shadow-md border border-amber-300 flex flex-col justify-center items-center font-bold text-amber-900 text-xs"; }, 100);
+                setTimeout(() => { document.getElementById('domino-2').className = "domino w-8 h-24 bg-amber-100 border border-amber-200 rounded-lg shadow-md flex flex-col justify-center items-center font-bold text-amber-800 text-xs"; }, 400);
+
+                tempBar.style.height = '10%';
+                tempBar.className = 'w-full bg-amber-400 transition-all duration-700';
+                tempValue.innerText = '0°C';
+                tempValue.className = 'font-black text-2xl text-amber-500';
+                tempStatus.innerText = '❄️ 合作氣氛結冰';
+                tempStatus.className = 'text-xs text-amber-500 mt-1 font-bold';
+
+                dialogueBox.innerHTML = `「你翻白眼嘆氣，不發一語。阿強感到無地自容，也乾脆玩沙、不講話。團隊一片寂靜，<b>沒有任何人前進。</b>」`;
+                showToast('冷淡的非口語訊息，就像看不見的寒流。', '🙄');
+
+            } else if (type === 'calm') {
+                setTimeout(() => { document.getElementById('domino-1').className = "domino w-8 h-24 bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-lg shadow-md border border-emerald-300 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 100);
+                setTimeout(() => { document.getElementById('domino-2').className = "domino w-8 h-24 bg-emerald-400 rounded-lg shadow-md border border-emerald-300 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 400);
+                setTimeout(() => { document.getElementById('domino-3').className = "domino w-8 h-24 bg-emerald-500 rounded-lg shadow-md border border-emerald-400 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 700);
+                setTimeout(() => { document.getElementById('domino-4').className = "domino w-8 h-24 bg-emerald-600 rounded-lg shadow-md border border-emerald-500 flex flex-col justify-center items-center font-bold text-white text-xs"; }, 1000);
+
+                tempBar.style.height = '37%';
+                tempBar.className = 'w-full bg-sky-400 transition-all duration-700';
+                tempValue.innerText = '37°C';
+                tempValue.className = 'font-black text-2xl text-sky-500';
+                tempStatus.innerText = '✨ 溫和和諧中';
+                tempStatus.className = 'text-xs text-slate-500 mt-1 font-bold';
+
+                dialogueBox.innerHTML = `「你做了深呼吸，安慰阿強。阿強心存感激，大家共同把電子備用地圖拿出來對照，<b>平安度過危機！</b>」`;
+                showToast('完美的自我管理與社會覺察！', '🌿');
+            }
+        }
+
+        // 評價星星
+        function rateStars(num) {
+            ratingScore = num;
+            for (let i = 1; i <= 5; i++) {
+                const star = document.getElementById(`star-${i}`);
+                if (i <= num) {
+                    star.className = "text-2xl text-amber-400 hover:scale-110 transition-transform";
+                } else {
+                    star.className = "text-2xl text-slate-200 hover:scale-110 transition-transform";
+                }
+            }
+        }
+
+        // 使用社交壓力盾牌
+        function applyShield(type) {
+            const textarea = document.getElementById('log-pressure');
+            if (type === 'firm') {
+                textarea.value = `「我想把這次探險做好。請大家不要敷衍，我們各自寫自己的日誌，很快就寫完了！」`;
+            } else if (type === 'alt') {
+                textarea.value = `「不如這樣吧！我來負責計時跟統整，你們把剛才的心得告訴我，我跟你們一起一邊講一邊寫，這樣最快！」`;
+            } else if (type === 'empathy') {
+                textarea.value = `「我知道大家忙著走任務現在一定累了。但如果不寫完今天就不能下課，我們咬緊牙關快速寫完，等一下就能出去玩了！」`;
+            }
+            showToast('防護罩充能！模板套用成功。', '🛡️');
+        }
+
+        // 反思牆本機渲染與 LocalStorage 操作
+        const localLogKey = "sel_reflection_logs_v1";
+
+        function loadLogs() {
+            const wall = document.getElementById('class-wall-logs');
+            const data = localStorage.getItem(localLogKey);
+            const logs = data ? JSON.parse(data) : [];
+
+            // 先清空整個牆面
+            wall.innerHTML = '';
+
+            if (logs.length === 0) {
+                // 如果沒有紀錄，重新動態插入預設提示文字
+                wall.innerHTML = `
+                    <div id="no-log-placeholder" class="text-center py-8 text-slate-400 text-xs italic">
+                        目前反思牆空空如也，快當第一個發表的人吧！
+                    </div>
+                `;
+                return;
+            }
+
+            // 如果有紀錄，依序生成卡片
+            logs.reverse().forEach(log => {
+                const item = document.createElement('div');
+                item.className = "p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl space-y-1 relative shadow-sm hover:shadow-md transition-shadow duration-200";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-extrabold text-sm text-slate-800">👤 ${escapeHtml(log.name)}</span>
+                        <span class="text-xs text-amber-500 font-bold">${'⭐'.repeat(log.rating)}</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed pt-1 border-t border-emerald-100/40">
+                        <strong class="text-emerald-800">🏆 貢獻：</strong> ${escapeHtml(log.role)}
+                    </p>
+                    <p class="text-xs text-slate-600 leading-relaxed pt-1">
+                        <strong class="text-emerald-800">🛡️ 防護言論：</strong> ${escapeHtml(log.pressure)}
+                    </p>
+                `;
+                wall.appendChild(item);
+            });
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function submitReflection(event) {
+            event.preventDefault();
+            const name = document.getElementById('log-name').value.trim();
+            const role = document.getElementById('log-role').value.trim();
+            const pressure = document.getElementById('log-pressure').value.trim();
+
+            if (ratingScore === 0) {
+                showToast('請在Q2中點選星星評分！', '⭐');
+                return;
+            }
+
+            const newLog = { name, role, rating: ratingScore, pressure };
+            const data = localStorage.getItem(localLogKey);
+            const logs = data ? JSON.parse(data) : [];
+            logs.push(newLog);
+            localStorage.setItem(localLogKey, JSON.stringify(logs));
+
+            // 重置表單與星星
+            document.getElementById('log-form').reset();
+            rateStars(0);
+
+            showToast('成功投稿至班級反思牆！', '🧱');
+            loadLogs();
+        }
+
+        let clearConfirmTimeout;
+
+        // 清空牆
+        function clearLogs() {
+            const btn = document.getElementById('clear-logs-btn');
+            if (btn.innerText.includes('再次點擊')) {
+                localStorage.removeItem(localLogKey);
+                showToast('已清空反思牆紀錄。', '🗑️');
+                loadLogs();
+                btn.innerHTML = '🗑️ 清除所有紀錄';
+                clearTimeout(clearConfirmTimeout);
+            } else {
+                btn.innerHTML = '⚠️ 再次點擊確認清空';
+                clearConfirmTimeout = setTimeout(() => {
+                    btn.innerHTML = '🗑️ 清除所有紀錄';
+                }, 3000);
+            }
+        }
+
+        // 支援專區控制
+        function toggleSupportZone() {
+            const content = document.getElementById('support-content');
+            const icon = document.getElementById('support-toggle-icon');
+            isSupportOpen = !isSupportOpen;
+            
+            if (isSupportOpen) {
+                content.classList.remove('hidden');
+                icon.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+                setTimeout(() => {
+                    content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else {
+                content.classList.add('hidden');
+                icon.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            }
+        }
+
+        function switchSupportTab(tabId) {
+            document.querySelectorAll('.support-tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.support-tab-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-700', 'border-b-2', 'border-indigo-600');
+                btn.classList.add('text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.add('text-indigo-700', 'border-b-2', 'border-indigo-600');
+            activeBtn.classList.remove('text-slate-500');
+        }
+
+        // 初始化
+        window.onload = function() {
+            loadLogs();
+        };
+    </script>
+</body>
+</html>
